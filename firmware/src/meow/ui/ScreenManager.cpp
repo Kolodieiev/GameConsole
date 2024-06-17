@@ -57,9 +57,9 @@ namespace meow
                 case ScreenID::ID_SCREEN_MENU:
                     screen = new MenuScreen(_display);
                     break;
-                // case ScreenID::ID_SCREEN_MP3:
-                //     screen = new Mp3Screen(_display);
-                //     break;
+                case ScreenID::ID_SCREEN_MP3:
+                    screen = new Mp3Screen(_display);
+                    break;
                 // case ScreenID::ID_SCREEN_CALC:
                 //     screen = new CalcScreen(_display);
                 //     break;
