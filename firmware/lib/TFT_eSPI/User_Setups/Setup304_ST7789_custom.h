@@ -30,8 +30,8 @@
 #define TFT_SCLK 41 // scl
 #define TFT_DC 40
 //
-#define TFT_RST -1
-// #define TFT_RST 18 У виправленій схемі
+// #define TFT_RST 3 // Стара схема
+#define TFT_RST 18 
 
 // Позбутися помилки. 46 пін не використовується
 #define TFT_CS 46
