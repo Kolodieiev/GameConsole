@@ -298,7 +298,7 @@ void Mp3Screen::showPlaylists()
     _fixed_menu->setBackColor(COLOR_MENU_ITEM);
     _fixed_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
     _fixed_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
-    _fixed_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 4) / PLAYLIST_ITEMS_NUM - 2);
+    _fixed_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 1) / PLAYLIST_ITEMS_NUM);
 
     _scrollbar = new ScrollBar(ID_SCROLL, _display);
     layout->addWidget(_scrollbar);
@@ -356,9 +356,9 @@ void Mp3Screen::showTracks(uint16_t pos)
 
     _dynamic_menu = creator.getDynamicMenu(ID_D_MENU, this);
     layout->addWidget(_dynamic_menu);
-    _dynamic_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 4) / TRACKS_ITEMS_NUM - 2);
+    _dynamic_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 2) / TRACKS_ITEMS_NUM);
     _dynamic_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
-    _dynamic_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
+    _dynamic_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 1);
 
     _scrollbar = new ScrollBar(ID_SCROLL, _display);
     layout->addWidget(_scrollbar);
