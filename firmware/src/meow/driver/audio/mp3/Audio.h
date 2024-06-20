@@ -19,7 +19,6 @@
 #include <SPIFFS.h>
 #include <FS.h>
 #include <FFat.h>
-#include <atomic>
 
 #if ESP_IDF_VERSION_MAJOR == 5
 #include <driver/i2s_std.h>
@@ -108,6 +107,7 @@ class Audio : private AudioBuffer
 public:
     Audio(bool internalDAC = false, uint8_t channelEnabled = 3, uint8_t i2sPort = I2S_NUM_0); // #99
     ~Audio();
+    void reconfigI2S();
     void setBufsize(int rambuf_sz, int psrambuf_sz);
     bool connecttoFS(fs::FS &fs, const char *path, int32_t m_fileStartPos = -1);
     bool setFileLoop(bool input); // TEST loop
@@ -168,11 +168,10 @@ private:
     bool setBitsPerSample(int bits);
     bool setChannels(int channels);
     bool setBitrate(int br);
-    void playChunk();
-    bool playSample(int16_t sample[2]);
+    void playChunk(bool i2s_only);
     void computeVUlevel(int16_t sample[2]);
     void computeLimit();
-    int32_t Gain(int16_t s[2]);
+    void Gain(int16_t* sample);
     bool initializeDecoder();
     esp_err_t I2Sstart(uint8_t i2s_num);
     esp_err_t I2Sstop(uint8_t i2s_num);
@@ -331,13 +330,13 @@ private:
     uint8_t m_curve = 0;          // volume characteristic
     uint8_t m_bitsPerSample = 16; // bitsPerSample
     uint8_t m_channels = 2;
-    uint8_t m_i2s_num = I2S_NUM_0;             // I2S_NUM_0 or I2S_NUM_1
-    uint8_t m_filterType[2];                   // lowpass, highpass
-    uint8_t m_vuLeft = 0;                      // average value of samples, left channel
-    uint8_t m_vuRight = 0;                     // average value of samples, right channel
-    int16_t *m_outBuff = NULL;                 // Interleaved L/R
-    std::atomic<int16_t> m_validSamples = {0}; // #144
-    std::atomic<int16_t> m_curSample{0};
+    uint8_t m_i2s_num = I2S_NUM_0; // I2S_NUM_0 or I2S_NUM_1
+    uint8_t m_filterType[2];       // lowpass, highpass
+    uint8_t m_vuLeft = 0;          // average value of samples, left channel
+    uint8_t m_vuRight = 0;         // average value of samples, right channel
+    int16_t *m_outBuff = NULL;     // Interleaved L/R
+    int16_t m_validSamples = {0};  // #144
+    int16_t m_curSample{0};
     int16_t m_decodeError = 0;       // Stores the return value of the decoder
     uint32_t m_contentlength = 0;    // Stores the length if the stream comes from fileserver
     uint32_t m_PlayingStartTime = 0; // Stores the milliseconds after the start of the audio
