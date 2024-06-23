@@ -32,6 +32,7 @@ namespace meow
         //
         GraphicsDriver &_display;
         //
+        bool _screen_enabled{true}; // Прапор, який дозволяє вимкнути перерисовку екрану
 
         // Робота, повязана з відрисовкою GUI.
         virtual void update() = 0;

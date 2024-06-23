@@ -18,7 +18,8 @@ namespace meow
             _input.update();
             update();
 
-            _layout->onDraw();
+            if (_screen_enabled)
+                _layout->onDraw();
 
 #ifdef DOUBLE_BUFFERRING
             _display.pushBuffer();
