@@ -17,15 +17,7 @@ namespace meow
     Pin::Pin(uint8_t pin_id, bool is_touch) : _pin_id{pin_id},
                                               _is_touch{is_touch}
     {
-        if (!is_touch)
-        {
-            pinMode(_pin_id, INPUT_PULLUP);
-        }
-        else
-        {
-            touchRead(_pin_id); // init channel
-            _pad = digitalPinToTouchChannel(_pin_id);
-        }
+        enable();
     }
 
     void Pin::lock(unsigned long lock_duration)
@@ -41,6 +33,9 @@ namespace meow
 
     void Pin::update()
     {
+        if (!_is_enabled)
+            return;
+
         if (!_is_locked)
         {
             if (_is_touch)
@@ -108,4 +103,27 @@ namespace meow
         _is_released = false;
     }
 
+    void Pin::enable()
+    {
+        _is_enabled = true;
+
+        if (!_is_touch)
+        {
+            pinMode(_pin_id, INPUT_PULLUP);
+        }
+        else
+        {
+            touchRead(_pin_id); // init channel
+            _pad = digitalPinToTouchChannel(_pin_id);
+        }
+    }
+
+    void Pin::disable()
+    {
+        _is_enabled = false;
+        reset();
+
+        gpio_reset_pin((gpio_num_t)_pin_id);
+        pinMode(_pin_id, INPUT);
+    }
 }

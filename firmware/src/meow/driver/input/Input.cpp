@@ -2,7 +2,6 @@
 
 namespace meow
 {
-
     void Input::update()
     {
         for (auto &&btn : _buttons)
@@ -14,5 +13,4 @@ namespace meow
         for (auto &&btn : _buttons)
             btn.second->reset();
     }
-
 }

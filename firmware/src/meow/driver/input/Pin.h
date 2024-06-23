@@ -22,21 +22,24 @@ namespace meow
             return _pin_id < other.getID();
         }
 
+        void enable();
+        void disable();
+
     private:
         uint8_t _pin_id;
         int8_t _pad;
         bool _is_touch;
         //
-        bool _is_locked = false;
+        bool _is_locked{false};
         unsigned long _lock_time;
         unsigned long _lock_duration;
         //
-        bool _is_touched = false;
+        bool _is_touched{false};
         unsigned long _hold_duration;
         //
-        bool _is_holded = false;
-        bool _is_pressed = false;
-        bool _is_released = false;
+        bool _is_holded{false};
+        bool _is_pressed{false};
+        bool _is_released{false};
+        bool _is_enabled;
     };
-
 }

@@ -29,6 +29,8 @@ namespace meow
         // Скинути значення всіх пінів
         void reset();
 
+        inline void enablePin(PinID pin_id) { _buttons.at(pin_id)->enable(); }
+        inline void disablePin(PinID pin_id) { _buttons.at(pin_id)->disable(); }
         inline bool isHolded(PinID pin_id) { return _buttons.at(pin_id)->isHolded(); }
         inline bool isPressed(PinID pin_id) { return _buttons.at(pin_id)->isPressed(); }
         inline bool isReleased(PinID pin_id) { return _buttons.at(pin_id)->isReleased(); }
