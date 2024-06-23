@@ -838,11 +838,16 @@ void Mp3Screen::upPressed()
 {
     if (_mode == MODE_AUDIO_PLAY && _is_locked)
     {
+        setCpuFrequencyMhz(240);
+
         DisplayUtil display;
         display.setBrightness(_brightness);
         _is_locked = false;
-        _track_name_lbl->setTicker(true);
-        setCpuFrequencyMhz(240);
+        _screen_enabled = true;
+
+        _input.enablePin(Input::PIN_BACK);
+        _input.enablePin(Input::PIN_LEFT);
+        _input.enablePin(Input::PIN_RIGHT);
     }
 }
 
@@ -853,33 +858,36 @@ void Mp3Screen::downPressed()
         DisplayUtil display;
         display.setBrightness(0);
         _is_locked = true;
-        _track_name_lbl->setTicker(false);
+        _screen_enabled = false;
+
+        _input.disablePin(Input::PIN_BACK);
+        _input.disablePin(Input::PIN_LEFT);
+        _input.disablePin(Input::PIN_RIGHT);
+
         setCpuFrequencyMhz(160);
     }
 }
 
 void Mp3Screen::left()
 {
-    if (_mode == MODE_AUDIO_PLAY && !_is_locked)
+    if (_mode == MODE_AUDIO_PLAY)
         playPrev();
 }
 
 void Mp3Screen::right()
 {
-    if (_mode == MODE_AUDIO_PLAY && !_is_locked)
+    if (_mode == MODE_AUDIO_PLAY)
         playNext();
 }
 
 void Mp3Screen::leftPressed()
 {
-    if (!_is_locked)
-        _audio.setTimeOffset(-20);
+    _audio.setTimeOffset(-20);
 }
 
 void Mp3Screen::rightPressed()
 {
-    if (!_is_locked)
-        _audio.setTimeOffset(20);
+    _audio.setTimeOffset(20);
 }
 
 void Mp3Screen::ok()
@@ -982,7 +990,7 @@ void Mp3Screen::back()
 
 void Mp3Screen::backPressed()
 {
-    if (_mode == MODE_AUDIO_PLAY && !_is_locked)
+    if (_mode == MODE_AUDIO_PLAY)
     {
         _audio.stopSong();
         savePref();
