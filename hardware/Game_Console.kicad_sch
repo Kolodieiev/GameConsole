@@ -2069,6 +2069,320 @@
 				)
 			)
 		)
+		(symbol "Simulation_SPICE:NMOS"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "Q1"
+				(at -3.048 3.302 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "NMOS"
+				(at 6.35 -1.2699 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+					(hide yes)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+				(at 0.254 14.478 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+				(at 1.524 -24.638 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "N-MOSFET transistor, drain/source/gate"
+				(at -3.048 -22.098 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Device" "NMOS"
+				(at 0 -17.145 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Type" "VDMOS"
+				(at 0 -19.05 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Sim.Pins" "1=G 2=S 3=D"
+				(at 0 -15.24 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "transistor NMOS N-MOS N-MOSFET simulation"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "NMOS_0_1"
+				(polyline
+					(pts
+						(xy 0.254 0) (xy -2.54 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 1.905) (xy 0.254 -1.905)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.27) (xy 0.762 -2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 0.508) (xy 0.762 -0.508)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 2.286) (xy 0.762 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 2.54) (xy 2.54 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.54 -2.54) (xy 2.54 0) (xy 0.762 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.762 -1.778) (xy 3.302 -1.778) (xy 3.302 1.778) (xy 0.762 1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.016 0) (xy 2.032 0.381) (xy 2.032 -0.381) (xy 1.016 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 2.794 0.508) (xy 2.921 0.381) (xy 3.683 0.381) (xy 3.81 0.254)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 3.302 0.381) (xy 2.921 -0.254) (xy 3.683 -0.254) (xy 3.302 0.381)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 1.651 0)
+					(radius 2.794)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 2.54 -1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(circle
+					(center 2.54 1.778)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+			)
+			(symbol "NMOS_1_1"
+				(pin input line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "G"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 -5.08 90)
+					(length 2.54)
+					(name "S"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 5.08 270)
+					(length 2.54)
+					(name "D"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Switch:SW_Push"
 			(pin_numbers hide)
 			(pin_names
@@ -3828,10 +4142,6 @@
 		(uuid "5ca4786e-e3de-4d81-bd48-a5d8c239ddf8")
 	)
 	(no_connect
-		(at 210.82 62.23)
-		(uuid "6f7765a7-caba-4861-8b61-bc9f296a4c57")
-	)
-	(no_connect
 		(at 243.84 87.63)
 		(uuid "8960bbc3-2d0f-48dc-baf0-9b52e49605de")
 	)
@@ -3969,6 +4279,16 @@
 	)
 	(wire
 		(pts
+			(xy 205.8406 152.3947) (xy 205.8406 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1e1c4b57-a3b0-4de1-adb4-82cecb40ce7d")
+	)
+	(wire
+		(pts
 			(xy 139.7 100.33) (xy 142.24 100.33)
 		)
 		(stroke
@@ -3979,7 +4299,7 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 142.24) (xy 200.66 142.24)
+			(xy 205.74 139.7) (xy 204.47 139.7)
 		)
 		(stroke
 			(width 0)
@@ -4169,7 +4489,7 @@
 	)
 	(wire
 		(pts
-			(xy 209.55 130.81) (xy 209.55 132.08)
+			(xy 213.36 128.27) (xy 213.36 129.54)
 		)
 		(stroke
 			(width 0)
@@ -4199,6 +4519,16 @@
 	)
 	(wire
 		(pts
+			(xy 213.36 158.7447) (xy 213.36 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54166d0c-5da3-4913-922e-381024197f65")
+	)
+	(wire
+		(pts
 			(xy 133.35 52.07) (xy 133.35 54.61)
 		)
 		(stroke
@@ -4219,7 +4549,7 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 152.4) (xy 201.93 152.4)
+			(xy 204.47 149.86) (xy 205.74 149.86)
 		)
 		(stroke
 			(width 0)
@@ -4279,7 +4609,17 @@
 	)
 	(wire
 		(pts
-			(xy 201.93 147.32) (xy 200.66 147.32)
+			(xy 208.28 162.56) (xy 208.28 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5eebdaa1-2292-4034-93ba-8fe0b83b4422")
+	)
+	(wire
+		(pts
+			(xy 205.74 144.78) (xy 204.47 144.78)
 		)
 		(stroke
 			(width 0)
@@ -4316,6 +4656,16 @@
 			(type default)
 		)
 		(uuid "64813a72-9caf-424c-92b5-42d0806ccbca")
+	)
+	(wire
+		(pts
+			(xy 205.8406 152.3947) (xy 207.3013 152.3947)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6489f382-953d-467e-bb1e-d931dbcd278d")
 	)
 	(wire
 		(pts
@@ -4369,6 +4719,16 @@
 	)
 	(wire
 		(pts
+			(xy 205.8406 152.4) (xy 204.47 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "70f420fa-db68-47f0-be22-e6d463f5f578")
+	)
+	(wire
+		(pts
 			(xy 210.82 80.01) (xy 213.36 80.01)
 		)
 		(stroke
@@ -4396,6 +4756,16 @@
 			(type default)
 		)
 		(uuid "73e7da52-7861-483e-99e2-237a3e7e7ab2")
+	)
+	(wire
+		(pts
+			(xy 207.3013 152.3947) (xy 207.3013 158.7447)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "74506766-f5f7-4980-af03-e916b6094d21")
 	)
 	(wire
 		(pts
@@ -4469,16 +4839,6 @@
 	)
 	(wire
 		(pts
-			(xy 210.82 62.23) (xy 213.36 62.23)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8f9e4aa1-0f91-4727-85e4-5b6b781afb0b")
-	)
-	(wire
-		(pts
 			(xy 243.84 74.93) (xy 246.38 74.93)
 		)
 		(stroke
@@ -4499,7 +4859,7 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 139.7) (xy 201.93 139.7)
+			(xy 204.47 137.16) (xy 205.74 137.16)
 		)
 		(stroke
 			(width 0)
@@ -4559,13 +4919,23 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 144.78) (xy 201.93 144.78)
+			(xy 204.47 142.24) (xy 205.74 142.24)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
 		(uuid "a104a123-2002-4e2e-9134-cb82294b99e8")
+	)
+	(wire
+		(pts
+			(xy 204.47 162.56) (xy 208.28 162.56)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2a8be60-c4a9-4125-a99e-a437ab2041a7")
 	)
 	(wire
 		(pts
@@ -4679,6 +5049,16 @@
 	)
 	(wire
 		(pts
+			(xy 207.3013 158.7447) (xy 213.36 158.7447)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b50f6c06-981a-4a31-beb0-6ef4ea2c7b2a")
+	)
+	(wire
+		(pts
 			(xy 196.85 54.61) (xy 196.85 67.31)
 		)
 		(stroke
@@ -4769,6 +5149,16 @@
 	)
 	(wire
 		(pts
+			(xy 210.82 62.23) (xy 213.36 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c594071e-95ed-409c-a6de-9ed6c0eb03b7")
+	)
+	(wire
+		(pts
 			(xy 74.93 156.21) (xy 74.93 153.67)
 		)
 		(stroke
@@ -4809,7 +5199,7 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 149.86) (xy 201.93 149.86)
+			(xy 204.47 147.32) (xy 205.74 147.32)
 		)
 		(stroke
 			(width 0)
@@ -4846,6 +5236,16 @@
 			(type default)
 		)
 		(uuid "dc49f77a-ad18-42aa-9d04-1438b55a6ec3")
+	)
+	(wire
+		(pts
+			(xy 208.28 161.29) (xy 213.36 161.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dd25a45e-4e97-460b-8c6d-709d5be0b022")
 	)
 	(wire
 		(pts
@@ -5202,6 +5602,29 @@
 		)
 		(uuid "e974ae5a-c0ef-40e4-bf8a-943fc220839c")
 	)
+	(global_label "DISP_EN"
+		(shape input)
+		(at 196.85 157.48 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 49 0 255 1)
+			)
+			(justify right)
+		)
+		(uuid "0198b3ed-4ad4-444a-b63d-f9f6277a0d98")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 186.0634 157.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "RX_0"
 		(shape input)
 		(at 124.46 95.25 180)
@@ -5319,7 +5742,7 @@
 	)
 	(global_label "DISP_SCK"
 		(shape input)
-		(at 200.66 139.7 180)
+		(at 204.47 137.16 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5330,7 +5753,7 @@
 		)
 		(uuid "1bd68674-747d-4c34-bd73-1598de3af90c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 188.6034 139.7 0)
+			(at 192.4134 137.16 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5503,7 +5926,7 @@
 	)
 	(global_label "DISP_RST"
 		(shape input)
-		(at 200.66 144.78 180)
+		(at 204.47 142.24 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5514,7 +5937,7 @@
 		)
 		(uuid "38999eb2-6e54-47ef-adc8-34d3fe927327")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 188.9058 144.78 0)
+			(at 192.7158 142.24 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5869,6 +6292,29 @@
 			)
 		)
 	)
+	(global_label "DISP_EN"
+		(shape input)
+		(at 210.82 62.23 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(color 49 0 255 1)
+			)
+			(justify right)
+		)
+		(uuid "8af9ba81-1fda-4365-9bd0-62587b9dca61")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 200.0334 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "GPIO10"
 		(shape passive)
 		(at 124.46 100.33 180)
@@ -5894,7 +6340,7 @@
 	)
 	(global_label "DISP_BLK"
 		(shape input)
-		(at 200.66 152.4 180)
+		(at 204.47 149.86 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5905,7 +6351,7 @@
 		)
 		(uuid "a7229aff-5064-43ee-b940-02433aca5691")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 188.7848 152.4 0)
+			(at 192.5948 149.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5986,7 +6432,7 @@
 	)
 	(global_label "DISP_MOSI"
 		(shape input)
-		(at 200.66 142.24 180)
+		(at 204.47 139.7 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -5997,7 +6443,7 @@
 		)
 		(uuid "b82d956e-e9b3-45bb-9fc8-f2189e30ac47")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 187.7567 142.24 0)
+			(at 191.5667 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6354,7 +6800,7 @@
 	)
 	(global_label "DISP_D{slash}C"
 		(shape input)
-		(at 200.66 147.32 180)
+		(at 204.47 144.78 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -6365,7 +6811,7 @@
 		)
 		(uuid "f403ce71-2ba3-4003-a856-4bc9df38ec7e")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 188.4824 147.32 0)
+			(at 192.2924 144.78 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6522,7 +6968,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1d47dc51-3934-4757-b958-7a3a8b47e73d")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR022"
 			(at 77.47 151.13 0)
 			(effects
 				(font
@@ -6573,7 +7019,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR021")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -6937,6 +7383,106 @@
 		)
 	)
 	(symbol
+		(lib_id "Simulation_SPICE:NMOS")
+		(at 201.93 157.48 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "3a29c57b-309d-44c6-a44c-d504fb944a0d")
+		(property "Reference" "Q1"
+			(at 198.882 154.178 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "NMOS"
+			(at 208.28 158.7499 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 202.184 143.002 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#cha_MOSFETs"
+			(at 203.454 182.118 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "N-MOSFET transistor, drain/source/gate"
+			(at 198.882 179.578 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "NMOS"
+			(at 201.93 174.625 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Type" "VDMOS"
+			(at 201.93 176.53 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=G 2=S 3=D"
+			(at 201.93 172.72 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "af19c85b-8bd0-4a92-b3c7-0d427d8f8c06")
+		)
+		(pin "3"
+			(uuid "cbabb825-c5c7-4677-8093-7ca0989387a9")
+		)
+		(pin "2"
+			(uuid "9be9334b-565d-40df-861a-d3a6454c6161")
+		)
+		(instances
+			(project "Game_Console"
+				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
+					(reference "Q1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Connector:Conn_01x02_Pin")
 		(at 124.46 45.72 0)
 		(unit 1)
@@ -7144,7 +7690,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 200.66 149.86 270)
+		(at 204.47 147.32 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7152,8 +7698,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "50408916-0077-49b9-b887-efe4ad596fda")
-		(property "Reference" "#PWR020"
-			(at 194.31 149.86 0)
+		(property "Reference" "#PWR019"
+			(at 198.12 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7162,7 +7708,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 196.85 149.8599 90)
+			(at 200.66 147.3199 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7171,7 +7717,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 200.66 149.86 0)
+			(at 204.47 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7180,7 +7726,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 200.66 149.86 0)
+			(at 204.47 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7189,7 +7735,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 200.66 149.86 0)
+			(at 204.47 147.32 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7203,7 +7749,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR020")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -7363,15 +7909,15 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 209.55 160.02 0)
+		(at 213.36 161.29 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "55a2166e-03b2-4aee-ba16-3865695de231")
-		(property "Reference" "#PWR025"
-			(at 209.55 166.37 0)
+		(property "Reference" "#PWR026"
+			(at 213.36 167.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7380,7 +7926,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 205.486 161.798 0)
+			(at 216.916 162.814 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7388,7 +7934,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 209.55 160.02 0)
+			(at 213.36 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7397,7 +7943,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 209.55 160.02 0)
+			(at 213.36 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7406,7 +7952,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 209.55 160.02 0)
+			(at 213.36 161.29 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7420,7 +7966,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR025")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -7428,7 +7974,7 @@
 	)
 	(symbol
 		(lib_id "power:+3V3")
-		(at 209.55 130.81 0)
+		(at 213.36 128.27 0)
 		(mirror y)
 		(unit 1)
 		(exclude_from_sim no)
@@ -7437,7 +7983,7 @@
 		(dnp no)
 		(uuid "57b94853-b121-4658-b2c5-23bd128bb6d1")
 		(property "Reference" "#PWR014"
-			(at 209.55 134.62 0)
+			(at 213.36 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7446,7 +7992,7 @@
 			)
 		)
 		(property "Value" "+3V3"
-			(at 213.36 129.794 0)
+			(at 217.17 127.254 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7454,7 +8000,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 209.55 130.81 0)
+			(at 213.36 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7463,7 +8009,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 209.55 130.81 0)
+			(at 213.36 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7472,7 +8018,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 209.55 130.81 0)
+			(at 213.36 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7494,15 +8040,15 @@
 	)
 	(symbol
 		(lib_id "display:TFT_240x280")
-		(at 209.55 146.05 0)
+		(at 213.36 143.51 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(uuid "5f4cc17a-4247-4fa9-b519-3594e01e0a91")
-		(property "Reference" "U5"
-			(at 215.9 145.796 0)
+		(property "Reference" "U3"
+			(at 219.71 143.256 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7511,7 +8057,7 @@
 			)
 		)
 		(property "Value" "~"
-			(at 204.47 134.62 0)
+			(at 208.28 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7519,7 +8065,7 @@
 			)
 		)
 		(property "Footprint" "display:IPS_240x320_2_inch"
-			(at 204.47 134.62 0)
+			(at 208.28 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7528,7 +8074,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 204.47 134.62 0)
+			(at 208.28 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7537,7 +8083,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 209.55 146.05 0)
+			(at 213.36 143.51 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -7572,7 +8118,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "U5")
+					(reference "U3")
 					(unit 1)
 				)
 			)
@@ -7788,7 +8334,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "69af8f41-156f-4da7-ae54-b3274076d973")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR023"
 			(at 67.31 153.67 0)
 			(effects
 				(font
@@ -7839,7 +8385,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR022")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -7855,7 +8401,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "6e2a7ece-4c98-41d3-94a1-692ea676e4ce")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR021"
 			(at 27.94 151.13 0)
 			(effects
 				(font
@@ -7906,7 +8452,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR026")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -8698,7 +9244,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "b3adb33a-78aa-4890-8c99-56ec40b9b259")
-		(property "Reference" "U4"
+		(property "Reference" "U5"
 			(at 113.03 134.112 90)
 			(effects
 				(font
@@ -8760,7 +9306,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "U4")
+					(reference "U5")
 					(unit 1)
 				)
 			)
@@ -8851,7 +9397,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cbd833e8-7b1b-4df2-be62-a7069118987b")
-		(property "Reference" "#PWR019"
+		(property "Reference" "#PWR020"
 			(at 119.38 149.86 0)
 			(effects
 				(font
@@ -8902,7 +9448,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR019")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -8917,7 +9463,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ceef7f8f-edc6-4a62-b64c-e08c429e9a89")
-		(property "Reference" "U3"
+		(property "Reference" "U4"
 			(at 82.55 133.096 90)
 			(effects
 				(font
@@ -8990,7 +9536,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "U3")
+					(reference "U4")
 					(unit 1)
 				)
 			)
@@ -9007,7 +9553,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d47ac935-286a-4708-b21e-4fa2464101ed")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR024"
 			(at 161.29 163.83 0)
 			(effects
 				(font
@@ -9057,7 +9603,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR023")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -9276,7 +9822,7 @@
 		(on_board yes)
 		(dnp no)
 		(uuid "ed4f0a7b-3db2-42e5-9237-f57f43101f15")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR025"
 			(at 257.81 163.83 0)
 			(effects
 				(font
@@ -9326,7 +9872,7 @@
 		(instances
 			(project "Game_Console"
 				(path "/b910026b-1db9-4543-a496-b0bd1b8a56a4"
-					(reference "#PWR024")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)

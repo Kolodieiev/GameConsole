@@ -1,0 +1,12 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "clock")(type "KiCad")(uri "${KIPRJMOD}/library/sym/clock.kicad_sym")(options "")(descr ""))
+  (lib (name "connector")(type "KiCad")(uri "${KIPRJMOD}/library/sym/connector.kicad_sym")(options "")(descr ""))
+  (lib (name "display")(type "KiCad")(uri "${KIPRJMOD}/library/sym/display.kicad_sym")(options "")(descr ""))
+  (lib (name "Espressif")(type "KiCad")(uri "${KIPRJMOD}/library/sym/Espressif.kicad_sym")(options "")(descr ""))
+  (lib (name "my")(type "KiCad")(uri "${KIPRJMOD}/library/sym/my.kicad_sym")(options "")(descr ""))
+  (lib (name "power_module")(type "KiCad")(uri "${KIPRJMOD}/library/sym/power_module.kicad_sym")(options "")(descr ""))
+  (lib (name "regulators")(type "KiCad")(uri "${KIPRJMOD}/library/sym/regulators.kicad_sym")(options "")(descr ""))
+  (lib (name "RTC_module")(type "KiCad")(uri "${KIPRJMOD}/library/sym/RTC_module.kicad_sym")(options "")(descr ""))
+  (lib (name "sd_module")(type "KiCad")(uri "${KIPRJMOD}/library/sym/sd_module.kicad_sym")(options "")(descr ""))
+)
