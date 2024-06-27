@@ -11,7 +11,7 @@ namespace meow
         if (!sd.hasConnection())
             return false;
 
-        File *file = loadPrefFile(pref_name, "w");
+        File *file = loadPrefFile(pref_name, FILE_WRITE);
 
         if (file == nullptr)
             return false;
@@ -29,7 +29,7 @@ namespace meow
         if (!sd.hasConnection())
             return "";
 
-        File *file = loadPrefFile(pref_name, "r");
+        File *file = loadPrefFile(pref_name, FILE_READ);
 
         if (!file)
             return "";
@@ -67,20 +67,20 @@ namespace meow
 
         File file;
 
-        if (mode == "w")
+        if (mode == FILE_WRITE)
             file = SD.open(path, mode, true);
         else
             file = SD.open(path, mode);
 
         if (!file)
         {
-            log_e("Помилка читання файлу налаштувань: %s", path);
+            log_e("Помилка читання файлу налаштувань: %s", path.c_str());
             return nullptr;
         }
 
         if (file.isDirectory())
         {
-            log_e("Помилка. Файл налаштувань не може бути каталогом: %s", path);
+            log_e("Помилка. Файл налаштувань не може бути каталогом: %s", path.c_str());
             file.close();
             return nullptr;
         }
