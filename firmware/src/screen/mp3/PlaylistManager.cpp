@@ -8,8 +8,7 @@ bool PlaylistManager::updatePlaylists()
 {
     String db_path = ROOT_PATH;
     db_path += PLAYLIST_LIB_NAME;
-    String root = ROOT_PATH;
-    return indexDirs(root.c_str(), db_path.c_str());
+    return indexDirs(ROOT_PATH, db_path.c_str());
 }
 
 bool PlaylistManager::updateTracklists(const char *playlist_name)
@@ -23,9 +22,7 @@ bool PlaylistManager::updateTracklists(const char *playlist_name)
     db_path += playlist_name;
     db_path += PLAYLIST_LIB_NAME;
 
-    String ext = AUDIO_EXT;
-
-    return indexFilesExt(dir_path.c_str(), ext.c_str(), db_path.c_str());
+    return indexFilesExt(dir_path.c_str(), AUDIO_EXT, db_path.c_str());
 }
 
 uint16_t PlaylistManager::getPlaylistSize(const char *playlist_name)
