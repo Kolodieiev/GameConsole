@@ -8,13 +8,16 @@ using namespace meow;
 class BooklistManager : public FileManager
 {
 public:
-    bool updateCategories();
-    bool updateBooklist(const char *cat_name);
-    uint16_t getCatSize(const char *cat_name);
-    bool removeBook(const char *cat_name, const char *book_name);
+    bool updateBookDirs();
+    bool updateBooklist(const char *book_dir_name);
+    uint16_t getDirSize(const char *book_dir_name);
+    bool removeBook(const char *book_dir_name, const char *book_name);
 
-    std::vector<String> getCategories();
-    std::vector<String> getBooks(const char *cat_name, uint8_t start_pos, uint8_t size);
+    std::vector<String> getBookDirs();
+    std::vector<String> getBooks(const char *book_dir_name, uint8_t start_pos, uint8_t size);
 
-    String getBookPath(const char *playlist_name, const char *track_name);
+    String getBookPath(const char *book_dir_name, const char *book_name);
+
+    size_t getBookSize(const char *book_dir_name, const char *book_name);
+    String readText(const char *book_dir_name, const char *book_name, uint64_t pos, uint64_t size);
 };

@@ -1,13 +1,21 @@
 #pragma once
 #include <Arduino.h>
+
+#include "meow/lib/DS3231/DS3231.h"
+
 #include "meow/ui/screen/IScreen.h"
 #include "meow/util/preferences/PrefUtil.h"
 #include "meow/ui/widget/scrollbar/ScrollBar.h"
+#include "meow/ui/widget/navbar/NavBar.h"
 #include "meow/ui/widget/menu/FixedMenu.h"
+#include "meow/ui/widget/menu/DynamicMenu.h"
+#include "meow/util/preferences/PrefUtil.h"
+
+#include "./BooklistManager.h"
 
 using namespace meow;
 
-class ReaderScreen : public IScreen
+class ReaderScreen : public IScreen, public IItemsLoader
 {
 
 public:
@@ -18,23 +26,31 @@ protected:
     virtual void loop() override;
     virtual void update() override;
 
+    virtual std::vector<MenuItem *> loadPrev(uint8_t size, uint16_t current_ID) override;
+    virtual std::vector<MenuItem *> loadNext(uint8_t size, uint16_t current_ID) override;
+
 private:
     enum Widget_ID : uint8_t
     {
         ID_NAVBAR = 1,
-        ID_PAGE,
+        ID_F_MENU,
+        ID_D_MENU,
         ID_SCROLL,
-        ID_TIME,
+        ID_BOOK_MENU,
         ID_PROGRESS,
+        ID_TIME_LBL,
+        ID_UPD_LBL,
+        ID_PAGE_LBL,
+        ID_PROGRESS_LBL
     };
 
     enum Mode : uint8_t
     {
-        MODE_CAT_SEL = 0,
-        MODE_CAT_UPD,
+        MODE_BOOK_DIR_SEL = 0,
+        MODE_UPDATING,
         MODE_BOOK_SEL,
-        MODE_BOOK_READING,
-        MODE_LIST_MENU
+        MODE_BOOK_READ,
+        MODE_BOOK_MENU
     };
 
     enum BlMenuItemsID : uint8_t
@@ -43,13 +59,47 @@ private:
         ID_ITEM_UPD,
     };
 
-    const uint8_t MAX_CHAR_TO_READ{200};
+    Mode _mode{MODE_BOOK_DIR_SEL};
+    bool _is_booklist_updating{false};
+    unsigned long _upd_inf_time{0};
+    //
+    BooklistManager _bl_manager;
+    PrefUtil _preferences;
 
+    const uint8_t BOOK_DIR_ITEMS_NUM{6};
+    const uint8_t BOOKS_ITEMS_NUM{10};
+    const uint16_t NUM_CHARS_TO_READ{580};
+    //
+    NavBar *_book_navbar;
+    Label *_time_lbl;
+    Label *_progress_lbl;
+    //
+    uint8_t _old_brightness;
     uint8_t _brightness;
-
+    bool _brightness_edit_en{true};
+    //
     Label *_page;
-    uint64_t _file_pos{0};
-
+    FixedMenu *_fixed_menu;
+    ScrollBar *_scrollbar;
+    FixedMenu *_pl_menu;
+    DynamicMenu *_dynamic_menu;
+    //
+    String _book_dir_name;
+    String _book_name;
+    uint16_t _book_pos{0};
+    size_t _read_pos{0};
+    size_t _book_size{0};
+    //
+    DS3231 _watch;
+    bool _watch_inited{false};
+    unsigned long _upd_time_time{0};
+    DS3231DateTime _temp_date_time;
+    //
+    Label *_upd_lbl;
+    uint8_t _upd_counter{0};
+    //
+    void savePref();
+    //
     void ok();
     void up();
     void down();
@@ -58,4 +108,21 @@ private:
 
     void back();
     void backPressed();
+
+    void showBookMenu();
+    void hideBookMenu();
+
+    void showUpdating();
+    void showBookDirs();
+    void fillBookDirs(Menu *menu_ptr, uint16_t from_id);
+    void showBooks(uint16_t pos = 0);
+    std::vector<MenuItem *> getBooksItems(uint8_t size, uint16_t from_id);
+    void openBook(bool contn = false);
+    void loadNextTxt();
+    void loadPrevTxt();
+
+    void showRead();
+
+    void updateTime();
+    void updateReadProgress();
 };

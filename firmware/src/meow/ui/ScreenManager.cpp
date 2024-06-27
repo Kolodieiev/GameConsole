@@ -11,7 +11,7 @@
 #include "screen/games/GamesListScreen.h"
 #include "screen/mp3/Mp3Screen.h"
 // #include "screen/calc/CalcScreen.h"
-// #include "screen/reader/ReaderScreen.h"
+#include "screen/reader/ReaderScreen.h"
 #include "screen/files/FilesScreen.h"
 #include "screen/preferences/PrefSelectScreen.h"
 #include "screen/preferences/PrefBrightScreen.h"
@@ -63,9 +63,9 @@ namespace meow
                 // case ScreenID::ID_SCREEN_CALC:
                 //     screen = new CalcScreen(_display);
                 //     break;
-                // case ScreenID::ID_SCREEN_READER:
-                //     screen = new ReaderScreen(_display);
-                //     break;
+                case ScreenID::ID_SCREEN_READER:
+                    screen = new ReaderScreen(_display);
+                    break;
                 case ScreenID::ID_SCREEN_GAMES:
                     screen = new GamesListScreen(_display);
                     break;

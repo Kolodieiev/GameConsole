@@ -67,18 +67,18 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
     // Label *calc_lbl = creator.getItemLabel(STR_CALC_ITEM, 4, 2);
     // calc_item->setLbl(calc_lbl);
 
-    // // Читалка
-    // MenuItem *read_item = creator.getMenuItem(ID_SCREEN_READER);
-    // _menu->addItem(read_item);
+    // Читалка
+    MenuItem *read_item = creator.getMenuItem(ID_SCREEN_READER);
+    _menu->addItem(read_item);
 
-    // Image *read_img = new Image(1, _display);
-    // read_item->setImg(read_img);
-    // read_img->setTransparentColor(Image::TRANSPARENT_COLOR);
-    // read_img->init(35, 35);
-    // read_img->setSrc(BOOK_IMG);
+    Image *read_img = new Image(1, _display);
+    read_item->setImg(read_img);
+    read_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    read_img->init(35, 35);
+    read_img->setSrc(BOOK_IMG);
 
-    // Label *read_lbl = creator.getItemLabel(STR_READER_ITEM, 4, 2);
-    // read_item->setLbl(read_lbl);
+    Label *read_lbl = creator.getItemLabel(STR_READER_ITEM, 4, 2);
+    read_item->setLbl(read_lbl);
 
     // Ігри
     MenuItem *game_item = creator.getMenuItem(ID_SCREEN_GAMES);
