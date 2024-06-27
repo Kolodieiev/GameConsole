@@ -26,12 +26,13 @@ const char STR_TRACK_TIME_PREF[] = "TrackTime";
 
 Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
 {
+    SdUtil sd;
+    sd.begin();
+
     _watch_inited = _watch.begin();
 
     if (!_watch_inited)
         log_e("Помилка ініціалізації RTC");
-
-    showPlaylists();
 
     String bright = _preferences.get(STR_PREF_BRIGHT);
     if (bright.isEmpty())
@@ -63,6 +64,8 @@ Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
         _audio.forceMono(true);
 
     _audio.setPinout(PIN_I2S_BCLK, PIN_I2S_LRC, PIN_I2S_DOUT);
+
+    showPlaylists();
 }
 
 Mp3Screen::~Mp3Screen()
@@ -306,11 +309,14 @@ void Mp3Screen::showPlaylists()
     _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
     _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
 
-    MenuItem *cont_item = creator.getMenuItem(1);
-    _fixed_menu->addItem(cont_item);
+    if (!_track_name.isEmpty())
+    {
+        MenuItem *cont_item = creator.getMenuItem(1);
+        _fixed_menu->addItem(cont_item);
 
-    Label *cont_lbl = creator.getItemLabel(STR_CONTINUE, 4, 2);
-    cont_item->setLbl(cont_lbl);
+        Label *cont_lbl = creator.getItemLabel(STR_CONTINUE, 4, 2);
+        cont_item->setLbl(cont_lbl);
+    }
 
     fillPlaylists(_fixed_menu, 3);
 
@@ -339,8 +345,6 @@ void Mp3Screen::fillPlaylists(Menu *menu_ptr, uint16_t from_id)
 
         ++from_id;
     }
-
-    _scrollbar->setMax(_fixed_menu->getSize());
 }
 
 void Mp3Screen::showTracks(uint16_t pos)
@@ -562,9 +566,6 @@ void Mp3Screen::showPlMenu()
 
 void Mp3Screen::hidePlMenu()
 {
-    if (_mode != MODE_PLST_MENU)
-        return;
-
     _mode = MODE_TRACK_SEL;
 
     getLayout()->deleteWidgetByID(ID_PL_MENU);
@@ -574,7 +575,7 @@ void Mp3Screen::hidePlMenu()
 
 void Mp3Screen::updateTime()
 {
-    if (!_watch_inited)
+    if (!_watch_inited || _is_locked)
         return;
 
     DS3231DateTime date_time = _watch.getDateTime();
