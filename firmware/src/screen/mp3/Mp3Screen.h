@@ -18,7 +18,6 @@ using namespace meow;
 
 class Mp3Screen : public IScreen, public IItemsLoader
 {
-private:
 public:
     Mp3Screen(GraphicsDriver &display);
     virtual ~Mp3Screen();
@@ -46,10 +45,6 @@ private:
         ID_ITEM_UPD,
     };
 
-    const uint8_t PIN_I2S_BCLK{21};
-    const uint8_t PIN_I2S_LRC{48};
-    const uint8_t PIN_I2S_DOUT{47};
-
     enum Widget_ID : uint8_t
     {
         ID_NAVBAR = 1,
@@ -71,6 +66,13 @@ private:
         ID_TIME_IMG,
     };
 
+    const uint8_t PIN_I2S_BCLK{21};
+    const uint8_t PIN_I2S_LRC{48};
+    const uint8_t PIN_I2S_DOUT{47};
+
+    const uint8_t PLAYLIST_ITEMS_NUM{6};
+    const uint8_t TRACKS_ITEMS_NUM{10};
+
     PrefUtil _preferences;
 
     uint8_t _brightness;
@@ -78,9 +80,6 @@ private:
 
     Mode _mode{MODE_PLST_SEL};
     bool _is_tracklist_upd{false};
-
-    const uint8_t PLAYLIST_ITEMS_NUM{6};
-    const uint8_t TRACKS_ITEMS_NUM{10};
 
     ScrollBar *_scrollbar;
     FixedMenu *_fixed_menu;
