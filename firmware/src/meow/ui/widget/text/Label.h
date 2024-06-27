@@ -36,7 +36,7 @@ namespace meow
          */
         void updateWidthToFit(uint16_t add_width_value = 0);
 
-        void setText(String text);
+        void setText(const String &text);
         inline String getText() const
         {
             return _text;
