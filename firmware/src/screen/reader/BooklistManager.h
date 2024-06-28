@@ -19,5 +19,10 @@ public:
     String getBookPath(const char *book_dir_name, const char *book_name);
 
     size_t getBookSize(const char *book_dir_name, const char *book_name);
-    String readText(const char *book_dir_name, const char *book_name, uint64_t pos, uint64_t size);
+    String readText(bool &out_is_eof, const char *book_dir_name, const char *book_name, uint64_t pos, uint64_t size);
+
+    bool containCyrillic(const char *book_dir_name, const char *book_name);
+
+private:
+    bool isCyrillic(char ch);
 };
