@@ -68,7 +68,7 @@ private:
 
     const uint8_t BOOK_DIR_ITEMS_NUM{6};
     const uint8_t BOOKS_ITEMS_NUM{10};
-    const uint16_t LAT_NUM_CHARS_TO_READ{580};
+    const uint16_t LAT_NUM_CHARS_TO_READ{550};
     const uint16_t KIR_NUM_CHARS_TO_READ{950};
     uint16_t _num_char_to_read{0};
     //
