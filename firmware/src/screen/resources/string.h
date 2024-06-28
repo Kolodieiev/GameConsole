@@ -92,4 +92,4 @@ const char STR_FIRMWARE_UPDATING[] = "Очікуйте. Відбувається
 //
 const char STR_LVL[] = "Рівень ";
 //
-const char EMPTY_READ_PROGRESS[] = "0/0";
+const char EMPTY_READ_PROGRESS[] = "00/000";
