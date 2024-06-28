@@ -362,7 +362,14 @@ void ReaderScreen::backPressed()
     if (_mode == MODE_BOOK_READ)
     {
         setCpuFrequencyMhz(240);
-        _brightness_edit_en = false;
+
+        if (!_brightness_edit_en)
+        {
+            _input.enablePin(Input::PIN_UP);
+            _input.enablePin(Input::PIN_DOWN);
+            _brightness_edit_en = false;
+        }
+
         DisplayUtil display;
         display.setBrightness(_old_brightness);
         _upd_time_time = 0;
