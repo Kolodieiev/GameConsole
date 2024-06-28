@@ -221,9 +221,17 @@ void ReaderScreen::ok()
         _brightness_edit_en = !_brightness_edit_en;
 
         if (_brightness_edit_en)
+        {
+            _input.enablePin(Input::PIN_UP);
+            _input.enablePin(Input::PIN_DOWN);
             _book_navbar->setVisibility(IWidget::VISIBLE);
+        }
         else
+        {
+            _input.disablePin(Input::PIN_UP);
+            _input.disablePin(Input::PIN_DOWN);
             _book_navbar->setVisibility(IWidget::INVISIBLE);
+        }
     }
     else if (_mode == MODE_BOOK_MENU)
     {
@@ -353,6 +361,7 @@ void ReaderScreen::backPressed()
 {
     if (_mode == MODE_BOOK_READ)
     {
+        setCpuFrequencyMhz(240);
         _brightness_edit_en = false;
         DisplayUtil display;
         display.setBrightness(_old_brightness);
@@ -529,6 +538,8 @@ void ReaderScreen::openBook(bool contn)
 
 void ReaderScreen::loadNextTxt()
 {
+    setCpuFrequencyMhz(240);
+
     _read_pos += _bytes_read;
 
     bool is_eof;
@@ -544,12 +555,16 @@ void ReaderScreen::loadNextTxt()
         _page->setText(txt);
         updateReadProgress();
     }
+
+    setCpuFrequencyMhz(80);
 }
 
 void ReaderScreen::loadPrevTxt()
 {
     if (_read_pos == 0)
         return;
+
+    setCpuFrequencyMhz(240);
 
     if (_read_pos > _num_char_to_read)
         _read_pos -= _num_char_to_read;
@@ -569,6 +584,8 @@ void ReaderScreen::loadPrevTxt()
         _page->setText(txt);
         updateReadProgress();
     }
+
+    setCpuFrequencyMhz(80);
 }
 
 void ReaderScreen::showRead()
