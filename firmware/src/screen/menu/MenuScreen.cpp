@@ -66,7 +66,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     // Label *calc_lbl = creator.getItemLabel(STR_CALC_ITEM, 4, 2);
     // calc_item->setLbl(calc_lbl);
-
+    
     // Читалка
     MenuItem *read_item = creator.getMenuItem(ID_SCREEN_READER);
     _menu->addItem(read_item);
