@@ -214,7 +214,7 @@ void ReaderScreen::ok()
     }
     else if (_mode == MODE_BOOK_SEL)
     {
-        openBook();
+        openBook(false);
     }
     else if (_mode == MODE_BOOK_READ)
     {
@@ -510,9 +510,15 @@ void ReaderScreen::openBook(bool contn)
         _book_name = _dynamic_menu->getCurrentItemText();
         _book_pos = _dynamic_menu->getCurrentItemID() - 1;
         _read_pos = 0;
+        _bytes_read = 0;
     }
 
     _book_size = _bl_manager.getBookSize(_book_dir_name.c_str(), _book_name.c_str());
+
+    if (_bl_manager.containCyrillic(_book_dir_name.c_str(), _book_name.c_str()))
+        _num_char_to_read = KIR_NUM_CHARS_TO_READ;
+    else
+        _num_char_to_read = LAT_NUM_CHARS_TO_READ;
 
     if (_book_size > 0)
     {
@@ -523,12 +529,17 @@ void ReaderScreen::openBook(bool contn)
 
 void ReaderScreen::loadNextTxt()
 {
-    String txt = _bl_manager.readText(_book_dir_name.c_str(), _book_name.c_str(), _read_pos, NUM_CHARS_TO_READ);
+    _read_pos += _bytes_read;
 
-    if (txt.length() > 0)
+    bool is_eof;
+    String txt = _bl_manager.readText(is_eof, _book_dir_name.c_str(), _book_name.c_str(), _read_pos, _num_char_to_read);
+
+    if (!txt.isEmpty())
     {
-        if (txt.length() == NUM_CHARS_TO_READ)
-            _read_pos += txt.length();
+        if (!is_eof)
+            _bytes_read = txt.length();
+        else
+            _bytes_read = 0;
 
         _page->setText(txt);
         updateReadProgress();
@@ -537,15 +548,24 @@ void ReaderScreen::loadNextTxt()
 
 void ReaderScreen::loadPrevTxt()
 {
-    if (_read_pos > NUM_CHARS_TO_READ)
-        _read_pos -= NUM_CHARS_TO_READ;
+    if (_read_pos == 0)
+        return;
+
+    if (_read_pos > _num_char_to_read)
+        _read_pos -= _num_char_to_read;
     else
         _read_pos = 0;
 
-    String txt = _bl_manager.readText(_book_dir_name.c_str(), _book_name.c_str(), _read_pos, NUM_CHARS_TO_READ);
+    bool is_eof;
+    String txt = _bl_manager.readText(is_eof, _book_dir_name.c_str(), _book_name.c_str(), _read_pos, _num_char_to_read);
 
     if (!txt.isEmpty())
     {
+        if (!is_eof)
+            _bytes_read = txt.length();
+        else
+            _bytes_read = 0;
+
         _page->setText(txt);
         updateReadProgress();
     }
@@ -635,9 +655,9 @@ void ReaderScreen::updateTime()
 void ReaderScreen::updateReadProgress()
 {
     String prog_txt;
-    prog_txt += _read_pos / NUM_CHARS_TO_READ;
+    prog_txt += _read_pos / _num_char_to_read;
     prog_txt += "/";
-    prog_txt += _book_size / NUM_CHARS_TO_READ;
+    prog_txt += _book_size / _num_char_to_read;
 
     _progress_lbl->setText(prog_txt);
     _progress_lbl->updateWidthToFit();
