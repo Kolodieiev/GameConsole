@@ -68,7 +68,9 @@ private:
 
     const uint8_t BOOK_DIR_ITEMS_NUM{6};
     const uint8_t BOOKS_ITEMS_NUM{10};
-    const uint16_t NUM_CHARS_TO_READ{580};
+    const uint16_t LAT_NUM_CHARS_TO_READ{580};
+    const uint16_t KIR_NUM_CHARS_TO_READ{950};
+    uint16_t _num_char_to_read{0};
     //
     NavBar *_book_navbar;
     Label *_time_lbl;
@@ -87,8 +89,10 @@ private:
     String _book_dir_name;
     String _book_name;
     uint16_t _book_pos{0};
-    size_t _read_pos{0};
     size_t _book_size{0};
+    size_t _read_pos{0};
+    size_t _bytes_read{0};
+
     //
     DS3231 _watch;
     bool _watch_inited{false};
