@@ -197,7 +197,7 @@ namespace meow
             return result;
 
         if (size == 0)
-            size = 10;
+            size = 100;
 
         if (size > result.max_size())
         {

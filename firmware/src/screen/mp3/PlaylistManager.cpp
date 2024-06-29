@@ -51,7 +51,7 @@ std::vector<String> PlaylistManager::getPlaylists()
     String db_path = ROOT_PATH;
     db_path += PLAYLIST_LIB_NAME;
 
-    return readFilesFromDB(db_path.c_str(), 0, 0);
+    return readFilesFromDB(db_path.c_str(), 0, 100);
 }
 
 std::vector<String> PlaylistManager::getTracks(const char *playlist_name, uint8_t start_pos, uint8_t size)
