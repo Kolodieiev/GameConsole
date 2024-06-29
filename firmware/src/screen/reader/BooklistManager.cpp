@@ -51,7 +51,7 @@ std::vector<String> BooklistManager::getBookDirs()
     String db_path = ROOT_PATH;
     db_path += BOOKLIST_LIB_NAME;
 
-    return readFilesFromDB(db_path.c_str(), 0, 0);
+    return readFilesFromDB(db_path.c_str(), 0, 100);
 }
 
 std::vector<String> BooklistManager::getBooks(const char *book_dir_name, uint8_t start_pos, uint8_t size)
