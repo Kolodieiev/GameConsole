@@ -4941,6 +4941,9 @@ int16_t TFT_eSPI::drawChar(uint16_t uniCode, int32_t x, int32_t y, uint8_t font)
 				case 187:   
 					uniCode = 2;
 				break;
+        case 8211:
+          uniCode = 13;
+          break;
 				default:
 					uniCode = CHRS_NMBR - 1;
 			}		
