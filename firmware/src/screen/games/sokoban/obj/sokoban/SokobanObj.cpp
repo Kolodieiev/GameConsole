@@ -78,12 +78,11 @@ void SokobanObj::stepTo(uint16_t x, uint16_t y, uint16_t box_x_step, uint16_t bo
 {
     std::list<IGameObject *> objs = getObjInPoint(x, y); // Вибрати всі об'єкти на плитці куди повинен здійснюватися наступний крок
 
-    std::list<IGameObject *>::iterator it_i;
-    for (it_i = objs.begin(); it_i != objs.end(); ++it_i)
+    for (auto it = objs.begin(), last_it = objs.end(); it != last_it; ++it)
     {
-        if ((*it_i)->getClassID() == ClassID::CLASS_BOX) // Якщо знайдено об'єкт ящика
+        if ((*it)->getClassID() == ClassID::CLASS_BOX) // Якщо знайдено об'єкт ящика
         {
-            BoxObj *box = (BoxObj *)*it_i;
+            BoxObj *box = (BoxObj *)*it;
 
             if (box->moveTo(box_x_step, box_y_step)) // намагаємося посунути ящик
             {

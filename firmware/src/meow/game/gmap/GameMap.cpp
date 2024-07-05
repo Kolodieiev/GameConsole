@@ -2,7 +2,6 @@
 
 namespace meow
 {
-
     GameMap::~GameMap()
     {
         freeMem();
@@ -18,9 +17,7 @@ namespace meow
 
         free(_tiles);
 
-        std::unordered_map<uint16_t, Tile *>::iterator it;
-
-        for (it = _tile_descr.begin(); it != _tile_descr.end(); ++it)
+        for (auto it = _tile_descr.begin(), last_it = _tile_descr.end(); it != last_it; ++it)
             delete it->second;
     }
 

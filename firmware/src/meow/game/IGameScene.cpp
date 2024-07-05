@@ -22,11 +22,9 @@ namespace meow
         _game_map.onDraw();
 
         std::list<IGameObject *> view_obj;
-
         IGameObject *obj;
 
-        std::list<IGameObject *>::iterator it;
-        for (it = _game_objs.begin(); it != _game_objs.end(); ++it)
+        for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
         {
             obj = *it;
 
@@ -83,7 +81,7 @@ namespace meow
                     else
                         return a->_y_global + a->_sprite.height < b->_y_global + b->_sprite.height; });
 
-        for (it = view_obj.begin(); it != view_obj.end(); ++it)
+        for (auto it = view_obj.begin(), last_it = view_obj.end(); it != last_it; ++it)
             (*it)->onDraw();
 
         _game_UI->onDraw();

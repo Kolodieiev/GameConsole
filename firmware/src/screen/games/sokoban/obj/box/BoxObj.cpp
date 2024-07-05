@@ -26,8 +26,7 @@ void BoxObj::update()
 
     std::list<IGameObject *> objs = getObjInPoint(_x_global, _y_global); // Отримати список усіх об'єктів у точці
 
-    std::list<IGameObject *>::iterator it;
-    for (it = objs.begin(); it != objs.end(); ++it)
+    for (auto it = objs.begin(), last_it = objs.end(); it != last_it; ++it)
     {
         if ((*it)->getClassID() == ClassID::CLASS_BOX_POINT) // Якщо об'єкт належить до типу BoxPointObj
         {
@@ -54,11 +53,9 @@ void BoxObj::reborn(IObjShape *shape)
 bool BoxObj::moveTo(uint16_t x, uint16_t y)
 {
     std::list<IGameObject *> objs = getObjInPoint(x, y); // Вибрати всі об'єкти на плитці куди повинен бути встановлений ящик
-
-    std::list<IGameObject *>::iterator it_j;
-    for (it_j = objs.begin(); it_j != objs.end(); ++it_j)
+    for (auto it = objs.begin(), last_it = objs.end(); it != last_it; ++it)
     {
-        if ((*it_j)->getClassID() == ClassID::CLASS_BOX) // Якщо знайдено об'єкт ящика, рух продовжувати не можна
+        if ((*it)->getClassID() == ClassID::CLASS_BOX) // Якщо знайдено об'єкт ящика, рух продовжувати не можна
             return false;
     }
 

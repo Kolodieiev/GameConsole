@@ -160,8 +160,8 @@ namespace meow
   std::list<IGameObject *> IGameObject::getObjInPoint(uint16_t x, uint16_t y)
   {
     std::list<IGameObject *> objs;
-    std::list<IGameObject *>::iterator it;
-    for (it = _game_objs.begin(); it != _game_objs.end(); ++it)
+    
+    for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
     {
       if (*it != this && (*it)->hasIntersectWithPoint(x, y))
         objs.push_back(*it);
@@ -173,8 +173,7 @@ namespace meow
   std::list<IGameObject *> IGameObject::getObjInCircle(uint16_t x_mid, uint16_t y_mid, uint16_t radius)
   {
     std::list<IGameObject *> objs;
-    std::list<IGameObject *>::iterator it;
-    for (it = _game_objs.begin(); it != _game_objs.end(); ++it)
+    for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
     {
       if (*it != this && (*it)->hasCollisionWithCircle(x_mid, y_mid, radius))
         objs.push_back(*it);
@@ -209,8 +208,7 @@ namespace meow
   std::list<IGameObject *> IGameObject::getObjctsInRect(uint16_t x_start, uint16_t y_start, uint16_t width, uint16_t height)
   {
     std::list<IGameObject *> objs;
-    std::list<IGameObject *>::iterator it;
-    for (it = _game_objs.begin(); it != _game_objs.end(); ++it)
+    for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
     {
       if (*it != this && (*it)->hasCollisionWithRect(x_start, y_start, width, height))
         objs.push_back(*it);
@@ -239,8 +237,7 @@ namespace meow
   bool IGameObject::hasIntersectWithBody(uint16_t x, uint16_t y, MovingDirection direction)
   {
     IGameObject *obj;
-    std::list<IGameObject *>::iterator it;
-    for (it = _game_objs.begin(); it != _game_objs.end(); ++it)
+    for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
     {
       obj = *it;
 

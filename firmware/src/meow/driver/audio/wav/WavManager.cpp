@@ -17,11 +17,8 @@ namespace meow
         if (_is_inited)
             i2s_driver_uninstall(I2S_NUM_0);
 
-        std::unordered_map<uint16_t, WavTrack *>::iterator mix_it;
-        for (mix_it = _mix.begin(); mix_it != _mix.end(); ++mix_it)
-        {
+        for (auto mix_it = _mix.begin(), last_it = _mix.end(); mix_it != last_it; ++mix_it)
             delete mix_it->second;
-        }
 
         _mix.clear();
         _track_id = 0;
@@ -120,7 +117,6 @@ namespace meow
         TaskParams *task_params = (TaskParams *)params;
 
         int16_t sample;
-        std::unordered_map<uint16_t, WavTrack *>::iterator it;
         size_t bytes_written;
 
         while (task_params->cmd != TaskParams::CMD_STOP)
@@ -131,7 +127,7 @@ namespace meow
                 {
                     sample = 0;
 
-                    for (it = _mix.begin(); it != _mix.end(); ++it)
+                    for (auto it = _mix.begin(), last_it = _mix.end(); it != last_it; ++it)
                     {
                         if (it->second->isPlaying())
                         {
