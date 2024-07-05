@@ -10,7 +10,8 @@ void guiTask(void *params)
 
 void setup()
 {
-    xTaskCreatePinnedToCore(guiTask, "guiTask", (1024 / 2) * 130, NULL, 10, NULL, 1);
+    // Serial.begin(115200);
+    xTaskCreatePinnedToCore(guiTask, "guiTask", (1024 / 2) * 100, NULL, 10, NULL, 1);
 }
 
 void loop()
