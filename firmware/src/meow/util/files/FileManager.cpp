@@ -326,6 +326,7 @@ namespace meow
         if (!new_file)
         {
             log_e("Помилка відкриття файлу %s", _new_name);
+            old_file.close();
             freeRes();
         }
 
@@ -334,6 +335,8 @@ namespace meow
 
         if (!buffer)
         {
+            old_file.close();
+            new_file.close();
             log_e("Помилка виділення пам'яті");
             esp_restart();
         }
