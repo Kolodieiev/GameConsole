@@ -49,7 +49,7 @@ Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
 
     _volume = atoi(_preferences.get(STR_VOLUME_PREF).c_str());
     _track_pos = atoi(_preferences.get(STR_TRACK_POS_PREF).c_str());
-    // _track_time = atoi(_preferences.get(STR_TRACK_TIME_PREF).c_str());
+    _track_time = atoi(_preferences.get(STR_TRACK_TIME_PREF).c_str());
     _playlist_name = _preferences.get(STR_PLAYLIST_PREF);
     _track_name = _preferences.get(STR_TRACK_NAME_PREF);
 
@@ -279,7 +279,7 @@ void Mp3Screen::savePref()
 {
     _preferences.set(STR_VOLUME_PREF, String(_volume).c_str());
     _preferences.set(STR_TRACK_POS_PREF, String(_track_pos).c_str());
-    // _preferences.set(STR_TRACK_TIME_PREF, String(_track_time).c_str());
+    _preferences.set(STR_TRACK_TIME_PREF, String(_track_time).c_str());
     _preferences.set(STR_PLAYLIST_PREF, _playlist_name.c_str());
     _preferences.set(STR_TRACK_NAME_PREF, _track_name.c_str());
 }
@@ -616,21 +616,11 @@ void Mp3Screen::updateTime()
 
 bool Mp3Screen::playTrack(bool contn)
 {
-    if (contn)
-    {
-        if ((_playlist_name.isEmpty() || _track_name.isEmpty()))
-            return false;
-    }
-    else
-    {
-        if (_dynamic_menu->getSize() == 0)
-            return false;
+    if ((_playlist_name.isEmpty() || _track_name.isEmpty()))
+        return false;
 
-        _track_name = _dynamic_menu->getCurrentItemText();
-        _track_pos = _dynamic_menu->getCurrentItemID() - 1;
-    }
-
-    _track_time = 0;
+    if (!contn)
+        _track_time = 0;
 
     String track_path = _pl_manager.getTrackPath(_playlist_name.c_str(), _track_name.c_str());
     if (track_path.isEmpty())
@@ -655,7 +645,7 @@ bool Mp3Screen::playNext()
     if (_track_name.isEmpty())
         return false;
 
-    if (!playTrack(true))
+    if (!playTrack(false))
         return false;
 
     ++_track_pos;
@@ -668,7 +658,7 @@ bool Mp3Screen::playPrev()
     if (_track_name.isEmpty())
         return false;
 
-    if (!playTrack(true))
+    if (!playTrack(false))
         return false;
 
     --_track_pos;
@@ -917,7 +907,12 @@ void Mp3Screen::ok()
     }
     else if (_mode == MODE_TRACK_SEL)
     {
-        playTrack();
+        if (_dynamic_menu->getSize() > 0)
+        {
+            _track_name = _dynamic_menu->getCurrentItemText();
+            _track_pos = _dynamic_menu->getCurrentItemID() - 1;
+            playTrack(false);
+        }
     }
     else if (_mode == MODE_AUDIO_PLAY)
     {
