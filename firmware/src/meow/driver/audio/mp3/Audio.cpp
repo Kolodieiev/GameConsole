@@ -404,6 +404,7 @@ bool Audio::connecttoFS(fs::FS &fs, const char *path, int32_t fileStartPos)
     xSemaphoreTakeRecursive(mutex_audio, portMAX_DELAY); // #3
 
     m_fileStartPos = fileStartPos;
+
     setDefaults(); // free buffers an set defaults
 
     char *audioPath = (char *)__malloc_heap_psram(strlen(path) + 2);
@@ -494,6 +495,7 @@ size_t Audio::readAudioHeader(uint32_t bytes)
     }
     return bytesReaded;
 }
+
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 int Audio::read_ID3_Header(uint8_t *data, size_t len)
 {
@@ -1005,6 +1007,7 @@ void Audio::processLocalFile()
 
     if (m_fileStartPos > 0)
     {
+        _need_calc_offset = true;
         setFilePos(m_fileStartPos);
         m_fileStartPos = -1;
     }
@@ -1017,7 +1020,6 @@ void Audio::processLocalFile()
         {
             goto exit;
         }
-        m_haveNewFilePos = m_resumeFilePos;
 
         m_resumeFilePos = mp3_correctResumeFilePos(m_resumeFilePos);
         if (m_resumeFilePos == -1)
@@ -1267,70 +1269,69 @@ int Audio::sendBytes(uint8_t *data, size_t len)
         bytesDecoderOut /= 2;
     if (m_bitsPerSample == 16)
         bytesDecoderOut *= 2;
-    computeAudioTime(bytesDecoded, bytesDecoderOut);
+
+    computeAudioTime(bytesDecoded);
 
     m_curSample = 0;
     playChunk(false);
     return bytesDecoded;
 }
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Audio::computeAudioTime(uint16_t bytesDecoderIn, uint16_t bytesDecoderOut)
-{
-    static uint64_t sumBytesIn = 0;
-    static uint64_t sumBytesOut = 0;
-    static uint32_t sumBitRate = 0;
-    static uint32_t counter = 0;
-    static uint32_t timeStamp = 0;
-    static uint32_t deltaBytesIn = 0;
-    static uint32_t nominalBitRate = 0;
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+void Audio::computeAudioTime(uint16_t bytesDecoderIn)
+{
     if (m_f_firstCurTimeCall)
     { // first call
         m_f_firstCurTimeCall = false;
-        sumBytesIn = 0;
-        sumBytesOut = 0;
-        sumBitRate = 0;
-        counter = 0;
-        timeStamp = millis();
-        deltaBytesIn = 0;
-        nominalBitRate = 0;
+        _sumBytesIn = 0;
+        _sumBitRate = 0;
+        _frame_counter = 0;
+        _timeStamp = millis();
+        _deltaBytesIn = 0;
+        _need_calc_br = true;
     }
 
-    sumBytesIn += bytesDecoderIn;
-    deltaBytesIn += bytesDecoderIn;
-    sumBytesOut += bytesDecoderOut;
+    _sumBytesIn += bytesDecoderIn;
+    _deltaBytesIn += bytesDecoderIn;
 
-    if (timeStamp + 500 < millis())
+    if (m_avr_bitrate)
     {
-        uint32_t t = millis();            // time tracking
-        uint32_t delta_t = t - timeStamp; //    ---"---
-        timeStamp = t;                    //    ---"---
+        m_audioCurrentTime = (float)(_sumBytesIn * 8) / m_avr_bitrate;
 
-        uint32_t bitRate = ((deltaBytesIn * 8000) / delta_t); // we know the time and bytesIn to compute the bitrate
+        if (m_haveNewFilePos > 0)
+        {
+            if (_need_calc_offset)
+            {
+                _need_calc_offset = false;
 
-        sumBitRate += bitRate;
-        ++counter;
-        if (nominalBitRate)
-        {
-            m_audioCurrentTime = round(((float)sumBytesIn * 8) / m_avr_bitrate);
+                if (m_haveNewFilePos < 3)
+                    m_haveNewFilePos = 3;
+
+                setTimeOffset(m_haveNewFilePos - 3);
+            }
+
+            _sumBytesIn = m_haveNewFilePos - m_audioDataStart;
+
+            m_haveNewFilePos = 0;
         }
-        else
-        {
-            m_avr_bitrate = sumBitRate / counter;
-            m_audioCurrentTime = (sumBytesIn * 8) / m_avr_bitrate;
-            // m_audioFileDuration = round(((float)m_audioDataSize * 8 / m_avr_bitrate));
-            m_audioFileDuration = round(8 * ((float)m_audioDataSize / m_avr_bitrate));
-        }
-        deltaBytesIn = 0;
     }
 
-    if (m_haveNewFilePos && m_avr_bitrate)
+    if (_need_calc_br && _timeStamp + 3000 < millis())
     {
-        uint32_t posWhithinAudioBlock = m_haveNewFilePos - m_audioDataStart;
-        uint32_t newTime = posWhithinAudioBlock / (m_avr_bitrate / 8);
-        m_audioCurrentTime = newTime;
-        sumBytesIn = posWhithinAudioBlock;
-        m_haveNewFilePos = 0;
+        uint32_t t = millis();             // time tracking
+        uint32_t delta_t = t - _timeStamp; //    ---"---
+        _timeStamp = t;                    //    ---"---
+
+        uint32_t bitRate = (float)(_deltaBytesIn * 8000) / delta_t; // we know the time and bytesIn to compute the bitrate
+
+        _sumBitRate += bitRate;
+        ++_frame_counter;
+
+        m_avr_bitrate = (float)_sumBitRate / _frame_counter;
+        m_audioFileDuration = round((float)(m_audioDataSize * 8) / m_avr_bitrate);
+
+        _deltaBytesIn = 0;
+        _need_calc_br = false;
     }
 }
 
@@ -1508,6 +1509,7 @@ bool Audio::setTimeOffset(int sec)
     {
         pos = endAB;
     }
+
     setFilePos(pos);
 
     return true;
@@ -1606,12 +1608,9 @@ void Audio::reconfigI2S()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-bool Audio::setBitrate(int br)
+void Audio::setBitrate(int br)
 {
     m_bitRate = br;
-    if (br)
-        return true;
-    return false;
 }
 uint32_t Audio::getBitRate(bool avg)
 {
@@ -1844,15 +1843,17 @@ void Audio::computeLimit()
     // log_i("m_limit_left %f,  m_limit_right %f ",m_limit_left, m_limit_right);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-void Audio::Gain(int16_t* sample)
+void Audio::Gain(int16_t *sample)
 {
     /* important: these multiplications must all be signed ints, or the result will be invalid */
-    if(m_bitsPerSample == I2S_BITS_PER_SAMPLE_16BIT){
-        sample[LEFTCHANNEL]  *= m_limit_left ;
+    if (m_bitsPerSample == I2S_BITS_PER_SAMPLE_16BIT)
+    {
+        sample[LEFTCHANNEL] *= m_limit_left;
         sample[RIGHTCHANNEL] *= m_limit_right;
     }
-    if(m_bitsPerSample == I2S_BITS_PER_SAMPLE_8BIT){
-        uint8_t* s = reinterpret_cast <uint8_t*>(sample);
+    if (m_bitsPerSample == I2S_BITS_PER_SAMPLE_8BIT)
+    {
+        uint8_t *s = reinterpret_cast<uint8_t *>(sample);
         int8_t l1 = (s[0] - 128) * m_limit_left;
         int8_t l2 = (s[1] - 128) * m_limit_right;
         s[0] = 128 + l1;

@@ -160,18 +160,18 @@ private:
     int findNextSync(uint8_t *data, size_t len);
     int sendBytes(uint8_t *data, size_t len);
     void setDecoderItems();
-    void computeAudioTime(uint16_t bytesDecoderIn, uint16_t bytesDecoderOut);
+    void computeAudioTime(uint16_t bytesDecoderIn);
     void printDecodeError(int r);
     size_t readAudioHeader(uint32_t bytes);
     int read_ID3_Header(uint8_t *data, size_t len);
     bool setSampleRate(uint32_t hz);
     bool setBitsPerSample(int bits);
     bool setChannels(int channels);
-    bool setBitrate(int br);
+    void setBitrate(int br);
     void playChunk(bool i2s_only);
     void computeVUlevel(int16_t sample[2]);
     void computeLimit();
-    void Gain(int16_t* sample);
+    void Gain(int16_t *sample);
     bool initializeDecoder();
     esp_err_t I2Sstart(uint8_t i2s_num);
     esp_err_t I2Sstop(uint8_t i2s_num);
@@ -365,6 +365,17 @@ private:
     int8_t m_gain0 = 0; // cut or boost filters (EQ)
     int8_t m_gain1 = 0;
     int8_t m_gain2 = 0;
+
+    //
+
+    uint64_t _sumBytesIn = 0;
+    uint64_t _sumBytesOut = 0;
+    uint64_t _sumBitRate = 0;
+    uint32_t _frame_counter = 0;
+    uint32_t _timeStamp = 0;
+    uint32_t _deltaBytesIn = 0;
+    bool _need_calc_br = true;
+    bool _need_calc_offset = false;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
