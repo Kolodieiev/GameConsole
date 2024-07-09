@@ -224,12 +224,14 @@ void ReaderScreen::ok()
         {
             _input.enablePin(Input::PIN_UP);
             _input.enablePin(Input::PIN_DOWN);
+            _input.enablePin(Input::PIN_BACK);
             _book_navbar->setVisibility(IWidget::VISIBLE);
         }
         else
         {
             _input.disablePin(Input::PIN_UP);
             _input.disablePin(Input::PIN_DOWN);
+            _input.disablePin(Input::PIN_BACK);
             _book_navbar->setVisibility(IWidget::INVISIBLE);
         }
     }
