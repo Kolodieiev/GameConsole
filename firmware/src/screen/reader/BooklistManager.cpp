@@ -115,11 +115,15 @@ bool BooklistManager::containCyrillic(const char *book_dir_name, const char *boo
     if (!f)
         return false;
 
-    String str = f.readString();
+    const uint8_t ARR_SIZE{160};
 
-    for (size_t i{0}; i < str.length(); ++i)
+    char ch_arr[ARR_SIZE];
+    size_t read_bytes = f.readBytes(ch_arr, ARR_SIZE);
+    f.close();
+
+    for (size_t i{0}; i < read_bytes; ++i)
     {
-        if (isCyrillic(str.c_str()[i]))
+        if (isCyrillic(ch_arr[i]))
             return true;
     }
 
