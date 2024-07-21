@@ -122,5 +122,4 @@ namespace meow
 
         using IWidgetContainer::addWidget;
     };
-
 }
