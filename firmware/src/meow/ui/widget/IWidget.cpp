@@ -2,7 +2,6 @@
 
 namespace meow
 {
-
     IWidget::IWidget(uint16_t widget_ID, GraphicsDriver &display) : _id{widget_ID}, _display{display} {}
 
     IWidget::~IWidget() {}
