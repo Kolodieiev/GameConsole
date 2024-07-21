@@ -69,16 +69,16 @@ namespace meow
 
     ToggleSwitch *ToggleSwitch::clone(uint16_t id) const
     {
-        ToggleSwitch *clone = new ToggleSwitch(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            ToggleSwitch *clone = new ToggleSwitch(*this);
+            clone->_id = id;
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        return clone;
     }
-
 }

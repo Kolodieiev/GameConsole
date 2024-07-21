@@ -119,18 +119,19 @@ namespace meow
         // Отримати список об'єктів, які перетинаються з точкою
         std::list<IGameObject *> getObjInPoint(uint16_t x, uint16_t y);
 
-        // Метод-шаблон для створення ігрових об'єктів
+        //  Метод-шаблон для створення ігрових об'єктів
         template <typename T>
         T *createObject()
         {
-            T *t = new T(_display, _audio, _game_map, _game_objs);
-            if (!t)
+            try
             {
-                log_e("Помилка створення об'єкта");
+                return new T(_display, _res, _audio, _game_map, _game_objs);
+            }
+            catch (const std::bad_alloc &e)
+            {
+                log_e(e.what());
                 esp_restart();
             }
-
-            return t;
         }
 
     private:

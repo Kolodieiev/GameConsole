@@ -86,14 +86,15 @@ namespace meow
         template <typename T>
         T *createObject()
         {
-            T *t = new T(_display, _res_manager, _audio, _game_map, _game_objs);
-            if (!t)
+            try
             {
-                log_e("Помилка створення об'єкта");
+                return new T(_display, _res_manager, _audio, _game_map, _game_objs);
+            }
+            catch (const std::bad_alloc &e)
+            {
+                log_e(e.what());
                 esp_restart();
             }
-
-            return t;
         }
     };
 

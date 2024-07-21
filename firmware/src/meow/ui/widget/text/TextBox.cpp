@@ -10,17 +10,18 @@ namespace meow
 
     TextBox *TextBox::clone(uint16_t id) const
     {
-        TextBox *clone = new TextBox(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            TextBox *clone = new TextBox(*this);
+            clone->_id = id;
+            clone->setText(_text);
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        clone->setText(_text);
-        return clone;
     }
 
     bool TextBox::removeLastChar()

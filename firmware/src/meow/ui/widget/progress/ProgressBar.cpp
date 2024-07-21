@@ -31,16 +31,17 @@ namespace meow
 
     ProgressBar *ProgressBar::clone(uint16_t id) const
     {
-        ProgressBar *clone = new ProgressBar(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            ProgressBar *clone = new ProgressBar(*this);
+            clone->_id = id;
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        return clone;
     }
 
     void ProgressBar::onDraw()

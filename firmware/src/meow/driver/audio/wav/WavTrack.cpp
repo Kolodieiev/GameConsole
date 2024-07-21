@@ -57,14 +57,14 @@ namespace meow
 
     WavTrack *WavTrack::clone()
     {
-        WavTrack *ret = new WavTrack(*this);
-        if (!ret)
+        try
+        {
+            return new WavTrack(*this);
+        }
+        catch (const std::bad_alloc &e)
         {
             log_e("Помилка клонування звукової доріжки");
             esp_restart();
         }
-
-        return ret;
     }
-
 }

@@ -8,17 +8,18 @@ namespace meow
 
     Label *Label::clone(uint16_t id) const
     {
-        Label *clone = new Label(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            Label *clone = new Label(*this);
+            clone->_id = id;
+            clone->setText(_text);
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        clone->setText(_text);
-        return clone;
     }
 
     void Label::initWidthToFit(uint16_t add_width_value)
@@ -39,8 +40,18 @@ namespace meow
 
     void Label::setText(const String &text)
     {
-        _text = text;
-        _text_len = calcRealStrLen(_text);
+        try
+        {
+            _text = text;
+            _text_len = calcRealStrLen(_text);
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
+            _text = "err";
+            _text_len = 0;
+        }
+
         _first_draw_char_pos = 0;
         _is_changed = true;
     }

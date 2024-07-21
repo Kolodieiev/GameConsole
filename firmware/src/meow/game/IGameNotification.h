@@ -11,7 +11,15 @@ namespace meow
     public:
         IGameNotification(GraphicsDriver &display) : _display{display}
         {
-            _notification = new Notification(1, _display);
+            try
+            {
+                _notification = new Notification(1, _display);
+            }
+            catch (const std::bad_alloc &e)
+            {
+                log_e(e.what());
+                esp_restart();
+            }
         }
 
         virtual ~IGameNotification()

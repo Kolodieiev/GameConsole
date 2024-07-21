@@ -3,48 +3,49 @@
 
 namespace meow
 {
-
     Image::Image(uint16_t wiget_ID, GraphicsDriver &display) : IWidget(wiget_ID, display) {}
 
 #ifdef DOUBLE_BUFFERRING
 
     Image *Image::clone(uint16_t id) const
     {
-        Image *clone = new Image(id, _display);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            Image *clone = new Image(id, _display);
+
+            clone->_has_border = _has_border;
+            clone->_x_pos = _x_pos;
+            clone->_y_pos = _y_pos;
+
+            clone->_width = _width;
+            clone->_height = _height;
+            clone->_back_color = _back_color;
+            clone->_border_color = _border_color;
+            clone->_corner_radius = _corner_radius;
+            clone->_is_transparent = _is_transparent;
+            clone->_transparent_color = _transparent_color;
+            clone->_img_ptr = _img_ptr;
+            clone->_img_buf = TFT_eSprite(_display.getTFT());
+            clone->_img_buf.setSwapBytes(true);
+            clone->_img_buf.setColorDepth(16);
+            clone->_img_buf.setAttribute(PSRAM_ENABLE, true);
+            clone->_img_buf.createSprite(_width, _height, 1);
+
+            if (!clone->_img_buf.getPointer())
+            {
+                log_e("Помилка створення спрайту зображення");
+                esp_restart();
+            }
+
+            clone->setSrc(_img_ptr);
+
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_has_border = _has_border;
-        clone->_x_pos = _x_pos;
-        clone->_y_pos = _y_pos;
-
-        clone->_width = _width;
-        clone->_height = _height;
-        clone->_back_color = _back_color;
-        clone->_border_color = _border_color;
-        clone->_corner_radius = _corner_radius;
-        clone->_is_transparent = _is_transparent;
-        clone->_transparent_color = _transparent_color;
-        clone->_img_ptr = _img_ptr;
-        clone->_img_buf = TFT_eSprite(_display.getTFT());
-        clone->_img_buf.setSwapBytes(true);
-        clone->_img_buf.setColorDepth(16);
-        clone->_img_buf.setAttribute(PSRAM_ENABLE, true);
-        clone->_img_buf.createSprite(_width, _height, 1);
-
-        if (!clone->_img_buf.getPointer())
-        {
-            log_e("Помилка створення спрайту");
-            esp_restart();
-        }
-
-        clone->setSrc(_img_ptr);
-
-        return clone;
     }
 
     void Image::setSrc(const uint16_t *image)
@@ -127,9 +128,17 @@ namespace meow
 
     Image *Image::clone(uint16_t id) const
     {
-        Image *clone = new Image(*this);
-        clone->_id = id;
-        return clone;
+        try
+        {
+            Image *clone = new Image(*this);
+            clone->_id = id;
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
+            esp_restart();
+        }
     }
 
     void Image::setSrc(const uint16_t *image)
@@ -176,5 +185,4 @@ namespace meow
         }
     }
 #endif
-
 }

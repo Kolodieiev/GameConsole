@@ -228,15 +228,16 @@ namespace meow
 
     void GameMap::addTileDescr(uint16_t sprite_id, Tile::TileType type, const uint16_t *sprite_src)
     {
-        Tile *tile = new Tile(type, sprite_src);
-
-        if (!tile)
+        try
         {
-            log_e("Помилка створення опису плитки");
+            Tile *tile = new Tile(type, sprite_src);
+            _tile_descr.insert(std::pair<uint16_t, Tile *>(sprite_id, tile));
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        _tile_descr.insert(std::pair<uint16_t, Tile *>(sprite_id, tile));
     }
 
 }

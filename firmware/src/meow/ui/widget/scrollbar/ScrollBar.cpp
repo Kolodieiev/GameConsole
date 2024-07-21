@@ -6,16 +6,17 @@ namespace meow
 
     ScrollBar *ScrollBar::clone(uint16_t id) const
     {
-        ScrollBar *clone = new ScrollBar(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            ScrollBar *clone = new ScrollBar(*this);
+            clone->_id = id;
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        return clone;
     }
 
     void ScrollBar::setValue(uint16_t value)

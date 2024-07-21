@@ -5,15 +5,22 @@
 
 namespace meow
 {
-
     class IGameMenu
     {
     public:
         IGameMenu(GraphicsDriver &display) : _display{display}
         {
-            _menu = new FixedMenu(1, _display);
-            _menu_back = new EmptyLayout(1, _display);
-            _menu_back->addWidget(_menu);
+            try
+            {
+                _menu = new FixedMenu(1, _display);
+                _menu_back = new EmptyLayout(1, _display);
+                _menu_back->addWidget(_menu);
+            }
+            catch (const std::bad_alloc &e)
+            {
+                log_e(e.what());
+                esp_restart();
+            }
         }
 
         virtual ~IGameMenu()

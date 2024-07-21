@@ -11,16 +11,17 @@ namespace meow
 
     SpinBox *SpinBox::clone(uint16_t id) const
     {
-        SpinBox *clone = new SpinBox(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            SpinBox *clone = new SpinBox(*this);
+            clone->_id = id;
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-        return clone;
     }
 
     void SpinBox::setMin(float min)

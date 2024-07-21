@@ -80,25 +80,25 @@ namespace meow
 
     NavBar *NavBar::clone(uint16_t id) const
     {
-        NavBar *clone = new NavBar(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            NavBar *clone = new NavBar(*this);
+            clone->_id = id;
+
+            if (_first)
+            {
+                clone->setWidgets(
+                    _first->clone(_first->getID()),
+                    _middle->clone(_middle->getID()),
+                    _last->clone(_last->getID()));
+            }
+
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+            log_e(e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-
-        if (_first)
-        {
-            clone->setWidgets(
-                _first->clone(_first->getID()),
-                _middle->clone(_middle->getID()),
-                _last->clone(_last->getID()));
-        }
-
-        return clone;
     }
-
 }
