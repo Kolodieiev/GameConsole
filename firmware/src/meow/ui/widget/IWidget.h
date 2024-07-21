@@ -5,7 +5,6 @@
 
 namespace meow
 {
-
     class IWidget
     {
 
