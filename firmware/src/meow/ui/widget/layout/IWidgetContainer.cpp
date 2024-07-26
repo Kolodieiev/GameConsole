@@ -42,14 +42,14 @@ namespace meow
 
     bool IWidgetContainer::deleteWidgetByID(uint16_t widget_ID)
     {
-        auto widgetsIt{_widgets.begin()};
+        auto widgets_it{_widgets.begin()};
 
         for (uint16_t i{0}; i < _widgets.size(); ++i)
         {
             if (_widgets[i]->getID() == widget_ID)
             {
                 delete _widgets[i];
-                _widgets.erase(widgetsIt + i);
+                _widgets.erase(widgets_it + i);
                 _is_changed = true;
                 _widgets.shrink_to_fit();
                 return true;
@@ -61,11 +61,9 @@ namespace meow
 
     IWidget *IWidgetContainer::findWidgetByID(uint16_t widget_ID) const
     {
-        for (uint16_t i{0}; i < _widgets.size(); ++i)
-        {
-            if (_widgets[i]->getID() == widget_ID)
-                return _widgets[i];
-        }
+        for (const auto &widget_ptr : _widgets)
+            if (widget_ptr->getID() == widget_ID)
+                return widget_ptr;
 
         return nullptr;
     }
@@ -80,8 +78,8 @@ namespace meow
 
     void IWidgetContainer::deleteWidgets()
     {
-        for (uint16_t i{0}; i < _widgets.size(); ++i)
-            delete _widgets[i];
+        for (const auto &widget_ptr : _widgets)
+            delete widget_ptr;
 
         _widgets.clear();
 
