@@ -8,7 +8,7 @@ namespace meow
     {
         if (!_widgets.empty())
         {
-            if (_cur_focus_pos)
+            if (_cur_focus_pos > 0)
             {
                 IWidget *item = _widgets[_cur_focus_pos];
                 item->removeFocus();
@@ -130,7 +130,6 @@ namespace meow
         }
         catch (const std::bad_alloc &e)
         {
-            
             log_e(e.what());
             esp_restart();
         }
