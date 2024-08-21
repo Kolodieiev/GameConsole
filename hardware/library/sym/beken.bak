@@ -515,12 +515,13 @@
 				)
 			)
 		)
-		(property "Footprint" "beken:bk1198_sop16"
+		(property "Footprint" "Package_SO:SOP-16_4.55x10.3mm_P1.27mm"
 			(at -0.508 10.414 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "Datasheet" ""

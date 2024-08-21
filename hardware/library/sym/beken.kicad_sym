@@ -22,7 +22,7 @@
 				)
 			)
 		)
-		(property "Footprint" "beken:bk1198_ssop24"
+		(property "Footprint" "Package_SO:SOP-24_7.5x15.4mm_P1.27mm"
 			(at -0.254 13.208 0)
 			(effects
 				(font
@@ -515,7 +515,7 @@
 				)
 			)
 		)
-		(property "Footprint" "beken:bk1198_sop16"
+		(property "Footprint" "Package_SO:SOP-16_4.55x10.3mm_P1.27mm"
 			(at -0.508 10.414 0)
 			(effects
 				(font
