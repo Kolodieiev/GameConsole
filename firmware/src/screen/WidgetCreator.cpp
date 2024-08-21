@@ -16,7 +16,7 @@ EmptyLayout *WidgetCreator::getEmptyLayout()
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }
@@ -39,7 +39,7 @@ Label *WidgetCreator::getDisplayDescription(uint16_t id, const char *text)
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }
@@ -59,7 +59,7 @@ Label *WidgetCreator::getItemLabel(const char *text, uint8_t font_id, uint8_t te
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }
@@ -78,7 +78,7 @@ MenuItem *WidgetCreator::getMenuItem(uint16_t id)
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }
@@ -114,7 +114,7 @@ NavBar *WidgetCreator::getNavbar(uint16_t id, const char *left, const char *midd
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }
@@ -131,7 +131,7 @@ DynamicMenu *WidgetCreator::getDynamicMenu(uint16_t id, IItemsLoader *loader)
     }
     catch (const std::bad_alloc &e)
     {
-        log_e(e.what());
+        log_e("%s", e.what());
         esp_restart();
     }
 }

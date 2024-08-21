@@ -39,7 +39,7 @@ namespace meow
         }
         catch (const std::bad_alloc &e)
         {
-            log_e(e.what());
+            log_e("%s", e.what());
             esp_restart();
         }
     }
