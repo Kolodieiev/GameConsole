@@ -7,7 +7,7 @@ namespace meow
 {
 
 #if defined(CONFIG_IDF_TARGET_ESP32S3)
-#define TRESHOLD 75000 // Чутливість сенсорних кнопок.
+#define TRESHOLD 50000 // Чутливість сенсорних кнопок.
 #else
 #define TRESHOLD 65
 #endif
