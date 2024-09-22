@@ -66,11 +66,7 @@ namespace meow
          * @param  state
          *
          */
-        inline void setType(SpinType spin_type)
-        {
-            _spin_type = spin_type;
-            _is_changed = true;
-        }
+        void setType(SpinType spin_type);
         inline SpinType getType() const { return _spin_type; }
 
     private:

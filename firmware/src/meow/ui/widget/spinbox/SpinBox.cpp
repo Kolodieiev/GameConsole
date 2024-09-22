@@ -61,6 +61,13 @@ namespace meow
         setSpinValToDraw();
     }
 
+    void SpinBox::setType(SpinType spin_type)
+    {
+        _spin_type = spin_type;
+        _is_changed = true;
+        setSpinValToDraw();
+    }
+
     void SpinBox::setSpinValToDraw()
     {
         if (_spin_type == TYPE_INT)
