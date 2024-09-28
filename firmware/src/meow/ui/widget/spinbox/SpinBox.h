@@ -72,6 +72,7 @@ namespace meow
     private:
         using Label::isTicker;
         using Label::setTicker;
+        using Label::setText;
 
         float _min = 0.0f;
         float _max = 0.0f;
