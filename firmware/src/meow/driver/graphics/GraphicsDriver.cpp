@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "GraphicsDriver.h"
 #include "../../util/bmp/BmpUtil.h"
 

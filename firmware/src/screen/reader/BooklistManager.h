@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC optimize("Ofast")
+
 #include <Arduino.h>
 
 #include "meow/util/files/FileManager.h"

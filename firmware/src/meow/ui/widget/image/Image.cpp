@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "Image.h"
 #include "meow/util/bmp/BmpUtil.h"
 

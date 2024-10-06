@@ -1,3 +1,4 @@
+#pragma GCC optimize("Ofast")
 #include "ScreenManager.h"
 #include "./screen/IScreen.h"
 #include "./ScreenID.h"

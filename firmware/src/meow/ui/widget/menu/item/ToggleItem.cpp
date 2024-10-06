@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "ToggleItem.h"
 namespace meow
 {

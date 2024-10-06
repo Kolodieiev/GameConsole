@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "Pin.h"
 #include "driver/touch_sensor.h"
 #include "esp32-hal-touch.h"

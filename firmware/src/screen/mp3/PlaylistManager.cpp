@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "PlaylistManager.h"
 
 const char ROOT_PATH[] = "/music";

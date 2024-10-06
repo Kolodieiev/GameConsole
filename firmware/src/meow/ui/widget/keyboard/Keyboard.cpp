@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "Keyboard.h"
 
 namespace meow

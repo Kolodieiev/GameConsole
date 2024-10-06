@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "KeyboardRow.h"
 #include "../text/Label.h"
 

@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "Mp3Screen.h"
 
 #include "../resources/color.h"

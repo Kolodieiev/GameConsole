@@ -1,5 +1,5 @@
 #pragma once
-// #pragma GCC optimize("Ofast")
+#pragma GCC optimize("Ofast")
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 

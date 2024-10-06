@@ -13,8 +13,9 @@
  ****************************************************/
 
 // Stop fonts etc being loaded multiple times
-#ifndef _TFT_eSPIH_
-#define _TFT_eSPIH_
+#pragma once
+#pragma GCC optimize("O3")
+
 
 #define TFT_ESPI_VERSION "2.5.30"
 
@@ -908,5 +909,3 @@ transpose(T& a, T& b) { T t = a; a = b; b = t; }
 ***************************************************************************************/
 // Load the Sprite Class
 #include "Extensions/Sprite.h"
-
-#endif // ends #ifndef _TFT_eSPIH_

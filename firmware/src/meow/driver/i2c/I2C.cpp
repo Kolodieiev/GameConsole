@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "I2C.h"
 #include <Wire.h>
 

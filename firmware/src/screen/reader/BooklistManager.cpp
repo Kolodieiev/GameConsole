@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "BooklistManager.h"
 
 const char ROOT_PATH[] = "/books";

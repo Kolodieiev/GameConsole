@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "IScreen.h"
 #include "../widget/layout/EmptyLayout.h"
 

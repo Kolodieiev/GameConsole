@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "ScrollBar.h"
 
 namespace meow

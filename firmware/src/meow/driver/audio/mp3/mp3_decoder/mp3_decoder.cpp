@@ -5,6 +5,7 @@
  *  Created on: 26.10.2018
  *  Updated on: 27.05.2024
  */
+#pragma GCC optimize("O3")
 #include "mp3_decoder.h"
 /* clip to range [-2^n, 2^n - 1] */
 #if 0 //Fast on ARM:

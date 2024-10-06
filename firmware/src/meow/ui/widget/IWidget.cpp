@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "IWidget.h"
 
 namespace meow

@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC optimize("Ofast")
 #include <Arduino.h>
 
 namespace meow

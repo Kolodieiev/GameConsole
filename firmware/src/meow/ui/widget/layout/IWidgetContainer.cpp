@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "IWidgetContainer.h"
 
 namespace meow

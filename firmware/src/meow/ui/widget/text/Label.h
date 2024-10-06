@@ -1,4 +1,5 @@
 #pragma once
+#pragma GCC optimize("Ofast")
 #include <Arduino.h>
 #include "../IWidget.h"
 #include "../image/Image.h"

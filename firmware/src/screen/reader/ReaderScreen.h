@@ -1,4 +1,6 @@
 #pragma once
+#pragma GCC optimize("Ofast")
+
 #include <Arduino.h>
 
 #include "meow/lib/DS3231/DS3231.h"

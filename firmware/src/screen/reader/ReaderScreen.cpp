@@ -1,3 +1,5 @@
+#pragma GCC optimize("Ofast")
+
 #include "ReaderScreen.h"
 
 #include "../WidgetCreator.h"
