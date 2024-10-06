@@ -693,14 +693,12 @@ int Audio::read_ID3_Header(uint8_t *data, size_t len)
 
         if (universal_tmp > 0)
         {
-            if (universal_tmp > 256)
-            {
-                universal_tmp -= 256;
-                return 256;
-            }
-            else
-            {
-                uint8_t t = universal_tmp;
+           if(universal_tmp > len) {
+                universal_tmp -= len;
+                return len;
+            } // Throw it away
+            else {
+                uint32_t t = universal_tmp;
                 universal_tmp = 0;
                 return t;
             }
@@ -989,7 +987,7 @@ void Audio::processLocalFile()
                 m_f_running = false;
                 return;
             }
-            if (InBuff.bufferFilled() > maxFrameSize)
+            if (InBuff.bufferFilled() > maxFrameSize || InBuff.bufferFilled() == m_fileSize)
             { // read the file header first
                 InBuff.bytesWasRead(readAudioHeader(InBuff.getMaxAvailableBytes()));
             }
@@ -1084,10 +1082,12 @@ void Audio::processLocalFile()
             free(afn);
             afn = NULL;
         }
+
         m_audioCurrentTime = 0;
         m_audioFileDuration = 0;
         m_resumeFilePos = -1;
         m_haveNewFilePos = 0;
+        
         return;
     }
     if (byteCounter == audiofile.size())
