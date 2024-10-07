@@ -165,7 +165,7 @@ namespace meow
 #endif
 
         private:
-                TFT_eSPI _tft;
+                TFT_eSPI _tft = TFT_eSPI();
 
 #ifdef DOUBLE_BUFFERRING
 #ifdef SHOW_FPS
