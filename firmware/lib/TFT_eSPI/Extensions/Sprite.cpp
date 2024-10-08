@@ -14,6 +14,7 @@
 ** Function name:           TFT_eSprite
 ** Description:             Class constructor
 ***************************************************************************************/
+#pragma GCC optimize("O3")
 
 TFT_eSprite::TFT_eSprite(TFT_eSPI *tft)
 {

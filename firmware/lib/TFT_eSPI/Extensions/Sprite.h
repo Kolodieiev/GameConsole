@@ -4,6 +4,7 @@
 // from the TFT_eSPI class. Some functions are overridden by this class so that the
 // graphics are written to the Sprite rather than the TFT.
 ***************************************************************************************/
+#pragma GCC optimize("O3")
 
 class TFT_eSprite : public TFT_eSPI {
 
