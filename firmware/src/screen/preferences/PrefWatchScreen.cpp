@@ -119,7 +119,7 @@ void PrefWatchScreen::update()
     {
         _input.lock(KeyID::KEY_LEFT, 200);
 
-        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->removeFocus();
 
         if (_curent_focus_pos > 0)
@@ -127,14 +127,14 @@ void PrefWatchScreen::update()
         else
             _curent_focus_pos = MAX_SPIN_POS;
 
-        spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->setFocus();
     }
     else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
         _input.lock(KeyID::KEY_RIGHT, 200);
 
-        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->removeFocus();
 
         if (_curent_focus_pos == MAX_SPIN_POS)
@@ -142,20 +142,20 @@ void PrefWatchScreen::update()
         else
             _curent_focus_pos++;
 
-        spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->setFocus();
     }
     else if (_input.isHolded(KeyID::KEY_UP))
     {
         _input.lock(KeyID::KEY_UP, 150);
-        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->up();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
         _input.lock(KeyID::KEY_DOWN, 150);
-        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
+        SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->down();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());
     }

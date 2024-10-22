@@ -70,7 +70,7 @@ namespace meow
         return nullptr;
     }
 
-    IWidget *IWidgetContainer::getWidgetByPos(uint16_t widget_pos) const
+    IWidget *IWidgetContainer::getWidgetByIndx(uint16_t widget_pos) const
     {
         if (_widgets.size() > widget_pos)
             return _widgets[widget_pos];

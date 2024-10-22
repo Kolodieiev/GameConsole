@@ -7,7 +7,6 @@
 
 namespace meow
 {
-
     class IWidgetContainer : public IWidget
     {
 
@@ -54,7 +53,7 @@ namespace meow
          * @return
          *       Вказівник на віджет у разі успіху. Інакше nullptr.
          */
-        virtual IWidget *getWidgetByPos(uint16_t widget_pos) const;
+        virtual IWidget *getWidgetByIndx(uint16_t widget_pos) const;
 
         /*!
          * @brief
@@ -92,5 +91,4 @@ namespace meow
         bool _is_enabled{true};
         std::vector<IWidget *> _widgets;
     };
-
 }
