@@ -64,44 +64,44 @@ void ReaderScreen::loop()
 
 void ReaderScreen::update()
 {
-    if (_input.isPressed(Input::PIN_OK))
+    if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 1000);
+        _input.lock(KeyID::KEY_OK, 1000);
         showBookMenu();
     }
-    else if (_input.isPressed(Input::PIN_BACK))
+    else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 2500);
+        _input.lock(KeyID::KEY_BACK, 2500);
         backPressed();
     }
-    else if (_input.isReleased(Input::PIN_UP))
+    else if (_input.isReleased(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 100);
+        _input.lock(KeyID::KEY_UP, 100);
         up();
     }
-    else if (_input.isReleased(Input::PIN_DOWN))
+    else if (_input.isReleased(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 100);
+        _input.lock(KeyID::KEY_DOWN, 100);
         down();
     }
-    else if (_input.isReleased(Input::PIN_RIGHT))
+    else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 100);
+        _input.lock(KeyID::KEY_RIGHT, 100);
         right();
     }
-    else if (_input.isReleased(Input::PIN_LEFT))
+    else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 100);
+        _input.lock(KeyID::KEY_LEFT, 100);
         left();
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 100);
+        _input.lock(KeyID::KEY_OK, 100);
         ok();
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 100);
+        _input.lock(KeyID::KEY_BACK, 100);
         back();
     }
 
@@ -224,16 +224,16 @@ void ReaderScreen::ok()
 
         if (_brightness_edit_en)
         {
-            _input.enablePin(Input::PIN_UP);
-            _input.enablePin(Input::PIN_DOWN);
-            _input.enablePin(Input::PIN_BACK);
+            _input.enablePin(KeyID::KEY_UP);
+            _input.enablePin(KeyID::KEY_DOWN);
+            _input.enablePin(KeyID::KEY_BACK);
             _book_navbar->setVisibility(IWidget::VISIBLE);
         }
         else
         {
-            _input.disablePin(Input::PIN_UP);
-            _input.disablePin(Input::PIN_DOWN);
-            _input.disablePin(Input::PIN_BACK);
+            _input.disablePin(KeyID::KEY_UP);
+            _input.disablePin(KeyID::KEY_DOWN);
+            _input.disablePin(KeyID::KEY_BACK);
             _book_navbar->setVisibility(IWidget::INVISIBLE);
         }
     }
@@ -369,8 +369,8 @@ void ReaderScreen::backPressed()
 
         if (!_brightness_edit_en)
         {
-            _input.enablePin(Input::PIN_UP);
-            _input.enablePin(Input::PIN_DOWN);
+            _input.enablePin(KeyID::KEY_UP);
+            _input.enablePin(KeyID::KEY_DOWN);
             _brightness_edit_en = false;
         }
 

@@ -9,15 +9,10 @@ namespace meow
 {
     class WavManager
     {
-    private:
-#define PIN_I2S_BCLK 21
-#define PIN_I2S_LRC 48
-#define PIN_I2S_DOUT 47
-
     public:
         ~WavManager();
 
-        bool init(uint8_t I2S_BCLK = PIN_I2S_BCLK, uint8_t I2S_LRC = PIN_I2S_LRC, uint8_t I2S_DOUT = PIN_I2S_DOUT);
+        bool init(uint8_t PIN_I2S_BCLK, uint8_t PIN_I2S_LRC, uint8_t PIN_I2S_DOUT);
 
         /*!
          * @brief

@@ -6,7 +6,6 @@
 
 namespace meow
 {
-
     // TODO додати перенесення рядків по /n
 
     class Label : public IWidget

@@ -1,11 +1,12 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include <Arduino.h>
+#include "../../setup/screen_id.h"
+
 #include "../../driver/input/Input.h"
 #include "../../driver/graphics/GraphicsDriver.h"
 #include "../widget/layout/IWidgetContainer.h"
-#include "../ScreenID.h"
 
 namespace meow
 {
@@ -51,7 +52,7 @@ namespace meow
         IWidgetContainer *_layout;
         //
         bool _is_released{false};
-        ScreenID _next_screen_ID{ScreenID::ID_SCREEN_HOME};
+        ScreenID _next_screen_ID;
         //
 #pragma endregion "don't touch this"
     };

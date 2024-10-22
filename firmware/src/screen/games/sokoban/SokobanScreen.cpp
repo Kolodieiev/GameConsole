@@ -45,26 +45,26 @@ void SokobanScreen::update()
     }
     else
     {
-        if (_input.isPressed(Input::PIN_BACK))
+        if (_input.isPressed(KeyID::KEY_BACK))
         {
-            _input.lock(Input::PIN_BACK, 500);
+            _input.lock(KeyID::KEY_BACK, 500);
             openScreenByID(ID_SCREEN_GAMES);
         }
-        else if (_input.isHolded(Input::PIN_UP))
+        else if (_input.isHolded(KeyID::KEY_UP))
         {
-            _input.lock(Input::PIN_UP, 130);
+            _input.lock(KeyID::KEY_UP, 130);
             _lvl_menu->focusUp();
             _scrollbar->scrollUp();
         }
-        else if (_input.isHolded(Input::PIN_DOWN))
+        else if (_input.isHolded(KeyID::KEY_DOWN))
         {
-            _input.lock(Input::PIN_DOWN, 130);
+            _input.lock(KeyID::KEY_DOWN, 130);
             _lvl_menu->focusDown();
             _scrollbar->scrollDown();
         }
-        else if (_input.isReleased(Input::PIN_OK))
+        else if (_input.isReleased(KeyID::KEY_OK))
         {
-            _input.lock(Input::PIN_OK, 500);
+            _input.lock(KeyID::KEY_OK, 500);
             uint8_t next_lvl = _lvl_menu->getCurrentItemID();
             getLayout()->deleteWidgets();
             _scene = new SokobanScene(_display, _input, _stored_objs, false, next_lvl);

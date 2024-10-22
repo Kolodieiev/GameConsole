@@ -83,64 +83,64 @@ void Mp3Screen::loop()
 
 void Mp3Screen::update()
 {
-    if (_input.isPressed(Input::PIN_UP))
+    if (_input.isPressed(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 500);
+        _input.lock(KeyID::KEY_UP, 500);
         upPressed();
     }
-    else if (_input.isPressed(Input::PIN_DOWN))
+    else if (_input.isPressed(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 500);
+        _input.lock(KeyID::KEY_DOWN, 500);
         downPressed();
     }
-    else if (_input.isPressed(Input::PIN_RIGHT))
+    else if (_input.isPressed(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 1000);
+        _input.lock(KeyID::KEY_RIGHT, 1000);
         rightPressed();
     }
-    else if (_input.isPressed(Input::PIN_LEFT))
+    else if (_input.isPressed(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 1000);
+        _input.lock(KeyID::KEY_LEFT, 1000);
         leftPressed();
     }
-    else if (_input.isReleased(Input::PIN_UP))
+    else if (_input.isReleased(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 100);
+        _input.lock(KeyID::KEY_UP, 100);
         up();
     }
-    else if (_input.isReleased(Input::PIN_DOWN))
+    else if (_input.isReleased(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 100);
+        _input.lock(KeyID::KEY_DOWN, 100);
         down();
     }
-    else if (_input.isReleased(Input::PIN_RIGHT))
+    else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 100);
+        _input.lock(KeyID::KEY_RIGHT, 100);
         right();
     }
-    else if (_input.isReleased(Input::PIN_LEFT))
+    else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 100);
+        _input.lock(KeyID::KEY_LEFT, 100);
         left();
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 100);
+        _input.lock(KeyID::KEY_OK, 100);
         ok();
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 100);
+        _input.lock(KeyID::KEY_BACK, 100);
         back();
     }
-    else if (_input.isPressed(Input::PIN_OK))
+    else if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 1000);
+        _input.lock(KeyID::KEY_OK, 1000);
         showPlMenu();
     }
-    else if (_input.isPressed(Input::PIN_BACK))
+    else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 2500);
+        _input.lock(KeyID::KEY_BACK, 2500);
         backPressed();
     }
 
@@ -838,9 +838,9 @@ void Mp3Screen::upPressed()
         _is_locked = false;
         _screen_enabled = true;
 
-        _input.enablePin(Input::PIN_BACK);
-        _input.enablePin(Input::PIN_LEFT);
-        _input.enablePin(Input::PIN_RIGHT);
+        _input.enablePin(KeyID::KEY_BACK);
+        _input.enablePin(KeyID::KEY_LEFT);
+        _input.enablePin(KeyID::KEY_RIGHT);
     }
 }
 
@@ -853,9 +853,9 @@ void Mp3Screen::downPressed()
         _is_locked = true;
         _screen_enabled = false;
 
-        _input.disablePin(Input::PIN_BACK);
-        _input.disablePin(Input::PIN_LEFT);
-        _input.disablePin(Input::PIN_RIGHT);
+        _input.disablePin(KeyID::KEY_BACK);
+        _input.disablePin(KeyID::KEY_LEFT);
+        _input.disablePin(KeyID::KEY_RIGHT);
 
         setCpuFrequencyMhz(160);
     }

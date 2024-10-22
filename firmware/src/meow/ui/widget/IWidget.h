@@ -2,7 +2,6 @@
 #pragma GCC optimize("Ofast")
 
 #include <Arduino.h>
-
 #include "../../driver/graphics/GraphicsDriver.h"
 
 namespace meow

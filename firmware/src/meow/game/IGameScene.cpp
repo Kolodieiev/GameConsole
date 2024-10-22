@@ -3,7 +3,6 @@
 
 namespace meow
 {
-
     IGameScene::~IGameScene()
     {
         for (auto &&it : _game_objs)

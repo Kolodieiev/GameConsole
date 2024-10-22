@@ -103,21 +103,21 @@ void PrefWatchScreen::loop()
 
 void PrefWatchScreen::update()
 {
-    if (_input.isReleased(Input::PIN_OK))
+    if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
 
         _watch.setDateTime(_cur_date_time);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
-    else if (_input.isReleased(Input::PIN_LEFT))
+    else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 200);
+        _input.lock(KeyID::KEY_LEFT, 200);
 
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->removeFocus();
@@ -130,9 +130,9 @@ void PrefWatchScreen::update()
         spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->setFocus();
     }
-    else if (_input.isReleased(Input::PIN_RIGHT))
+    else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 200);
+        _input.lock(KeyID::KEY_RIGHT, 200);
 
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->removeFocus();
@@ -145,16 +145,16 @@ void PrefWatchScreen::update()
         spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->setFocus();
     }
-    else if (_input.isHolded(Input::PIN_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 150);
+        _input.lock(KeyID::KEY_UP, 150);
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->up();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 150);
+        _input.lock(KeyID::KEY_DOWN, 150);
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByPos(_curent_focus_pos);
         spinBox->down();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());

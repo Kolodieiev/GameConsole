@@ -227,26 +227,26 @@ std::vector<MenuItem *> FilesScreen::loadNext(uint8_t size, uint16_t current_ID)
 
 void FilesScreen::update()
 {
-    if (_input.isPressed(Input::PIN_OK))
+    if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 1500);
+        _input.lock(KeyID::KEY_OK, 1500);
         if (_mode == MODE_NAVIGATION)
             showContextMenu();
         else if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             saveDialogResult();
     }
-    else if (_input.isPressed(Input::PIN_BACK))
+    else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 1500);
+        _input.lock(KeyID::KEY_BACK, 1500);
 
         if (_mode == MODE_NAVIGATION)
             openScreenByID(ID_SCREEN_MENU);
         else if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             hideDialog();
     }
-    else if (_input.isHolded(Input::PIN_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 130);
+        _input.lock(KeyID::KEY_UP, 130);
         if (_mode == MODE_NAVIGATION)
         {
             _files_list->focusUp();
@@ -257,9 +257,9 @@ void FilesScreen::update()
         else if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusUp();
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 130);
+        _input.lock(KeyID::KEY_DOWN, 130);
         if (_mode == MODE_NAVIGATION)
         {
             _files_list->focusDown();
@@ -270,26 +270,26 @@ void FilesScreen::update()
         else if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusDown();
     }
-    else if (_input.isHolded(Input::PIN_RIGHT))
+    else if (_input.isHolded(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 130);
+        _input.lock(KeyID::KEY_RIGHT, 130);
         if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusRight();
     }
-    else if (_input.isHolded(Input::PIN_LEFT))
+    else if (_input.isHolded(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 130);
+        _input.lock(KeyID::KEY_LEFT, 130);
         if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusLeft();
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 200);
+        _input.lock(KeyID::KEY_OK, 200);
         ok();
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 300);
+        _input.lock(KeyID::KEY_BACK, 300);
         back();
     }
 

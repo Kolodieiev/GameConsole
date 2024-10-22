@@ -60,9 +60,9 @@ void FirmwareScreen::loop()
 
 void FirmwareScreen::update()
 {
-    if (_input.isReleased(Input::PIN_OK))
+    if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
 
         if (_fm.fileExist(STR_FIRMWARE_FN))
         {
@@ -78,9 +78,9 @@ void FirmwareScreen::update()
             ESP.restart();
         }
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
         openScreenByID(ID_SCREEN_MENU);
     }
 }

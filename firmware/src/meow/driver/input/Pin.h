@@ -27,9 +27,9 @@ namespace meow
         void disable();
 
     private:
-        uint8_t _pin_id;
+        const uint8_t _pin_id;
+        const bool _is_touch;
         int8_t _pad;
-        bool _is_touch;
         //
         bool _is_locked{false};
         unsigned long _lock_time;

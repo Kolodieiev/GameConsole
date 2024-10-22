@@ -63,24 +63,24 @@ void GamesListScreen::loop()
 
 void GamesListScreen::update()
 {
-    if (_input.isHolded(Input::PIN_UP))
+    if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 200);
+        _input.lock(KeyID::KEY_UP, 200);
         up();
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 200);
+        _input.lock(KeyID::KEY_DOWN, 200);
         down();
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
         openScreenByID(ID_SCREEN_MENU);
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
 
         openScreenByID((ScreenID)_menu->getCurrentItemID());
     }

@@ -36,9 +36,9 @@ void TorchScreen::loop()
 
 void TorchScreen::update()
 {
-    if (_input.isReleased(Input::PIN_OK))
+    if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
         _is_light_on = !_is_light_on;
 
         if (!_is_light_on)
@@ -46,26 +46,26 @@ void TorchScreen::update()
         else
             DisplayUtil::setBrightness(_torch_brightness);
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
 
         DisplayUtil::setBrightness(_display_brightness);
         openScreenByID(ID_SCREEN_HOME);
     }
-    else if (_input.isReleased(Input::PIN_LEFT))
+    else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 500);
+        _input.lock(KeyID::KEY_LEFT, 500);
         getLayout()->setBackColor(TFT_WHITE);
     }
-    else if (_input.isReleased(Input::PIN_RIGHT))
+    else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 500);
+        _input.lock(KeyID::KEY_RIGHT, 500);
         getLayout()->setBackColor(TFT_RED);
     }
-    else if (_input.isHolded(Input::PIN_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 50);
+        _input.lock(KeyID::KEY_UP, 50);
 
         if (_torch_brightness < 240)
         {
@@ -73,9 +73,9 @@ void TorchScreen::update()
             DisplayUtil::setBrightness(_torch_brightness);
         }
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 50);
+        _input.lock(KeyID::KEY_DOWN, 50);
 
         if (_torch_brightness > 20)
         {

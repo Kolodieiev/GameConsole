@@ -16,7 +16,6 @@
 
 namespace meow
 {
-
     class IGameScene
     {
     public:

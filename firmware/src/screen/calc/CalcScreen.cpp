@@ -20,44 +20,44 @@ void CalcScreen::loop()
 
 void CalcScreen::update()
 {
-    if (_input.isPressed(Input::PIN_OK))
+    if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 1500);
+        _input.lock(KeyID::KEY_OK, 1500);
         // showContextMenu();
     }
-    else if (_input.isPressed(Input::PIN_BACK))
+    else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 1500);
+        _input.lock(KeyID::KEY_BACK, 1500);
         openScreenByID(ID_SCREEN_MENU);
     }
-    else if (_input.isHolded(Input::PIN_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 130);
+        _input.lock(KeyID::KEY_UP, 130);
         _keyboard->focusUp();
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 130);
+        _input.lock(KeyID::KEY_DOWN, 130);
         _keyboard->focusDown();
     }
-    else if (_input.isHolded(Input::PIN_RIGHT))
+    else if (_input.isHolded(KeyID::KEY_RIGHT))
     {
-        _input.lock(Input::PIN_RIGHT, 130);
+        _input.lock(KeyID::KEY_RIGHT, 130);
         _keyboard->focusRight();
     }
-    else if (_input.isHolded(Input::PIN_LEFT))
+    else if (_input.isHolded(KeyID::KEY_LEFT))
     {
-        _input.lock(Input::PIN_LEFT, 130);
+        _input.lock(KeyID::KEY_LEFT, 130);
         _keyboard->focusLeft();
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 200);
+        _input.lock(KeyID::KEY_OK, 200);
         ok();
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 300);
+        _input.lock(KeyID::KEY_BACK, 300);
         back();
     }
 }

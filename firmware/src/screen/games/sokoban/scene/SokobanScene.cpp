@@ -559,21 +559,21 @@ void SokobanScene::update()
 {
     IGameObject::MovingDirection direction = IGameObject::DIRECTION_NONE;
 
-    if (_input.isPressed(Input::PIN_OK))
+    if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
         openSceneByID(++_level);
         return;
     }
-    else if (_input.isPressed(Input::PIN_BACK))
+    else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
         _is_finished = true;
         return;
     }
-    else if (_input.isReleased(Input::PIN_OK))
+    else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 400);
+        _input.lock(KeyID::KEY_OK, 400);
         _is_ghost_selected = !_is_ghost_selected;
         _input.reset();
     }
@@ -582,13 +582,13 @@ void SokobanScene::update()
     {
         _main_obj = _ghost; // Якщо обрано привида встановлюємо його вказівник головним у сцені
 
-        if (_input.isHolded(Input::PIN_UP)) // Оброблюємо тільки утримання кнопок
+        if (_input.isHolded(KeyID::KEY_UP)) // Оброблюємо тільки утримання кнопок
             direction = IGameObject::DIRECTION_UP;
-        else if (_input.isHolded(Input::PIN_DOWN))
+        else if (_input.isHolded(KeyID::KEY_DOWN))
             direction = IGameObject::DIRECTION_DOWN;
-        else if (_input.isHolded(Input::PIN_RIGHT))
+        else if (_input.isHolded(KeyID::KEY_RIGHT))
             direction = IGameObject::DIRECTION_RIGHT;
-        else if (_input.isHolded(Input::PIN_LEFT))
+        else if (_input.isHolded(KeyID::KEY_LEFT))
             direction = IGameObject::DIRECTION_LEFT;
 
         if (direction != IGameObject::DIRECTION_NONE) // Якщо натиснута кнопка переміщеня
@@ -598,24 +598,24 @@ void SokobanScene::update()
     {
         _main_obj = _sokoban; // Встановлюємо головним об'єктом комірника
 
-        if (_input.isReleased(Input::PIN_UP)) // Оброблюємо тільки відпусканя кнопок
+        if (_input.isReleased(KeyID::KEY_UP)) // Оброблюємо тільки відпусканя кнопок
         {
-            _input.lock(Input::PIN_UP, 100); // Блокуємо кнопку на 200мс, щоб запобігти випадковим зайвим натисканням
+            _input.lock(KeyID::KEY_UP, 100); // Блокуємо кнопку на 200мс, щоб запобігти випадковим зайвим натисканням
             direction = IGameObject::DIRECTION_UP;
         }
-        else if (_input.isReleased(Input::PIN_DOWN))
+        else if (_input.isReleased(KeyID::KEY_DOWN))
         {
-            _input.lock(Input::PIN_DOWN, 100);
+            _input.lock(KeyID::KEY_DOWN, 100);
             direction = IGameObject::DIRECTION_DOWN;
         }
-        else if (_input.isReleased(Input::PIN_RIGHT))
+        else if (_input.isReleased(KeyID::KEY_RIGHT))
         {
-            _input.lock(Input::PIN_RIGHT, 100);
+            _input.lock(KeyID::KEY_RIGHT, 100);
             direction = IGameObject::DIRECTION_RIGHT;
         }
-        else if (_input.isReleased(Input::PIN_LEFT))
+        else if (_input.isReleased(KeyID::KEY_LEFT))
         {
-            _input.lock(Input::PIN_LEFT, 100);
+            _input.lock(KeyID::KEY_LEFT, 100);
             direction = IGameObject::DIRECTION_LEFT;
         }
 

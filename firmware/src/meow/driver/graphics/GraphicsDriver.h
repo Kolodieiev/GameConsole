@@ -2,19 +2,10 @@
 #pragma GCC optimize("Ofast")
 #include <Arduino.h>
 #include <TFT_eSPI.h>
-
-//--------------------------------------------------------------------------------------------------- Налаштування графіки
+#include "../../setup/graphics_setup.h"
 
 namespace meow
 {
-
-#define DOUBLE_BUFFERRING //  Подвійна буферизація. Працює тільки з наявністю PSRAM
-// #define SHOW_FPS            // Відображати значення FPS
-#define COLOR_16BIT // Глибина кольору
-                    // #define COLOR_8BIT
-                    // #define ENABLE_SCREENSHOTER // Увімкнути підтримку створення скриншотів.
-                    //---------------------------------------------------------------------------------------------------
-
         class GraphicsDriver
         {
         public:

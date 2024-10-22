@@ -1,4 +1,4 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include "IScreen.h"
 #include "../widget/layout/EmptyLayout.h"
@@ -18,6 +18,7 @@ namespace meow
             upd_time = millis();
 
             _input.update();
+
             update();
 
             if (_screen_enabled)
@@ -84,5 +85,4 @@ namespace meow
     }
 
 #pragma endregion "don't touch this"
-
 }

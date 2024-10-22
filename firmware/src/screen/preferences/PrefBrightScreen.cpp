@@ -54,24 +54,24 @@ void PrefBrightScreen::loop()
 
 void PrefBrightScreen::update()
 {
-    if (_input.isReleased(Input::PIN_OK))
+    if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(Input::PIN_OK, 500);
+        _input.lock(KeyID::KEY_OK, 500);
 
         PrefUtil pref;
         pref.set(STR_PREF_BRIGHT, String(_progress->getProgress()).c_str());
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
-    else if (_input.isReleased(Input::PIN_BACK))
+    else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(Input::PIN_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, 500);
 
         DisplayUtil::setBrightness(_old_bright);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
-    else if (_input.isHolded(Input::PIN_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(Input::PIN_UP, 100);
+        _input.lock(KeyID::KEY_UP, 100);
 
         uint16_t cur_progress = _progress->getProgress();
 
@@ -82,9 +82,9 @@ void PrefBrightScreen::update()
             DisplayUtil::setBrightness(cur_progress);
         }
     }
-    else if (_input.isHolded(Input::PIN_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(Input::PIN_DOWN, 100);
+        _input.lock(KeyID::KEY_DOWN, 100);
 
         uint16_t cur_progress = _progress->getProgress();
         if (cur_progress > BRIGHT_STEP * 2)
