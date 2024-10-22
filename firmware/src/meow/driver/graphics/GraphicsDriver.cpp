@@ -42,6 +42,10 @@ namespace meow
         _flick_buf.setColorDepth(8);
         _display_buf.setColorDepth(8);
         _renderer_buf.setColorDepth(8);
+#elif defined(COLOR_1BIT)
+        _flick_buf.setColorDepth(1);
+        _display_buf.setColorDepth(1);
+        _renderer_buf.setColorDepth(1);
 #endif
         _flick_buf.setAttribute(PSRAM_ENABLE, true);
         _display_buf.setAttribute(PSRAM_ENABLE, true);
