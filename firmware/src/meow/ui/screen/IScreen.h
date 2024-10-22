@@ -6,7 +6,7 @@
 
 #include "../../driver/input/Input.h"
 #include "../../driver/graphics/GraphicsDriver.h"
-#include "../widget/layout/IWidgetContainer.h"
+#include "../widget/IWidgetContainer.h"
 
 namespace meow
 {

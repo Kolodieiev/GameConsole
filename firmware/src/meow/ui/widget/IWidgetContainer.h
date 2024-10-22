@@ -2,7 +2,7 @@
 #pragma GCC optimize("Ofast")
 
 #include <Arduino.h>
-#include "../IWidget.h"
+#include "./IWidget.h"
 #include <vector>
 
 namespace meow

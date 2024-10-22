@@ -2,7 +2,7 @@
 #pragma GCC optimize("Ofast")
 
 #include <Arduino.h>
-#include "../layout/IWidgetContainer.h"
+#include "../IWidgetContainer.h"
 
 namespace meow
 {
