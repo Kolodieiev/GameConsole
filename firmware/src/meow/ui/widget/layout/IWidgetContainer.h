@@ -48,12 +48,24 @@ namespace meow
         /*!
          * @brief
          *       Отримати віджет по його порядковому номері у контейнері.
-         * @param widget_pos
+         * @param widget_indx
          *       Порядковий номер віджета.
          * @return
          *       Вказівник на віджет у разі успіху. Інакше nullptr.
          */
-        IWidget *getWidgetByIndx(uint16_t widget_pos) const;
+        IWidget *getWidgetByIndx(uint16_t widget_indx) const;
+
+        /*!
+         * @brief
+         *       Отримати віджет за його позицією на екрані.
+         * @param x
+         *       Позиція віджета по осі X.
+         * @param y
+         *       Позиція віджета по осі Y.
+         * @return
+         *       Вказівник на віджет у разі успіху. Інакше nullptr.
+         */
+        IWidget *getWidgetByPos(uint16_t x, uint16_t y) const;
 
         /*!
          * @brief
