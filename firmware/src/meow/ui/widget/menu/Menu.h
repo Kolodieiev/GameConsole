@@ -19,7 +19,7 @@ namespace meow
         virtual bool focusUp() = 0;
         virtual bool focusDown() = 0;
 
-        virtual void deleteWidgets() override;
+        void deleteWidgets();
 
         /*!
          * @brief
@@ -123,5 +123,6 @@ namespace meow
         uint16_t getCyclesCount() const;
 
         using IWidgetContainer::addWidget;
+        using IWidgetContainer::deleteWidgets;
     };
 }

@@ -23,7 +23,7 @@ namespace meow
          * @return
          *        true у разі успіху операції. Інакше false.
          */
-        virtual bool addWidget(IWidget *widget_ptr);
+        bool addWidget(IWidget *widget_ptr);
 
         /*!
          * @brief
@@ -33,7 +33,7 @@ namespace meow
          * @return
          *        true у разі успіху операції. Інакше false.
          */
-        virtual bool deleteWidgetByID(uint16_t widget_ID);
+        bool deleteWidgetByID(uint16_t widget_ID);
 
         /*!
          * @brief
@@ -43,7 +43,7 @@ namespace meow
          * @return
          *        Вказівник на віджет у разі успіху. Інакше nullptr.
          */
-        virtual IWidget *findWidgetByID(uint16_t widget_ID) const;
+        IWidget *findWidgetByID(uint16_t widget_ID) const;
 
         /*!
          * @brief
@@ -53,25 +53,25 @@ namespace meow
          * @return
          *       Вказівник на віджет у разі успіху. Інакше nullptr.
          */
-        virtual IWidget *getWidgetByIndx(uint16_t widget_pos) const;
+        IWidget *getWidgetByIndx(uint16_t widget_pos) const;
 
         /*!
          * @brief
          *       Видалити усі елементи з контейнера та очистити пам'ять, яку вони займали.
          */
-        virtual void deleteWidgets();
+        void deleteWidgets();
 
         /*!
          * @return
          *        Кількість елементів у контейнері.
          */
-        inline uint16_t getSize() const { return _widgets.size(); };
+        uint16_t getSize() const { return _widgets.size(); };
 
         /*!
          * @brief
          *      Розблоковує перерисовку віджетів, що знаходяться всередині цього контейнера.
          */
-        inline void enable()
+        void enable()
         {
             _is_enabled = true;
         }
@@ -80,12 +80,12 @@ namespace meow
          * @brief
          *        Блокує перерисовку віджетів, що знаходяться всередині цього контейнера.
          */
-        inline void disable()
+        void disable()
         {
             _is_enabled = false;
         }
 
-        inline bool isEnabled() const { return _is_enabled; }
+        bool isEnabled() const { return _is_enabled; }
 
     protected:
         bool _is_enabled{true};
