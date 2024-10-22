@@ -160,7 +160,7 @@ namespace meow
   std::list<IGameObject *> IGameObject::getObjInPoint(uint16_t x, uint16_t y)
   {
     std::list<IGameObject *> objs;
-    
+
     for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
     {
       if (*it != this && (*it)->hasIntersectWithPoint(x, y))
@@ -230,8 +230,8 @@ namespace meow
 
   bool IGameObject::hasIntersectWithPoint(uint16_t x, uint16_t y)
   {
-    return (x >= _x_global + _body.ofst_w && x <= _x_global + _sprite.width - 1 - _body.ofst_w) &&
-           (y >= _y_global + _body.ofst_h && y <= _y_global + _sprite.height - 1);
+    return (x > _x_global + _body.ofst_w && x < _x_global + _sprite.width - _body.ofst_w) &&
+           (y > _y_global + _body.ofst_h && y < _y_global + _sprite.height);
   }
 
   bool IGameObject::hasIntersectWithBody(uint16_t x, uint16_t y, MovingDirection direction)
