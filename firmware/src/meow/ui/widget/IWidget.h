@@ -44,26 +44,26 @@ namespace meow
 
         void forcedDraw();
 
-        inline void setPos(uint16_t x, uint16_t y)
+        void setPos(uint16_t x, uint16_t y)
         {
             _x_pos = x;
             _y_pos = y;
             _is_changed = true;
         }
 
-        inline void setHeight(uint16_t height)
+        void setHeight(uint16_t height)
         {
             _height = height;
             _is_changed = true;
         }
 
-        inline void setWidth(uint16_t width)
+        void setWidth(uint16_t width)
         {
             _width = width;
             _is_changed = true;
         }
 
-        inline void setBackColor(uint16_t back_color)
+        void setBackColor(uint16_t back_color)
         {
             _back_color = back_color;
             _is_changed = true;
@@ -73,20 +73,20 @@ namespace meow
          * @brief  Задати батьківський контейнер, відносно якого буде розраховуватись позиціонування.
          *
          */
-        inline void setParent(IWidget *parent)
+        void setParent(IWidget *parent)
         {
             _parent = parent;
             _is_changed = true;
         }
 
-        inline const IWidget *getParent() const { return _parent; }
+        const IWidget *getParent() const { return _parent; }
 
         /*!
          * @brief  Задати скруглення вуглів елементу.
          * @param  radius
          *         Значення скруглення вуглів.
          */
-        inline void setCornerRadius(const uint8_t radius)
+        void setCornerRadius(const uint8_t radius)
         {
             _corner_radius = radius;
             _is_changed = true;
@@ -99,13 +99,13 @@ namespace meow
          * @param  state
          *         Логічне значення стану.
          */
-        inline void setBorder(const bool state)
+        void setBorder(const bool state)
         {
             _has_border = state;
             _is_changed = true;
         }
 
-        inline void setBorderColor(uint16_t color)
+        void setBorderColor(uint16_t color)
         {
             _border_color = color;
             _is_changed = true;
@@ -125,14 +125,14 @@ namespace meow
          */
         uint16_t getYPos() const;
 
-        inline uint8_t getCornerRadius() const { return _corner_radius; }
-        inline uint16_t getID() const { return _id; }
-        inline uint16_t getHeight() const { return _height; }
-        inline uint16_t getWidth() const { return _width; }
-        inline uint16_t getBackColor() const { return _back_color; }
-        inline uint16_t getBorderColor() const { return _border_color; }
+        uint8_t getCornerRadius() const { return _corner_radius; }
+        uint16_t getID() const { return _id; }
+        uint16_t getHeight() const { return _height; }
+        uint16_t getWidth() const { return _width; }
+        uint16_t getBackColor() const { return _back_color; }
+        uint16_t getBorderColor() const { return _border_color; }
 
-        inline bool hasBorder() const { return _has_border; }
+        bool hasBorder() const { return _has_border; }
 
         /*!
          * @brief
@@ -169,7 +169,7 @@ namespace meow
             _focus_border_color = color;
             _is_changed = true;
         }
-        inline uint16_t getFocusBorderColor() const { return _focus_border_color; }
+        uint16_t getFocusBorderColor() const { return _focus_border_color; }
 
         /*!
          * @brief
@@ -182,7 +182,7 @@ namespace meow
             _focus_back_color = color;
             _is_changed = true;
         }
-        inline uint16_t getFocusBackColor() const { return _focus_back_color; }
+        uint16_t getFocusBackColor() const { return _focus_back_color; }
 
         /*!
          * @brief Встановити фокус на елементі.
@@ -203,7 +203,7 @@ namespace meow
             _is_changed = true;
         }
 
-        inline Visibility getVisibility() const { return _visibility; }
+        Visibility getVisibility() const { return _visibility; }
 
     protected:
         uint16_t _id{0};
