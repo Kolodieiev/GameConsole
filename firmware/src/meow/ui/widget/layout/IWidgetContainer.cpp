@@ -70,12 +70,31 @@ namespace meow
         return nullptr;
     }
 
-    IWidget *IWidgetContainer::getWidgetByIndx(uint16_t widget_pos) const
+    IWidget *IWidgetContainer::getWidgetByIndx(uint16_t widget_indx) const
     {
-        if (_widgets.size() > widget_pos)
-            return _widgets[widget_pos];
+        if (_widgets.size() > widget_indx)
+            return _widgets[widget_indx];
 
         return nullptr;
+    }
+
+    IWidget *IWidgetContainer::getWidgetByCoords(uint16_t x, uint16_t y) const
+    {
+        for (const auto &widget_ptr : _widgets)
+        {
+            if (widget_ptr->hasIntersectWithCoords(x, y))
+            {
+                if (widget_ptr->isContainer())
+                {
+                    IWidgetContainer *container = (IWidgetContainer *)widget_ptr;
+                    return container->getWidgetByCoords(x, y);
+                }
+                else
+                    return widget_ptr;
+            }
+        }
+
+        return (IWidget *)this;
     }
 
     void IWidgetContainer::deleteWidgets()

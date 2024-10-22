@@ -116,4 +116,12 @@ namespace meow
             _back_color = _old_back_color;
     }
 
+    bool IWidget::hasIntersectWithCoords(uint16_t x, uint16_t y)
+    {
+        if (_parent)
+            return (x > _parent->getXPos() + _x_pos && x < _parent->getXPos() + _x_pos + _width) &&
+                   (y > _parent->getYPos() + _y_pos && y < _parent->getYPos() + _y_pos + _height);
+        else
+            return (x > _x_pos && x < _x_pos + _width) && (y > _y_pos && y < _y_pos + _height);
+    }
 }

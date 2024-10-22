@@ -205,8 +205,27 @@ namespace meow
 
         Visibility getVisibility() const { return _visibility; }
 
+        /*!
+         * @brief
+         *       Визначити, чи має цей віджет перетин з координатами.
+         * @param  x
+         *       X - координата.
+         * @param  y
+         *       Y - координата.
+         * @return
+         *      true у разі, якщо віджет має перетин, інакше false.
+         */
+        bool hasIntersectWithCoords(uint16_t x, uint16_t y);
+
+        /*!
+         * @return
+         *      true у разі, якщо віджет являється контейнером для інших віджетів, інакше false.
+         */
+        bool isContainer()const {return _is_container;}
+
     protected:
         uint16_t _id{0};
+        bool _is_container{false};
         bool _is_changed{true};
         bool _has_border{false};
 
