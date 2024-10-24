@@ -730,21 +730,21 @@ void ReaderScreen::showBooks(uint16_t pos)
 
 std::vector<MenuItem *> ReaderScreen::getBooksItems(uint8_t size, uint16_t from_id)
 {
-    std::vector<String> tracks = _bl_manager.getBooks(_book_dir_name.c_str(), from_id, size);
+    std::vector<String> books = _bl_manager.getBooks(_book_dir_name.c_str(), from_id, size);
 
     WidgetCreator creator{_display};
 
     std::vector<MenuItem *> ret;
-    ret.reserve(tracks.size());
+    ret.reserve(books.size());
 
-    for (size_t i = 0; i < tracks.size(); ++i)
+    for (size_t i = 0; i < books.size(); ++i)
     {
         ++from_id;
 
         MenuItem *item = creator.getMenuItem(from_id);
         ret.push_back(item);
 
-        Label *item_lbl = creator.getItemLabel(tracks[i].c_str(), 2, 1);
+        Label *item_lbl = creator.getItemLabel(books[i].c_str(), 2, 1);
         item->setLbl(item_lbl);
     }
 
