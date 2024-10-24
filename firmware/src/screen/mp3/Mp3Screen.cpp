@@ -229,6 +229,7 @@ std::vector<MenuItem *> Mp3Screen::getTracksItems(uint8_t size, uint16_t current
     WidgetCreator creator{_display};
 
     std::vector<MenuItem *> ret;
+    ret.reserve(tracks.size());
 
     for (size_t i = 0; i < tracks.size(); ++i)
     {

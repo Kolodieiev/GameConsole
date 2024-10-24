@@ -130,6 +130,7 @@ std::vector<MenuItem *> FilesScreen::getMenuFilesItems(const char *path, uint16_
     MenuItem *template_item = creator.getMenuItem();
 
     std::vector<MenuItem *> ret;
+    ret.reserve(files.size());
 
     for (size_t i = 0; i < files.size(); ++i)
     {

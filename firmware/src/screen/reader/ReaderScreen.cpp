@@ -735,6 +735,7 @@ std::vector<MenuItem *> ReaderScreen::getBooksItems(uint8_t size, uint16_t from_
     WidgetCreator creator{_display};
 
     std::vector<MenuItem *> ret;
+    ret.reserve(tracks.size());
 
     for (size_t i = 0; i < tracks.size(); ++i)
     {
