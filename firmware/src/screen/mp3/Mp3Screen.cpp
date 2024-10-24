@@ -83,15 +83,10 @@ void Mp3Screen::loop()
 
 void Mp3Screen::update()
 {
-    if (_input.isPressed(KeyID::KEY_UP))
+    if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_UP, 500);
-        upPressed();
-    }
-    else if (_input.isPressed(KeyID::KEY_DOWN))
-    {
-        _input.lock(KeyID::KEY_DOWN, 500);
-        downPressed();
+        _input.lock(KeyID::KEY_OK, 1000);
+        changeBackLight();
     }
     else if (_input.isPressed(KeyID::KEY_RIGHT))
     {
@@ -103,14 +98,14 @@ void Mp3Screen::update()
         _input.lock(KeyID::KEY_LEFT, 1000);
         leftPressed();
     }
-    else if (_input.isReleased(KeyID::KEY_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 100);
+        _input.lock(KeyID::KEY_UP, 150);
         up();
     }
-    else if (_input.isReleased(KeyID::KEY_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 100);
+        _input.lock(KeyID::KEY_DOWN, 150);
         down();
     }
     else if (_input.isReleased(KeyID::KEY_RIGHT))
@@ -806,6 +801,39 @@ void Mp3Screen::up()
     }
 }
 
+void Mp3Screen::changeBackLight()
+{
+    if (_mode != MODE_AUDIO_PLAY)
+        return;
+
+    if (_is_locked)
+    {
+        setCpuFrequencyMhz(240);
+
+        DisplayUtil display;
+        display.setBrightness(_brightness);
+        _screen_enabled = true;
+
+        _input.enablePin(KeyID::KEY_BACK);
+        _input.enablePin(KeyID::KEY_LEFT);
+        _input.enablePin(KeyID::KEY_RIGHT);
+    }
+    else
+    {
+        DisplayUtil display;
+        display.setBrightness(0);
+        _screen_enabled = false;
+
+        _input.disablePin(KeyID::KEY_BACK);
+        _input.disablePin(KeyID::KEY_LEFT);
+        _input.disablePin(KeyID::KEY_RIGHT);
+
+        setCpuFrequencyMhz(160);
+    }
+
+    _is_locked = !_is_locked;
+}
+
 void Mp3Screen::down()
 {
     if (_mode == MODE_PLST_SEL)
@@ -825,40 +853,6 @@ void Mp3Screen::down()
     else if (_mode == MODE_PLST_MENU)
     {
         _pl_menu->focusDown();
-    }
-}
-
-void Mp3Screen::upPressed()
-{
-    if (_mode == MODE_AUDIO_PLAY && _is_locked)
-    {
-        setCpuFrequencyMhz(240);
-
-        DisplayUtil display;
-        display.setBrightness(_brightness);
-        _is_locked = false;
-        _screen_enabled = true;
-
-        _input.enablePin(KeyID::KEY_BACK);
-        _input.enablePin(KeyID::KEY_LEFT);
-        _input.enablePin(KeyID::KEY_RIGHT);
-    }
-}
-
-void Mp3Screen::downPressed()
-{
-    if (_mode == MODE_AUDIO_PLAY && !_is_locked)
-    {
-        DisplayUtil display;
-        display.setBrightness(0);
-        _is_locked = true;
-        _screen_enabled = false;
-
-        _input.disablePin(KeyID::KEY_BACK);
-        _input.disablePin(KeyID::KEY_LEFT);
-        _input.disablePin(KeyID::KEY_RIGHT);
-
-        setCpuFrequencyMhz(160);
     }
 }
 

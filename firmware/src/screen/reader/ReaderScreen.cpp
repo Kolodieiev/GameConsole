@@ -74,14 +74,14 @@ void ReaderScreen::update()
         _input.lock(KeyID::KEY_BACK, 2500);
         backPressed();
     }
-    else if (_input.isReleased(KeyID::KEY_UP))
+    else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 100);
+        _input.lock(KeyID::KEY_UP, 150);
         up();
     }
-    else if (_input.isReleased(KeyID::KEY_DOWN))
+    else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 100);
+        _input.lock(KeyID::KEY_DOWN, 150);
         down();
     }
     else if (_input.isReleased(KeyID::KEY_RIGHT))

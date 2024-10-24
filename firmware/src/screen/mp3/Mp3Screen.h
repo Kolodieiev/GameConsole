@@ -147,10 +147,9 @@ private:
     void updateTrackPos();
 
     void up();
-    void upPressed();
-
     void down();
-    void downPressed();
+
+    void changeBackLight();
 
     void left();
     void leftPressed();
