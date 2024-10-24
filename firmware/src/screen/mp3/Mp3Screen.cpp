@@ -83,12 +83,7 @@ void Mp3Screen::loop()
 
 void Mp3Screen::update()
 {
-    if (_input.isPressed(KeyID::KEY_OK))
-    {
-        _input.lock(KeyID::KEY_OK, 1000);
-        changeBackLight();
-    }
-    else if (_input.isPressed(KeyID::KEY_RIGHT))
+    if (_input.isPressed(KeyID::KEY_RIGHT))
     {
         _input.lock(KeyID::KEY_RIGHT, 1000);
         rightPressed();
@@ -131,7 +126,7 @@ void Mp3Screen::update()
     else if (_input.isPressed(KeyID::KEY_OK))
     {
         _input.lock(KeyID::KEY_OK, 1000);
-        showPlMenu();
+        okPressed();
     }
     else if (_input.isPressed(KeyID::KEY_BACK))
     {
@@ -528,9 +523,6 @@ void Mp3Screen::showUpdating()
 
 void Mp3Screen::showPlMenu()
 {
-    if (_mode != MODE_TRACK_SEL)
-        return;
-
     _mode = MODE_PLST_MENU;
 
     _dynamic_menu->disable();
@@ -803,9 +795,6 @@ void Mp3Screen::up()
 
 void Mp3Screen::changeBackLight()
 {
-    if (_mode != MODE_AUDIO_PLAY)
-        return;
-
     if (_is_locked)
     {
         setCpuFrequencyMhz(240);
@@ -963,6 +952,14 @@ void Mp3Screen::ok()
             }
         }
     }
+}
+
+void Mp3Screen::okPressed()
+{
+    if (_mode == MODE_AUDIO_PLAY)
+        changeBackLight();
+    else if (_mode == MODE_TRACK_SEL)
+        showPlMenu();
 }
 
 void Mp3Screen::back()

@@ -158,6 +158,7 @@ private:
     void rightPressed();
 
     void ok();
+    void okPressed();
 
     void back();
     void backPressed();
