@@ -230,6 +230,8 @@ namespace meow
 
   bool IGameObject::hasIntersectWithPoint(uint16_t x, uint16_t y)
   {
+    ++x;
+    ++y;
     return (x > _x_global + _body.ofst_w && x < _x_global + _sprite.width - _body.ofst_w) &&
            (y > _y_global + _body.ofst_h && y < _y_global + _sprite.height);
   }
