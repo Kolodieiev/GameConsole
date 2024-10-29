@@ -5,23 +5,27 @@
 // Тому пін CS задано такий, що ніде не використовується на платі.
 #define SD_PIN_CS 46
 
-//ESP32S3. FSPI
+//ESP32S3
+#define SPI_BUS FSPI
 #define SD_PIN_MISO 13 
 #define SD_PIN_MOSI 11 
 #define SD_PIN_SCLK 12 
 
-//ESP32S3. HSPI. Уточнити!
+//ESP32S3. Уточнити!
+// #define SPI_BUS HSPI
 // #define SD_PIN_MISO 40 
 // #define SD_PIN_MOSI 42 
 // #define SD_PIN_SCLK 41
 
-//ESP32. VSPI
+//ESP32
+// #define SPI_BUS VSPI
 // #define SD_PIN_CS 5
 // #define SD_PIN_MISO 19
 // #define SD_PIN_MOSI 23
 // #define SD_PIN_SCLK 18
 
-//ESP32. HSPI
+//ESP32
+// #define SPI_BUS HSPI
 // #define SD_PIN_MISO 12
 // #define SD_PIN_MOSI 13
 // #define SD_PIN_SCLK 14
