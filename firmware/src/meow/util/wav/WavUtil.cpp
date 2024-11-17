@@ -1,71 +1,44 @@
 #include "WavUtil.h"
-#include "../sd/SdUtil.h"
-
 namespace meow
 {
     WavData WavUtil::loadWav(const char *path_to_wav)
     {
         WavData wav_data;
 
-        SdUtil sd;
-        if (!sd.hasConnection())
+        if (!_file_mngr.fileExist(path_to_wav))
             return wav_data;
-
-        File wav_file = SD.open(path_to_wav, "r");
-
-        if (!wav_file)
-        {
-            log_e("Помилка читання файлу: %s", path_to_wav);
-            return wav_data;
-        }
-
-        if (wav_file.isDirectory())
-        {
-            wav_file.close();
-            log_e("Помилка. Файл не може бути каталогом: %s", path_to_wav);
-            return wav_data;
-        }
 
         WavHeader header;
 
-        wav_file.read((uint8_t *)&header, HEADER_SIZE);
+        _file_mngr.readFile((char *)&header, path_to_wav, HEADER_SIZE);
 
         if (!validateHeader(header))
         {
-            wav_file.close();
             log_e("Помилка валідації файлу: %s", path_to_wav);
             return wav_data;
         }
 
         if (!psramFound() || !psramInit())
         {
-            wav_file.close();
             log_e("Помилка ініціалізації PSRAM");
             return wav_data;
         }
 
         uint8_t *data = (uint8_t *)ps_malloc(header.data_size);
-
         if (!data)
         {
             log_e("Помилка виділення пам'яті");
-            wav_file.close();
             return wav_data;
         }
 
-        size_t bytes_readed{0};
-        wav_file.seek(HEADER_SIZE);
-        bytes_readed = wav_file.read(data, header.data_size);
+        size_t bytes_read = _file_mngr.readFile((char *)data, path_to_wav, header.data_size, HEADER_SIZE);
 
-        if (bytes_readed != header.data_size)
+        if (bytes_read != header.data_size)
         {
-            wav_file.close();
             free(data);
             log_e("Помилка читання звуковго файлу");
             return wav_data;
         }
-
-        wav_file.close();
 
         wav_data.size = header.data_size;
         wav_data.data_ptr = data;
