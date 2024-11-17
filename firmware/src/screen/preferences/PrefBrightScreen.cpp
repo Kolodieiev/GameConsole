@@ -1,6 +1,6 @@
 #include "PrefBrightScreen.h"
 
-#include "meow/util/preferences/PrefUtil.h"
+#include "meow/manager/settings/SettingsManager.h"
 #include "meow/util/display/DisplayUtil.h"
 
 #include "../WidgetCreator.h"
@@ -11,8 +11,8 @@
 
 PrefBrightScreen::PrefBrightScreen(GraphicsDriver &display) : IScreen(display)
 {
-    PrefUtil pref;
-    String bright = pref.get(STR_PREF_BRIGHT);
+    SettingsManager settings;
+    String bright = settings.get(STR_PREF_BRIGHT);
 
     if (bright.equals(""))
         _old_bright = 100;
@@ -58,15 +58,16 @@ void PrefBrightScreen::update()
     {
         _input.lock(KeyID::KEY_OK, 500);
 
-        PrefUtil pref;
-        pref.set(STR_PREF_BRIGHT, String(_progress->getProgress()).c_str());
+        SettingsManager settings;
+        settings.set(STR_PREF_BRIGHT, String(_progress->getProgress()).c_str());
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
         _input.lock(KeyID::KEY_BACK, 500);
 
-        DisplayUtil::setBrightness(_old_bright);
+        DisplayUtil displ_util;
+        displ_util.setBrightness(_old_bright);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
     else if (_input.isHolded(KeyID::KEY_UP))
@@ -79,7 +80,8 @@ void PrefBrightScreen::update()
         {
             cur_progress += BRIGHT_STEP;
             _progress->setProgress(cur_progress);
-            DisplayUtil::setBrightness(cur_progress);
+            DisplayUtil displ_util;
+            displ_util.setBrightness(cur_progress);
         }
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
@@ -91,7 +93,8 @@ void PrefBrightScreen::update()
         {
             cur_progress -= BRIGHT_STEP;
             _progress->setProgress(cur_progress);
-            DisplayUtil::setBrightness(cur_progress);
+            DisplayUtil displ_util;
+            displ_util.setBrightness(cur_progress);
         }
     }
 }
