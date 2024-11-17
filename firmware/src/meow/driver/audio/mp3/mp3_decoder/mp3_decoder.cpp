@@ -1650,7 +1650,7 @@ void MP3Decoder_FreeBuffers()
     if(m_SubbandInfo)       {free(m_SubbandInfo);     m_SubbandInfo=NULL;}
     if(m_MP3FrameInfo)      {free(m_MP3FrameInfo);    m_MP3FrameInfo=NULL;}
 
-//    log_i("MP3Decoder: %lu bytes memory was freed", ESP.getFreeHeap() - i);
+//    log_e("MP3Decoder: %lu bytes memory was freed", ESP.getFreeHeap() - i);
 }
 
 /***********************************************************************************************************************

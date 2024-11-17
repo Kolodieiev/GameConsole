@@ -479,12 +479,12 @@ bool Audio::connecttoFS(fs::FS &fs, const char *path, int32_t fileStartPos)
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 size_t Audio::readAudioHeader(uint32_t bytes)
 {
-    size_t bytesReaded = 0;
+    size_t bytesRead = 0;
 
     int res = read_ID3_Header(InBuff.getReadPtr(), bytes);
 
     if (res >= 0)
-        bytesReaded = res;
+        bytesRead = res;
     else
     { // error, skip header
         m_controlCounter = 100;
@@ -495,7 +495,7 @@ size_t Audio::readAudioHeader(uint32_t bytes)
         log_e("Processing stopped due to invalid audio header");
         return 0;
     }
-    return bytesReaded;
+    return bytesRead;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1119,7 +1119,7 @@ void Audio::playAudioData()
 
     if (bytesDecoded < 0)
     { // no syncword found or decode error, try next chunk
-        log_i("err bytesDecoded %i", bytesDecoded);
+        log_e("err bytesDecoded %i", bytesDecoded);
         uint8_t next = 200;
         if (InBuff.bufferFilled() < next)
             next = InBuff.bufferFilled();
@@ -1248,7 +1248,7 @@ int Audio::sendBytes(uint8_t *data, size_t len)
 
     if (bytesDecoded == 0 && m_decodeError == 0)
     { // unlikely framesize
-        log_i("framesize is 0, start decoding again");
+        log_e("framesize is 0, start decoding again");
         m_f_playing = false; // seek for new syncword
         // we're here because there was a wrong sync word so skip one byte and seek for the next
         return 1;
@@ -1842,7 +1842,7 @@ void Audio::computeLimit()
     m_limit_left = l * v;
     m_limit_right = r * v;
 
-    // log_i("m_limit_left %f,  m_limit_right %f ",m_limit_left, m_limit_right);
+    // log_e("m_limit_left %f,  m_limit_right %f ",m_limit_left, m_limit_right);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 void Audio::Gain(int16_t *sample)
@@ -1992,11 +1992,11 @@ void Audio::IIR_calculateCoefficients(int8_t G0, int8_t G1, int8_t G2)
         m_filter[HIFGSHELF].b2 = (V - sqrtf(2 * V) * K + K * K) * norm;
     }
 
-    //    log_i("LS a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[0].a0, m_filter[0].a1, m_filter[0].a2,
+    //    log_e("LS a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[0].a0, m_filter[0].a1, m_filter[0].a2,
     //                                                  m_filter[0].b1, m_filter[0].b2);
-    //    log_i("EQ a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[1].a0, m_filter[1].a1, m_filter[1].a2,
+    //    log_e("EQ a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[1].a0, m_filter[1].a1, m_filter[1].a2,
     //                                                  m_filter[1].b1, m_filter[1].b2);
-    //    log_i("HS a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[2].a0, m_filter[2].a1, m_filter[2].a2,
+    //    log_e("HS a0=%f, a1=%f, a2=%f, b1=%f, b2=%f", m_filter[2].a0, m_filter[2].a1, m_filter[2].a2,
     //                                                  m_filter[2].b1, m_filter[2].b2);
 }
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2193,7 +2193,7 @@ int32_t Audio::mp3_correctResumeFilePos(uint32_t resumeFilePos)
             if (pos >= maxPos)
                 goto exit;
         }
-        // log_i("pos1 %i, byte1a %X, byte2a %X, byte3a %X", pos1, byte1a, byte2a, byte3a);
+        // log_e("pos1 %i, byte1a %X, byte2a %X, byte3a %X", pos1, byte1a, byte2a, byte3a);
 
         if (pos + 3 >= maxPos)
             goto exit;
@@ -2226,7 +2226,7 @@ int32_t Audio::mp3_correctResumeFilePos(uint32_t resumeFilePos)
         }
     }
     (void)pos2;
-    // log_i("found pos1=%i, pos2=%i", pos1, pos2);
+    // log_e("found pos1=%i, pos2=%i", pos1, pos2);
     if (found)
         return (pos1);
 

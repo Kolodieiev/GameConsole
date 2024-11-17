@@ -800,7 +800,7 @@ int8_t AsyncClient::_close(){
     //ets_printf("X: 0x%08x\n", (uint32_t)this);
     int8_t err = ERR_OK;
     if(_pcb) {
-        //log_i("");
+        //log_e("");
         tcp_arg(_pcb, NULL);
         tcp_sent(_pcb, NULL);
         tcp_recv(_pcb, NULL);
@@ -912,7 +912,7 @@ int8_t AsyncClient::_fin(tcp_pcb* pcb, int8_t err) {
 
 int8_t AsyncClient::_sent(tcp_pcb* pcb, uint16_t len) {
     _rx_last_packet = millis();
-    //log_i("%u", len);
+    //log_e("%u", len);
     _pcb_busy = false;
     if(_sent_cb) {
         _sent_cb(_sent_cb_arg, this, len, (millis() - _pcb_sent_at));
