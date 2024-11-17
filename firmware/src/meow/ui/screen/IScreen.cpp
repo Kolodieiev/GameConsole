@@ -22,11 +22,13 @@ namespace meow
             update();
 
             if (_screen_enabled)
+            {
                 _layout->onDraw();
 
 #ifdef DOUBLE_BUFFERRING
-            _display.pushBuffer();
+                _display.pushBuffer();
 #endif
+            }
         }
     }
 
