@@ -3,9 +3,9 @@
 
 #include "./qrencode.h"
 
-uint16_t *QR_Gen::generateQR(const String &str, uint8_t pixel_prescaller, uint16_t front_color, uint16_t back_color, uint8_t casesensitive)
+uint16_t *QR_Gen::generateQR(const char *str, uint8_t pixel_prescaller, uint16_t front_color, uint16_t back_color, uint8_t casesensitive)
 {
-    QRcode *qr = QRcode_encodeString(str.c_str(), 0, QR_ECLEVEL_H, QR_MODE_8, casesensitive);
+    QRcode *qr = QRcode_encodeString(str, 0, QR_ECLEVEL_H, QR_MODE_8, casesensitive);
 
     if (!qr)
     {
@@ -18,14 +18,14 @@ uint16_t *QR_Gen::generateQR(const String &str, uint8_t pixel_prescaller, uint16
     if (pixel_prescaller == 0)
         pixel_prescaller = 1;
 
-    uint16_t _image_width = qr_width * pixel_prescaller;
+    _image_width = qr_width * pixel_prescaller;
 
     if (_image_width % 4)
         _image_width = (_image_width / 4) * 4;
 
     uint32_t num_pixels = (qr_width * pixel_prescaller) * (qr_width * pixel_prescaller);
     //
-    
+
     uint16_t *result_image;
 
     if (psramFound() && psramInit())
