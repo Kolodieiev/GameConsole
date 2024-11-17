@@ -1,16 +1,15 @@
 #pragma once
 #include <Arduino.h>
-#include "../sd/SdUtil.h"
+#include "../files/FileManager.h"
 
 namespace meow
 {
-    class PrefUtil
+    class SettingsManager : private FileManager
     {
     public:
+        using FileManager::hasConnection;
         bool set(const char *pref_name, const char *value);
         String get(const char *pref_name);
-
-    private:
-        File *loadPrefFile(const char *file_name, const char *mode);
+        String getPrefFilePath(const char *pref_name);
     };
 }
