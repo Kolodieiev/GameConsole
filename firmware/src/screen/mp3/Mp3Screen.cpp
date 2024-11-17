@@ -1,4 +1,4 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include "Mp3Screen.h"
 
@@ -17,8 +17,9 @@
 #include "meow/ui/widget/layout/EmptyLayout.h"
 #include "meow/ui/widget/navbar/NavBar.h"
 
-#include "meow/util/sd/SdUtil.h"
+#include "meow/manager/sd/SD_Manager.h"
 #include "meow/util/display/DisplayUtil.h"
+#include "meow/setup/i2s_setup.h"
 
 const char STR_PLAYLIST_PREF[] = "Playlist";
 const char STR_TRACK_NAME_PREF[] = "TrackName";
@@ -26,213 +27,18 @@ const char STR_VOLUME_PREF[] = "Volume";
 const char STR_TRACK_POS_PREF[] = "TrackPos";
 const char STR_TRACK_TIME_PREF[] = "TrackTime";
 
-Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
-{
-    SdUtil sd;
-    sd.begin();
-
-    _watch_inited = _watch.begin();
-
-    if (!_watch_inited)
-        log_e("Помилка ініціалізації RTC");
-
-    String bright = _preferences.get(STR_PREF_BRIGHT);
-    if (bright.isEmpty())
-    {
-        _brightness = 100;
-    }
-    else
-    {
-        _brightness = atoi(bright.c_str());
-
-        if (_brightness == 0)
-            _brightness = 100;
-    }
-
-    _volume = atoi(_preferences.get(STR_VOLUME_PREF).c_str());
-    _track_pos = atoi(_preferences.get(STR_TRACK_POS_PREF).c_str());
-    _track_time = atoi(_preferences.get(STR_TRACK_TIME_PREF).c_str());
-    _playlist_name = _preferences.get(STR_PLAYLIST_PREF);
-    _track_name = _preferences.get(STR_TRACK_NAME_PREF);
-
-    if (_volume == 0)
-        _volume = 5;
-
-    _audio.setVolumeSteps(31);
-    _audio.setVolume(_volume);
-
-    String mono_mode = _preferences.get(STR_PREF_MONO_AUDIO);
-    if (mono_mode == "1")
-        _audio.forceMono(true);
-
-    _audio.setPinout(PIN_I2S_BCLK, PIN_I2S_LRC, PIN_I2S_DOUT);
-
-    showPlaylists();
-}
-
-Mp3Screen::~Mp3Screen()
-{
-    SdUtil sd;
-    sd.end();
-}
-
 void Mp3Screen::loop()
 {
     _audio.loop();
 }
 
-void Mp3Screen::update()
+void Mp3Screen::savePref()
 {
-    if (_input.isPressed(KeyID::KEY_RIGHT))
-    {
-        _input.lock(KeyID::KEY_RIGHT, 1000);
-        rightPressed();
-    }
-    else if (_input.isPressed(KeyID::KEY_LEFT))
-    {
-        _input.lock(KeyID::KEY_LEFT, 1000);
-        leftPressed();
-    }
-    else if (_input.isHolded(KeyID::KEY_UP))
-    {
-        _input.lock(KeyID::KEY_UP, 150);
-        up();
-    }
-    else if (_input.isHolded(KeyID::KEY_DOWN))
-    {
-        _input.lock(KeyID::KEY_DOWN, 150);
-        down();
-    }
-    else if (_input.isReleased(KeyID::KEY_RIGHT))
-    {
-        _input.lock(KeyID::KEY_RIGHT, 100);
-        right();
-    }
-    else if (_input.isReleased(KeyID::KEY_LEFT))
-    {
-        _input.lock(KeyID::KEY_LEFT, 100);
-        left();
-    }
-    else if (_input.isReleased(KeyID::KEY_OK))
-    {
-        _input.lock(KeyID::KEY_OK, 100);
-        ok();
-    }
-    else if (_input.isReleased(KeyID::KEY_BACK))
-    {
-        _input.lock(KeyID::KEY_BACK, 100);
-        back();
-    }
-    else if (_input.isPressed(KeyID::KEY_OK))
-    {
-        _input.lock(KeyID::KEY_OK, 1000);
-        okPressed();
-    }
-    else if (_input.isPressed(KeyID::KEY_BACK))
-    {
-        _input.lock(KeyID::KEY_BACK, 2500);
-        backPressed();
-    }
-
-    if (_mode == MODE_AUDIO_PLAY)
-    {
-        if (_audio.isRunning())
-        {
-            if (_is_locked)
-                return;
-
-            if (_is_new_track && updateTrackDuration())
-            {
-                _track_name_lbl->setText(_track_name);
-                _is_new_track = false;
-            }
-
-            if (millis() - _upd_inf_time > UPD_TRACK_INF_INTERVAL)
-            {
-                updateTrackPos();
-                _upd_inf_time = millis();
-            }
-        }
-        // Якщо трек скінчився самостійно
-        else if (_is_playing)
-        {
-            // Намагаємося перемкнути
-            if (playNext())
-            {
-                _is_new_track = true;
-            }
-            // Якщо не вдалося змінити трек з 3х спроб, зупинити плеєр
-            else if (_attempt_to_play_next_counter == 3)
-            {
-                setStopState();
-            }
-            else
-                ++_attempt_to_play_next_counter;
-        }
-
-        if (!_is_locked && millis() - _upd_time_time > UPD_TIME_INTERVAL)
-        {
-            updateTime();
-            _upd_time_time = millis();
-        }
-    }
-    else if (_mode == MODE_PLST_UPD)
-    {
-        if (_pl_manager.isTaskDone())
-        {
-            if (_is_tracklist_upd)
-            {
-                if (_track_pos > 0)
-                {
-                    uint16_t list_size = _pl_manager.getPlaylistSize(_playlist_name.c_str());
-
-                    if (_track_pos >= list_size)
-                        _track_pos = list_size;
-                }
-
-                showTracks(_track_pos);
-            }
-            else
-                showPlaylists();
-        }
-        else if ((millis() - _upd_inf_time) > UPD_TRACK_INF_INTERVAL)
-        {
-            String upd_txt = STR_UPDATING;
-            if (_upd_counter > 3)
-                _upd_counter = 0;
-            else
-                ++_upd_counter;
-
-            for (uint8_t i{0}; i < _upd_counter; ++i)
-                upd_txt += ".";
-
-            _upd_lbl->setText(upd_txt);
-            _upd_inf_time = millis();
-        }
-    }
-}
-
-std::vector<MenuItem *> Mp3Screen::getTracksItems(uint8_t size, uint16_t current_ID)
-{
-    std::vector<String> tracks = _pl_manager.getTracks(_playlist_name.c_str(), current_ID, size);
-
-    WidgetCreator creator{_display};
-
-    std::vector<MenuItem *> ret;
-    ret.reserve(tracks.size());
-
-    for (size_t i = 0; i < tracks.size(); ++i)
-    {
-        ++current_ID;
-
-        MenuItem *item = creator.getMenuItem(current_ID);
-        ret.push_back(item);
-
-        Label *item_lbl = creator.getItemLabel(tracks[i].c_str(), 2, 1);
-        item->setLbl(item_lbl);
-    }
-
-    return ret;
+    _settings.set(STR_VOLUME_PREF, String(_volume).c_str());
+    _settings.set(STR_TRACK_POS_PREF, String(_track_pos).c_str());
+    _settings.set(STR_TRACK_TIME_PREF, String(_track_time).c_str());
+    _settings.set(STR_PLAYLIST_PREF, _playlist_name.c_str());
+    _settings.set(STR_TRACK_NAME_PREF, _track_name.c_str());
 }
 
 std::vector<MenuItem *> Mp3Screen::loadPrev(uint8_t size, uint16_t current_ID)
@@ -268,58 +74,27 @@ std::vector<MenuItem *> Mp3Screen::loadNext(uint8_t size, uint16_t current_ID)
     return getTracksItems(size, current_ID);
 }
 
-void Mp3Screen::savePref()
+std::vector<MenuItem *> Mp3Screen::getTracksItems(uint8_t size, uint16_t current_ID)
 {
-    _preferences.set(STR_VOLUME_PREF, String(_volume).c_str());
-    _preferences.set(STR_TRACK_POS_PREF, String(_track_pos).c_str());
-    _preferences.set(STR_TRACK_TIME_PREF, String(_track_time).c_str());
-    _preferences.set(STR_PLAYLIST_PREF, _playlist_name.c_str());
-    _preferences.set(STR_TRACK_NAME_PREF, _track_name.c_str());
-}
-
-void Mp3Screen::showPlaylists()
-{
-    _mode = MODE_PLST_SEL;
+    std::vector<String> tracks = _pl_manager.getTracks(_playlist_name.c_str(), current_ID, size);
 
     WidgetCreator creator{_display};
 
-    EmptyLayout *layout = creator.getEmptyLayout();
-    setLayout(layout);
+    std::vector<MenuItem *> ret;
+    ret.reserve(tracks.size());
 
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK);
-    layout->addWidget(navbar);
-
-    _fixed_menu = new FixedMenu(ID_F_MENU, _display);
-    layout->addWidget(_fixed_menu);
-    _fixed_menu->setBackColor(COLOR_MENU_ITEM);
-    _fixed_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
-    _fixed_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
-    _fixed_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 1) / PLAYLIST_ITEMS_NUM);
-
-    _scrollbar = new ScrollBar(ID_SCROLL, _display);
-    layout->addWidget(_scrollbar);
-    _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
-
-    if (!_track_name.isEmpty())
+    for (size_t i = 0; i < tracks.size(); ++i)
     {
-        MenuItem *cont_item = creator.getMenuItem(1);
-        _fixed_menu->addItem(cont_item);
+        ++current_ID;
 
-        Label *cont_lbl = creator.getItemLabel(STR_CONTINUE, 4, 2);
-        cont_item->setLbl(cont_lbl);
+        MenuItem *item = creator.getMenuItem(current_ID);
+        ret.push_back(item);
+
+        Label *item_lbl = creator.getItemLabel(tracks[i].c_str(), 2, 1);
+        item->setLbl(item_lbl);
     }
 
-    fillPlaylists(_fixed_menu, 3);
-
-    MenuItem *upd_item = creator.getMenuItem(2);
-    _fixed_menu->addItem(upd_item);
-
-    Label *upd_lbl = creator.getItemLabel(STR_UPD_LISTS, 4, 2);
-    upd_item->setLbl(upd_lbl);
-
-    _scrollbar->setMax(_fixed_menu->getSize());
+    return ret;
 }
 
 void Mp3Screen::fillPlaylists(Menu *menu_ptr, uint16_t from_id)
@@ -340,54 +115,62 @@ void Mp3Screen::fillPlaylists(Menu *menu_ptr, uint16_t from_id)
     }
 }
 
-void Mp3Screen::showTracks(uint16_t pos)
+//-------------------------------------------------------------------------------------------
+
+Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
 {
-    _mode = MODE_TRACK_SEL;
-
     WidgetCreator creator{_display};
-
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
 
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
+    if (!_pl_manager.hasConnection())
+    {
+        showSDErrTmpl();
+        return;
+    }
 
-    _dynamic_menu = creator.getDynamicMenu(ID_D_MENU, this);
-    layout->addWidget(_dynamic_menu);
-    _dynamic_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 2) / TRACKS_ITEMS_NUM);
-    _dynamic_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
-    _dynamic_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 1);
+    _watch_inited = _watch.begin();
 
-    _scrollbar = new ScrollBar(ID_SCROLL, _display);
-    layout->addWidget(_scrollbar);
-    _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+    if (!_watch_inited)
+        log_e("Помилка ініціалізації RTC");
 
-    uint16_t pl_sz = _pl_manager.getPlaylistSize(_playlist_name.c_str());
+    _brightness = atoi(_settings.get(STR_PREF_BRIGHT).c_str());
+    _volume = atoi(_settings.get(STR_VOLUME_PREF).c_str());
+    _track_pos = atoi(_settings.get(STR_TRACK_POS_PREF).c_str());
+    _track_time = atoi(_settings.get(STR_TRACK_TIME_PREF).c_str());
+    _playlist_name = _settings.get(STR_PLAYLIST_PREF);
+    _track_name = _settings.get(STR_TRACK_NAME_PREF);
 
-    if (pl_sz > 0 && pos == pl_sz)
-        --pos;
+    if (_brightness == 0)
+        _brightness = 100;
+    if (_volume == 0)
+        _volume = 5;
 
-    _scrollbar->setMax(pl_sz);
-    _scrollbar->setValue(pos);
+    _audio.setVolumeSteps(31);
+    _audio.setVolume(_volume);
 
-    std::vector<MenuItem *> items = getTracksItems(_dynamic_menu->getItemsNumOnScreen(), pos);
+    String mono_mode = _settings.get(STR_PREF_MONO_AUDIO);
+    if (mono_mode.equals("1"))
+        _audio.forceMono(true);
 
-    for (size_t i = 0; i < items.size(); ++i)
-        _dynamic_menu->addItem(items[i]);
+    _audio.setPinout(PIN_I2S_BCLK, PIN_I2S_LRC, PIN_I2S_DOUT);
+
+    showPlaylists();
 }
+
+//-------------------------------------------------------------------------------------------
 
 void Mp3Screen::showPlaying()
 {
     const uint8_t DISPLAY_PADDING{10};
 
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+    layout->deleteWidgets();
+
     WidgetCreator creator{_display};
 
-    EmptyLayout *layout = creator.getEmptyLayout();
-    setLayout(layout);
-
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_PAUSE, "", STR_EXIT);
-    layout->addWidget(navbar);
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_PAUSE, "", STR_EXIT));
 
     _track_name_lbl = new Label(ID_TRACK_NAME, _display);
     layout->addWidget(_track_name_lbl);
@@ -412,20 +195,20 @@ void Mp3Screen::showPlaying()
     _progress->setProgress(1);
     _progress->setPos(DISPLAY_PADDING, _display.height() - NAVBAR_HEIGHT - _progress->getHeight() - 5);
 
-    _track_pos_lbl = _track_name_lbl->clone(ID_TRACK_POS);
-    layout->addWidget(_track_pos_lbl);
-    _track_pos_lbl->setText(STR_POS_TIME);
-    _track_pos_lbl->setAlign(IWidget::ALIGN_END);
-    _track_pos_lbl->initWidthToFit();
-    _track_pos_lbl->setBackColor(COLOR_MAIN_BACK);
-    _track_pos_lbl->setPos(DISPLAY_PADDING, _progress->getYPos() - 25);
-    _track_pos_lbl->setTicker(false);
+    _cur_track_time_lbl = _track_name_lbl->clone(ID_CUR_TRACK_TIME);
+    layout->addWidget(_cur_track_time_lbl);
+    _cur_track_time_lbl->setText(STR_ZERO_TRACK_TIME);
+    _cur_track_time_lbl->setAlign(IWidget::ALIGN_END);
+    _cur_track_time_lbl->initWidthToFit();
+    _cur_track_time_lbl->setBackColor(COLOR_MAIN_BACK);
+    _cur_track_time_lbl->setPos(DISPLAY_PADDING, _progress->getYPos() - 25);
+    _cur_track_time_lbl->setTicker(false);
 
-    _track_time_lbl = _track_pos_lbl->clone(ID_TRACK_TIME);
-    layout->addWidget(_track_time_lbl);
-    _track_time_lbl->setText(STR_TRACK_TIME);
-    _track_time_lbl->initWidthToFit();
-    _track_time_lbl->setPos(_display.width() - _track_time_lbl->getWidth() - DISPLAY_PADDING, _track_pos_lbl->getYPos());
+    _gen_track_time_lbl = _cur_track_time_lbl->clone(ID_GEN_TRACK_TIME);
+    layout->addWidget(_gen_track_time_lbl);
+    _gen_track_time_lbl->setText(STR_ZERO_TRACK_TIME);
+    _gen_track_time_lbl->initWidthToFit();
+    _gen_track_time_lbl->setPos(_display.width() - _cur_track_time_lbl->getWidth() - DISPLAY_PADDING, _cur_track_time_lbl->getYPos());
 
     _play_btn = new Image(ID_PLAY_BTN, _display);
     layout->addWidget(_play_btn);
@@ -495,36 +278,118 @@ void Mp3Screen::showPlaying()
     _temp_date_time.year = 0;
 
     updateTime();
+
+    _mode = MODE_AUDIO_PLAY;
+    layout->enable();
 }
 
 void Mp3Screen::showUpdating()
 {
-    _mode = MODE_PLST_UPD;
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    layout->deleteWidgets();
 
     WidgetCreator creator{_display};
 
-    EmptyLayout *layout = creator.getEmptyLayout();
-    setLayout(layout);
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL);
-    layout->addWidget(navbar);
+    _msg_lbl = creator.getStatusMsgLable(ID_MSG_LBL, STR_UPDATING, 2);
+    layout->addWidget(_msg_lbl);
 
-    _upd_lbl = new Label(ID_UPD_LBL, _display);
-    layout->addWidget(_upd_lbl);
-    _upd_lbl->setAlign(IWidget::ALIGN_CENTER);
-    _upd_lbl->setGravity(IWidget::GRAVITY_CENTER);
-    _upd_lbl->setBackColor(COLOR_MAIN_BACK);
-    _upd_lbl->setTextColor(TFT_WHITE);
-    _upd_lbl->setText(STR_UPDATING);
-    _upd_lbl->setHeight(16);
-    _upd_lbl->setWidth(_display.width());
-    _upd_lbl->setPos(0, (float)(_display.height() - NAVBAR_HEIGHT - _upd_lbl->getHeight()) / 2);
+    _mode = MODE_UPDATING;
+    layout->enable();
+}
+
+void Mp3Screen::showTracks(uint16_t pos)
+{
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    layout->deleteWidgets();
+
+    WidgetCreator creator{_display};
+
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
+
+    _dynamic_menu = creator.getDynamicMenu(ID_D_MENU, this);
+    layout->addWidget(_dynamic_menu);
+    _dynamic_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 2) / TRACKS_ITEMS_NUM);
+    _dynamic_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
+    _dynamic_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 1);
+
+    _scrollbar = new ScrollBar(ID_SCROLL, _display);
+    layout->addWidget(_scrollbar);
+    _scrollbar->setWidth(SCROLLBAR_WIDTH);
+    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
+    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+
+    uint16_t pl_sz = _pl_manager.getPlaylistSize(_playlist_name.c_str());
+
+    if (pl_sz > 0 && pos == pl_sz)
+        --pos;
+
+    _scrollbar->setMax(pl_sz);
+    _scrollbar->setValue(pos);
+
+    std::vector<MenuItem *> items = getTracksItems(_dynamic_menu->getItemsNumOnScreen(), pos);
+
+    for (size_t i = 0; i < items.size(); ++i)
+        _dynamic_menu->addItem(items[i]);
+
+    _mode = MODE_TRACK_SEL;
+    layout->enable();
+}
+
+void Mp3Screen::showPlaylists()
+{
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    layout->deleteWidgets();
+
+    WidgetCreator creator{_display};
+
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
+
+    _fixed_menu = new FixedMenu(ID_F_MENU, _display);
+    layout->addWidget(_fixed_menu);
+    _fixed_menu->setBackColor(COLOR_MENU_ITEM);
+    _fixed_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
+    _fixed_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
+    _fixed_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 1) / PLAYLIST_ITEMS_NUM);
+
+    _scrollbar = new ScrollBar(ID_SCROLL, _display);
+    layout->addWidget(_scrollbar);
+    _scrollbar->setWidth(SCROLLBAR_WIDTH);
+    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
+    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+
+    if (!_track_name.isEmpty())
+    {
+        MenuItem *cont_item = creator.getMenuItem(1);
+        _fixed_menu->addItem(cont_item);
+
+        Label *cont_lbl = creator.getItemLabel(STR_CONTINUE, 4, 2);
+        cont_item->setLbl(cont_lbl);
+    }
+
+    fillPlaylists(_fixed_menu, 3);
+
+    MenuItem *upd_item = creator.getMenuItem(2);
+    _fixed_menu->addItem(upd_item);
+
+    Label *upd_lbl = creator.getItemLabel(STR_UPD_LISTS, 4, 2);
+    upd_item->setLbl(upd_lbl);
+
+    _scrollbar->setMax(_fixed_menu->getSize());
+
+    _mode = MODE_PLST_SEL;
+    layout->enable();
 }
 
 void Mp3Screen::showPlMenu()
 {
-    _mode = MODE_PLST_MENU;
-
     _dynamic_menu->disable();
 
     WidgetCreator creator{_display};
@@ -552,16 +417,41 @@ void Mp3Screen::showPlMenu()
         Label *upd_lbl = creator.getItemLabel(STR_DELETE, 4, 2);
         del_item->setLbl(upd_lbl);
     }
+
+    _mode = MODE_PLST_MENU;
 }
 
 void Mp3Screen::hidePlMenu()
 {
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    layout->deleteWidgetByID(ID_PL_MENU);
+
     _mode = MODE_TRACK_SEL;
-
-    getLayout()->deleteWidgetByID(ID_PL_MENU);
-
     _dynamic_menu->enable();
+    layout->enable();
 }
+
+void Mp3Screen::showSDErrTmpl()
+{
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    layout->deleteWidgets();
+
+    WidgetCreator creator{_display};
+
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
+
+    _msg_lbl = creator.getStatusMsgLable(ID_MSG_LBL, STR_SD_ERR);
+    layout->addWidget(_msg_lbl);
+
+    _mode = MODE_SD_UNCONN;
+    layout->enable();
+}
+
+//-------------------------------------------------------------------------------------------
 
 void Mp3Screen::updateTime()
 {
@@ -604,38 +494,162 @@ void Mp3Screen::updateTime()
     _time_lbl->updateWidthToFit();
 }
 
-bool Mp3Screen::playTrack(bool contn)
+//-------------------------------------------------------------------------------------------
+
+void Mp3Screen::update()
 {
-    if ((_playlist_name.isEmpty() || _track_name.isEmpty()))
-        return false;
-
-    if (!contn)
-        _track_time = 0;
-
-    String track_path = _pl_manager.getTrackPath(_playlist_name.c_str(), _track_name.c_str());
-    if (track_path.isEmpty())
-        return false;
-
-    if (!_audio.connecttoFS(SD, track_path.c_str(), _track_time))
+    if (_mode == MODE_SD_UNCONN)
     {
-        setStopState();
-        return false;
+        if (_input.isReleased(KeyID::KEY_BACK))
+        {
+            _input.lock(KeyID::KEY_BACK, 500);
+            openScreenByID(ID_SCREEN_MENU);
+        }
+
+        return;
     }
 
-    showPlaying();
-    _mode = MODE_AUDIO_PLAY;
-    _is_new_track = true;
-    _is_playing = true;
-    return true;
+    if (_input.isPressed(KeyID::KEY_RIGHT))
+    {
+        _input.lock(KeyID::KEY_RIGHT, 1000);
+        rightPressed();
+    }
+    else if (_input.isPressed(KeyID::KEY_LEFT))
+    {
+        _input.lock(KeyID::KEY_LEFT, 1000);
+        leftPressed();
+    }
+    else if (_input.isHolded(KeyID::KEY_UP))
+    {
+        _input.lock(KeyID::KEY_UP, 150);
+        up();
+    }
+    else if (_input.isHolded(KeyID::KEY_DOWN))
+    {
+        _input.lock(KeyID::KEY_DOWN, 150);
+        down();
+    }
+    else if (_input.isReleased(KeyID::KEY_RIGHT))
+    {
+        _input.lock(KeyID::KEY_RIGHT, 100);
+        right();
+    }
+    else if (_input.isReleased(KeyID::KEY_LEFT))
+    {
+        _input.lock(KeyID::KEY_LEFT, 100);
+        left();
+    }
+    else if (_input.isReleased(KeyID::KEY_OK))
+    {
+        _input.lock(KeyID::KEY_OK, 100);
+        ok();
+    }
+    else if (_input.isReleased(KeyID::KEY_BACK))
+    {
+        _input.lock(KeyID::KEY_BACK, 100);
+        back();
+    }
+    else if (_input.isPressed(KeyID::KEY_OK))
+    {
+        _input.lock(KeyID::KEY_OK, 1000);
+        okPressed();
+    }
+    else if (_input.isPressed(KeyID::KEY_BACK))
+    {
+        _input.lock(KeyID::KEY_BACK, 2500);
+        backPressed();
+    }
+
+    if (_mode == MODE_AUDIO_PLAY)
+    {
+        if (_audio.isRunning())
+        {
+            if (_is_locked)
+                return;
+
+            if (_is_new_track && updateTrackDuration())
+            {
+                _track_name_lbl->setText(_track_name);
+                _is_new_track = false;
+            }
+
+            if (millis() - _upd_msg_time > UPD_TRACK_INF_INTERVAL)
+            {
+                updateTrackTime();
+                _upd_msg_time = millis();
+            }
+        }
+        // Якщо трек скінчився самостійно
+        else if (_is_playing)
+        {
+            // Намагаємося перемкнути
+            if (playNext())
+            {
+                _is_new_track = true;
+            }
+            // Якщо не вдалося змінити трек з 3х спроб, зупинити плеєр
+            else if (_attempt_to_play_next_counter == 3)
+            {
+                setStopState();
+            }
+            else
+                ++_attempt_to_play_next_counter;
+        }
+
+        if (!_is_locked && millis() - _upd_time_time > UPD_TIME_INTERVAL)
+        {
+            updateTime();
+            _upd_time_time = millis();
+        }
+    }
+    else if (_mode == MODE_UPDATING)
+    {
+        if (_pl_manager.isWorking() && (millis() - _upd_msg_time) > UPD_TRACK_INF_INTERVAL)
+        {
+            String upd_txt = STR_UPDATING;
+            if (_upd_counter > 2)
+                _upd_counter = 0;
+            else
+                ++_upd_counter;
+
+            for (uint8_t i{0}; i < _upd_counter; ++i)
+                upd_txt += ".";
+
+            _msg_lbl->setText(upd_txt);
+            _upd_msg_time = millis();
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Mp3Screen::leftPressed()
+{
+    _audio.setTimeOffset(-20);
+}
+
+void Mp3Screen::rightPressed()
+{
+    _audio.setTimeOffset(20);
+}
+
+void Mp3Screen::left()
+{
+    if (_mode == MODE_AUDIO_PLAY)
+        playPrev();
+}
+
+void Mp3Screen::right()
+{
+    if (_mode == MODE_AUDIO_PLAY)
+        playNext();
 }
 
 bool Mp3Screen::playNext()
 {
     _track_name = _pl_manager.getNextTrackName(_playlist_name.c_str(), _track_pos);
-    if (_track_name.isEmpty())
-        return false;
 
-    if (!playTrack(false))
+    if (_track_name.isEmpty() || !playTrack(false))
         return false;
 
     ++_track_pos;
@@ -645,13 +659,35 @@ bool Mp3Screen::playNext()
 bool Mp3Screen::playPrev()
 {
     _track_name = _pl_manager.getPrevTrackName(_playlist_name.c_str(), _track_pos);
-    if (_track_name.isEmpty())
-        return false;
 
-    if (!playTrack(false))
+    if (_track_name.isEmpty() || !playTrack(false))
         return false;
 
     --_track_pos;
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool Mp3Screen::playTrack(bool contn)
+{
+    if ((_playlist_name.isEmpty() || _track_name.isEmpty()))
+        return false;
+
+    if (!contn)
+        _track_time = 0;
+
+    String track_path = _pl_manager.getTrackPath(_playlist_name.c_str(), _track_name.c_str());
+
+    if (!_audio.connecttoFS(SD, track_path.c_str(), _track_time))
+    {
+        setStopState();
+        return false;
+    }
+
+    showPlaying();
+    _is_new_track = true;
+    _is_playing = true;
     return true;
 }
 
@@ -695,12 +731,12 @@ void Mp3Screen::setStopState()
 
     _play_btn->setSrc(PLAY_IMG);
     _track_name_lbl->setText(STR_STOPPED);
-    _track_pos_lbl->setText(STR_POS_TIME);
-    _track_time_lbl->setText(STR_TRACK_TIME);
+    _cur_track_time_lbl->setText(STR_ZERO_TRACK_TIME);
+    _gen_track_time_lbl->setText(STR_ZERO_TRACK_TIME);
     _progress->reset();
 
     if (_is_locked)
-        setCpuFrequencyMhz(10);
+        setCpuFrequencyMhz(80);
 }
 
 bool Mp3Screen::updateTrackDuration()
@@ -732,7 +768,7 @@ bool Mp3Screen::updateTrackDuration()
 
     track_time += sec;
 
-    _track_time_lbl->setText(track_time);
+    _gen_track_time_lbl->setText(track_time);
 
     _progress->setProgress(0);
     _progress->setMax(duration);
@@ -740,33 +776,33 @@ bool Mp3Screen::updateTrackDuration()
     return true;
 }
 
-void Mp3Screen::updateTrackPos()
+void Mp3Screen::updateTrackTime()
 {
     _track_time = _audio.getAudioCurrentTime();
 
     uint32_t minutes = floor((float)_track_time / 60);
     uint32_t sec = _track_time - minutes * 60;
 
-    String track_pos;
+    String track_time_str;
 
     if (minutes < 100)
-        track_pos += "0";
+        track_time_str += "0";
 
     if (minutes < 10)
-        track_pos += "0";
+        track_time_str += "0";
 
-    track_pos += String(minutes);
+    track_time_str += String(minutes);
 
-    track_pos += ":";
+    track_time_str += ":";
 
     sec = _track_time - minutes * 60;
 
     if (sec < 10)
-        track_pos += "0";
+        track_time_str += "0";
 
-    track_pos += String(sec);
+    track_time_str += String(sec);
 
-    _track_pos_lbl->setText(track_pos);
+    _cur_track_time_lbl->setText(track_time_str);
 
     _progress->setProgress(_track_time);
 }
@@ -845,28 +881,6 @@ void Mp3Screen::down()
     }
 }
 
-void Mp3Screen::left()
-{
-    if (_mode == MODE_AUDIO_PLAY)
-        playPrev();
-}
-
-void Mp3Screen::right()
-{
-    if (_mode == MODE_AUDIO_PLAY)
-        playNext();
-}
-
-void Mp3Screen::leftPressed()
-{
-    _audio.setTimeOffset(-20);
-}
-
-void Mp3Screen::rightPressed()
-{
-    _audio.setTimeOffset(20);
-}
-
 void Mp3Screen::ok()
 {
     if (_mode == MODE_PLST_SEL)
@@ -878,9 +892,9 @@ void Mp3Screen::ok()
         }
         else if (item_ID == 2)
         {
-            if (_pl_manager.updatePlaylists())
+            if (_pl_manager.updatePlaylists([this]
+                                            { showPlaylists(); }))
             {
-                _is_tracklist_upd = false;
                 showUpdating();
             }
         }
@@ -924,9 +938,11 @@ void Mp3Screen::ok()
 
         if (id == ID_ITEM_UPD)
         {
-            if (_pl_manager.updateTracklists(_playlist_name.c_str()))
+            if (_pl_manager.updateTracklists(_playlist_name.c_str(), [this]
+                                             {
+                                                updateTrackPos();
+                                                showTracks(_track_pos); }))
             {
-                _is_tracklist_upd = true;
                 showUpdating();
             }
         }
@@ -936,21 +952,32 @@ void Mp3Screen::ok()
             if (track_name.isEmpty())
                 return;
 
-            _track_pos = _dynamic_menu->getCurrentItemID();
+            _track_pos = _dynamic_menu->getCurrentItemID() - 1;
 
-            --_track_pos;
-
-            if (_pl_manager.removeTrack(_playlist_name.c_str(), track_name.c_str()))
+            if (_pl_manager.removeTrack(_playlist_name.c_str(), track_name.c_str(), [this]
+                                        {
+                                            if (!_pl_manager.updateTracklists(_playlist_name.c_str(), [this]
+                                                                             {
+                                                                                updateTrackPos();
+                                                                                showTracks(_track_pos); }))
+                                            {
+                                                showTracks(_track_pos);
+                                            } }))
             {
-                if (_pl_manager.updateTracklists(_playlist_name.c_str()))
-                {
-                    _is_tracklist_upd = true;
-                    showUpdating();
-                }
-                else
-                    showTracks(_track_pos);
+                showUpdating();
             }
         }
+    }
+}
+
+void Mp3Screen::updateTrackPos()
+{
+    if (_track_pos > 0)
+    {
+        uint16_t list_size = _pl_manager.getPlaylistSize(_playlist_name.c_str());
+
+        if (_track_pos >= list_size)
+            _track_pos = list_size;
     }
 }
 

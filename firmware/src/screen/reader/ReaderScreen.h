@@ -1,17 +1,16 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include <Arduino.h>
 
 #include "meow/lib/DS3231/DS3231.h"
 
 #include "meow/ui/screen/IScreen.h"
-#include "meow/util/preferences/PrefUtil.h"
+#include "meow/manager/settings/SettingsManager.h"
 #include "meow/ui/widget/scrollbar/ScrollBar.h"
 #include "meow/ui/widget/navbar/NavBar.h"
 #include "meow/ui/widget/menu/FixedMenu.h"
 #include "meow/ui/widget/menu/DynamicMenu.h"
-#include "meow/util/preferences/PrefUtil.h"
 
 #include "./BooklistManager.h"
 
@@ -22,7 +21,7 @@ class ReaderScreen : public IScreen, public IItemsLoader
 
 public:
     ReaderScreen(GraphicsDriver &display);
-    virtual ~ReaderScreen();
+    virtual ~ReaderScreen() {}
 
 protected:
     virtual void loop() override;
@@ -43,7 +42,8 @@ private:
         ID_TIME_LBL,
         ID_UPD_LBL,
         ID_PAGE_LBL,
-        ID_PROGRESS_LBL
+        ID_PROGRESS_LBL,
+        ID_MSG_LBL
     };
 
     enum Mode : uint8_t
@@ -52,7 +52,8 @@ private:
         MODE_UPDATING,
         MODE_BOOK_SEL,
         MODE_BOOK_READ,
-        MODE_BOOK_MENU
+        MODE_BOOK_MENU,
+        MODE_SD_UNCONN
     };
 
     enum BlMenuItemsID : uint8_t
@@ -62,11 +63,10 @@ private:
     };
 
     Mode _mode{MODE_BOOK_DIR_SEL};
-    bool _is_booklist_updating{false};
-    unsigned long _upd_inf_time{0};
+    unsigned long _upd_msg_time{0};
     //
     BooklistManager _bl_manager;
-    PrefUtil _preferences;
+    SettingsManager _settings;
 
     const uint8_t BOOK_DIR_ITEMS_NUM{6};
     const uint8_t BOOKS_ITEMS_NUM{10};
@@ -101,7 +101,7 @@ private:
     unsigned long _upd_time_time{0};
     DS3231DateTime _temp_date_time;
     //
-    Label *_upd_lbl;
+    Label *_msg_lbl;
     uint8_t _upd_counter{0};
     //
     void savePref();
@@ -131,4 +131,8 @@ private:
 
     void updateTime();
     void updateReadProgress();
+
+    void showSDErrTmpl();
+
+    void updateBookPos();
 };

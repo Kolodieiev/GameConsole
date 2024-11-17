@@ -1,7 +1,7 @@
 #pragma once
+#pragma GCC optimize("O3")
 #include <Arduino.h>
-
-#include "meow/util/files/FileManager.h"
+#include "meow/manager/files/FileManager.h"
 
 #include "meow/ui/widget/scrollbar/ScrollBar.h"
 #include "meow/ui/widget/menu/FixedMenu.h"
@@ -13,13 +13,15 @@
 
 #include "meow/ui/screen/IScreen.h"
 
+#include "meow/lib/server/file_server/FileServer.h"
+
 using namespace meow;
 
 class FilesScreen : public IScreen, public IItemsLoader
 {
 public:
     FilesScreen(GraphicsDriver &display);
-    virtual ~FilesScreen();
+    virtual ~FilesScreen() {}
 
     virtual std::vector<MenuItem *> loadPrev(uint8_t size, uint16_t current_ID) override;
     virtual std::vector<MenuItem *> loadNext(uint8_t size, uint16_t current_ID) override;
@@ -39,9 +41,10 @@ private:
         ID_CONTEXT_MENU,
         ID_KEYBOARD,
         ID_DIALOG_TXT,
-        ID_UPD_LBL,
-        ID_ERR_LBL,
+        ID_MSG_LBL,
         ID_PROGRESS,
+        ID_QR_IMG,
+        ID_QR_LBL,
     };
 
     enum Item_ID : uint8_t
@@ -52,7 +55,9 @@ private:
         ID_ITEM_COPY,
         ID_ITEM_REMOVE,
         ID_ITEM_NEW_DIR,
-        ID_ITEM_RENAME
+        ID_ITEM_RENAME,
+        ID_ITEM_IMPORT,
+        ID_ITEM_EXPORT,
     };
 
     enum BTN_ID : uint8_t
@@ -110,17 +115,27 @@ private:
         MODE_CONTEXT_MENU,
         MODE_NEW_DIR_DIALOG,
         MODE_RENAME_DIALOG,
-        MODE_BAD_CONNECT
+        MODE_SD_UNCONN,
+        MODE_CANCELING,
+        MODE_FILE_SERVER
     };
     //
-    FileManager _fm;
+    FileManager _file_manager;
     //
-    Label *_task_lbl;
+    Label *_msg_lbl;
     const uint16_t UPD_TRACK_INF_INTERVAL{1000};
-    unsigned long _upd_inf_time{0};
+    unsigned long _upd_msg_time{0};
     uint8_t _upd_counter{0};
     //
     Mode _mode{MODE_NAVIGATION};
+    bool _has_task = false;
+    //
+    FileServer _server;
+    Image *_qr_img;
+    uint16_t *_qr_img_buff = nullptr;
+    uint16_t _qr_width = 0;
+    uint8_t _display_brightness = 125;
+    bool _is_back_eabled = true;
     //
     FixedMenu *_context_menu;
     ScrollBar *_scrollbar;
@@ -141,11 +156,13 @@ private:
     std::vector<String> _breadcrumbs;
     String makePathFromBreadcrumbs();
     //
-    void showFiles();
-    void showDirUpdating();
-    void showCopying();
-    void showRemoving();
-    void showSDErr();
+    void showFilesTmpl();
+    void showUpdatingTmpl();
+    void showCopyingTmpl();
+    void showRemovingTmpl();
+    void showCancelingTmpl();
+    void showSDErrTmpl();
+    void showServerTmpl();
     //
     void showContextMenu();
     void hideContextMenu();
@@ -157,6 +174,7 @@ private:
     void prepareFileMoving();
     void prepareFileCopying();
     void pasteFile();
+    void removeFile();
     //
     void ok();
     void back();
@@ -164,10 +182,14 @@ private:
     void openNextLevel();
     void openPrevlevel();
     //
-    void loadDir(bool need_update);
+    void showDir(bool need_update);
     void updateDir(const char *dir_path);
 
     void saveDialogResult();
 
     std::vector<MenuItem *> getMenuFilesItems(const char *path, uint16_t file_pos, uint8_t size);
+    //
+    void startFileServer(FileServer::ServerMode mode);
+    void stopFileServer();
+    void switchBackLight();
 };
