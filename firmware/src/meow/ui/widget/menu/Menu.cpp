@@ -3,7 +3,6 @@
 
 namespace meow
 {
-
     Menu::Menu(uint16_t widget_ID, GraphicsDriver &display) : IWidgetContainer(widget_ID, display) {}
 
     IWidget *Menu::findItemByID(uint16_t itemID) const
@@ -58,9 +57,12 @@ namespace meow
     {
         if (!_is_changed)
         {
-            if (_is_enabled && _visibility != INVISIBLE)
-                for (uint16_t i{_first_item_index}; i < _first_item_index + getCyclesCount(); ++i)
+            if (_visibility != INVISIBLE)
+            {
+                uint16_t cycles_count = getCyclesCount();
+                for (uint16_t i{_first_item_index}; _is_enabled && i < _first_item_index + cycles_count; ++i)
                     _widgets[i]->onDraw();
+            }
         }
         else
         {
@@ -73,7 +75,10 @@ namespace meow
             }
 
             if (_widgets.size() == 0)
+            {
+                clear();
                 return;
+            }
 
             uint16_t cyclesCount = getCyclesCount();
 

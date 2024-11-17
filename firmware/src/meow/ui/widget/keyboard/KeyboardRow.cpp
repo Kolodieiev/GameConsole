@@ -124,7 +124,7 @@ namespace meow
         if (!_is_changed)
         {
             if (_visibility != INVISIBLE)
-                for (uint16_t i{0}; i < _widgets.size(); ++i)
+                for (uint16_t i{0}; _is_enabled && i < _widgets.size(); ++i)
                     _widgets[i]->onDraw();
         }
         else
