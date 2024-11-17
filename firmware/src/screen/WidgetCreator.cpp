@@ -135,3 +135,17 @@ DynamicMenu *WidgetCreator::getDynamicMenu(uint16_t id, IItemsLoader *loader)
         esp_restart();
     }
 }
+
+Label *WidgetCreator::getStatusMsgLable(uint16_t id, const char *text, uint8_t text_size)
+{
+    Label *lbl = new Label(id, _display);
+    lbl->setText(text);
+    lbl->setTextSize(text_size);
+    lbl->setAlign(IWidget::ALIGN_CENTER);
+    lbl->setGravity(IWidget::GRAVITY_CENTER);
+    lbl->setBackColor(COLOR_MAIN_BACK);
+    lbl->setWidth(_display.width());
+    lbl->setHeight(_display.height() - NAVBAR_HEIGHT);
+
+    return lbl;
+}

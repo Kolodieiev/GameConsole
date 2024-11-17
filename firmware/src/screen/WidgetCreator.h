@@ -23,10 +23,11 @@ public:
 
     EmptyLayout *getEmptyLayout();
     Label *getDisplayDescription(uint16_t id, const char *text);
-    Label *getItemLabel( const char *text, uint8_t font_id = 2, uint8_t text_size = 1);
+    Label *getItemLabel(const char *text, uint8_t font_id = 2, uint8_t text_size = 1);
     MenuItem *getMenuItem(uint16_t id = 1);
     NavBar *getNavbar(uint16_t id, const char *left, const char *middle, const char *right);
     DynamicMenu *getDynamicMenu(uint16_t id, IItemsLoader *loader);
+    Label *getStatusMsgLable(uint16_t id, const char *text, uint8_t text_size = 1);
 
 private:
     GraphicsDriver &_display;
