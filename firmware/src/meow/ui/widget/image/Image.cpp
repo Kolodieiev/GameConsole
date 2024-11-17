@@ -77,7 +77,7 @@ namespace meow
 
         if (_img_buf.getPointer() == nullptr)
         {
-            log_e("Помилка ініціалізації буферу");
+            log_e("Помилка ініціалізації буферу %u на %u", _width, _height);
             esp_restart();
         }
     }

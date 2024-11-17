@@ -1,8 +1,9 @@
 #include "SplashScreen.h"
-
-#include "meow/util/preferences/PrefUtil.h"
 #include "meow/util/display/DisplayUtil.h"
-#include "meow/util/sd/SdUtil.h"
+
+#include "meow/manager/settings/SettingsManager.h"
+#include "meow/manager/spi/SPI_Manager.h"
+#include "meow/manager/sd/SD_Manager.h"
 
 #include "../WidgetCreator.h"
 #include "meow/ui/widget/image/Image.h"
@@ -11,6 +12,8 @@
 #include "../resources/string.h"
 #include "./res/paw_src.h"
 #include "./res/logo_txt_src.h"
+
+#include "meow/setup/sd_setup.h"
 
 #define RES_X_OFFSET 5
 #define LBL_X_OFFSET 70
@@ -26,25 +29,27 @@ SplashScreen::SplashScreen(GraphicsDriver &display) : IScreen(display)
     //
     uint16_t y_pos{5};
 
-    // check sd
-    SdUtil sd;
-
-    if (sd.begin())
+    SD_Manager sd = SD_Manager::getInstance();
+    SPI_Manager spi_mngr;
+    spi_mngr.initBus(SD_SPI_BUS, SD_PIN_SCLK, SD_PIN_MISO, SD_PIN_MOSI);
+    
+    sd.setup(SD_PIN_CS, spi_mngr.getSpi4Bus(SD_SPI_BUS), SD_FREQUENCY, SD_MOUNTPOINT, SD_MAX_FILES);
+    if (sd.mount())
     {
         addLabel(RES_X_OFFSET, y_pos, STR_SUCCSESS, TFT_GREEN);
 
-        PrefUtil pref;
-        String bright = pref.get(STR_PREF_BRIGHT);
+        SettingsManager settings;
+        String bright = settings.get(STR_PREF_BRIGHT);
+
+        DisplayUtil displ_util;
 
         if (bright.equals(""))
-            DisplayUtil::setBrightness(240);
+            displ_util.setBrightness(240);
         else
-            DisplayUtil::setBrightness(atoi(bright.c_str()));
+            displ_util.setBrightness(atoi(bright.c_str()));
     }
     else
         addLabel(RES_X_OFFSET, y_pos, STR_FAIL, TFT_RED);
-
-    sd.end();
 
     addLabel(LBL_X_OFFSET, y_pos, STR_SD_LBL, TFT_WHITE);
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <Arduino.h>
 #include "meow/ui/screen/IScreen.h"
-#include "meow/util/files/FileManager.h"
+#include "meow/manager/files/FileManager.h"
 
 using namespace meow;
 
@@ -9,7 +9,7 @@ class FirmwareScreen : public IScreen
 {
 public:
     FirmwareScreen(GraphicsDriver &display);
-    virtual ~FirmwareScreen();
+    virtual ~FirmwareScreen(){}
 
 protected:
     virtual void loop() override;
@@ -24,7 +24,7 @@ private:
         ID_VERSION,
     };
 
-    FileManager _fm;
+    FileManager _file_mngr;
 
     void showUpdating();
 };

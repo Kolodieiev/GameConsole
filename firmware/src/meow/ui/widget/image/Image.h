@@ -10,6 +10,9 @@ namespace meow
     class Image : public IWidget
     {
 
+    // TODO Переписати
+
+
     public:
         static const uint16_t TRANSPARENT_COLOR{0xF81F}; // Колір rgb(255, 0, 255)
 

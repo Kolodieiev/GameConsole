@@ -16,6 +16,7 @@ const char STR_ERASE[] = "Стерти";
 const char STR_UPDATING[] = "Оновлення";
 const char STR_COPYING[] = "Копіювання";
 const char STR_REMOVING[] = "Видалення";
+const char STR_CANCELING[] = "Відміна";
 const char STR_PAUSE[] = "Пауза";
 const char STR_EXIT[] = "Вихід";
 const char STR_PASTE[] = "Вставити";
@@ -27,7 +28,8 @@ const char STR_MOVE[] = "Перемістити";
 const char STR_SUCCSESS[] = "Успішно";
 const char STR_FAIL[] = "Невдача";
 const char STR_CONTINUE[] = "Продовжити";
-
+const char STR_IMPORT[] = "Отримати";
+const char STR_EXPORT[] = "Поділитися";
 //
 const char STR_NEW_DIR[] = "Новий кат.";
 
@@ -71,17 +73,21 @@ const char EMPTY_TIME[] = "00:00";
 // PREF
 const char STR_PREF_BRIGHT[] = "brightness";
 const char STR_PREF_MONO_AUDIO[] = "forcemono";
+const char STR_PREF_FS_AP_SSID[] = "fs_ap_ssid";
+const char STR_PREF_FS_AP_PWD[] = "fs_ap_pwd";
 //
 const char STR_BRIGHT[] = "Яскравість";
 const char STR_AUDIO_MONO[] = "Монозвук";
 const char STR_WATCH[] = "Годинник";
-
+const char STR_FILE_SERVER[] = "Файловий сервер";
+//
+const char STR_AP_NAME[] = "SSID:";
+const char STR_AP_PWD[] = "PWD:";
 //
 const char STR_UPD_LISTS[] = "Оновити списки";
 const char STR_STOPPED[] = "Зупинено";
 
-const char STR_POS_TIME[] = "000:00";
-const char STR_TRACK_TIME[] = "000:00";
+const char STR_ZERO_TRACK_TIME[] = "000:00";
 
 //
 const char STR_SD_ERR[] = "SD не примонтовано";

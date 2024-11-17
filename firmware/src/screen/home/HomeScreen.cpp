@@ -9,7 +9,6 @@
 #include "meow/ui/widget/navbar/NavBar.h"
 //
 #include "meow/util/bmp/BmpUtil.h"
-#include "meow/util/sd/SdUtil.h"
 
 HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
 {
@@ -36,9 +35,6 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
         wallpp_img->setSrc(_wallpaper_ptr);
         wallpp_img->setPos(0, 0);
     }
-
-    SdUtil sd;
-    sd.end();
 
     _bat_cap_lbl = new Label(ID_BAT_LVL, _display);
     layout->addWidget(_bat_cap_lbl);
@@ -112,9 +108,7 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
 HomeScreen::~HomeScreen()
 {
     delete _bat_ico;
-
-    if (_wallpaper_ptr)
-        free((void *)_wallpaper_ptr);
+    free((void *)_wallpaper_ptr);
 }
 
 void HomeScreen::loop()

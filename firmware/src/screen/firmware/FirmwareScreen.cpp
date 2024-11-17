@@ -1,7 +1,6 @@
 #include "FirmwareScreen.h"
-
-#include "meow/util/sd/SdUtil.h"
 #include "Update.h"
+
 #include "../WidgetCreator.h"
 
 #include "../resources/string.h"
@@ -17,7 +16,7 @@ FirmwareScreen::FirmwareScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
 
-    if (_fm.fileExist(STR_FIRMWARE_FN))
+    if (_file_mngr.fileExist(STR_FIRMWARE_FN))
         layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_UPDATE, "", STR_BACK));
     else
         layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_BACK));
@@ -49,11 +48,6 @@ FirmwareScreen::FirmwareScreen(GraphicsDriver &display) : IScreen(display)
     version->setFontID(2);
 }
 
-FirmwareScreen::~FirmwareScreen()
-{
-    _fm.end();
-}
-
 void FirmwareScreen::loop()
 {
 }
@@ -64,11 +58,13 @@ void FirmwareScreen::update()
     {
         _input.lock(KeyID::KEY_OK, 500);
 
-        if (_fm.fileExist(STR_FIRMWARE_FN))
+        if (_file_mngr.fileExist(STR_FIRMWARE_FN))
         {
             File firmware = SD.open(STR_FIRMWARE_FN, FILE_READ);
 
             showUpdating();
+
+            delay(200);
 
             Update.begin(firmware.size(), U_FLASH);
             Update.writeStream(firmware);

@@ -21,6 +21,7 @@ namespace meow
         ID_SCREEN_PREF_BRIGHT,
         ID_SCREEN_PREF_WATCH,
         ID_SCREEN_PREF_WALL,
+        ID_SCREEN_PREF_FILE_SERVER,
         // Ігрові екрани
         ID_SCREEN_SNAKE,
         ID_SCREEN_SOKOBAN,

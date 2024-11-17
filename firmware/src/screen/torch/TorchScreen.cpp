@@ -1,6 +1,6 @@
 #include "TorchScreen.h"
 
-#include "meow/util/preferences/PrefUtil.h"
+#include "meow/manager/settings/SettingsManager.h"
 #include "meow/util/display/DisplayUtil.h"
 
 #include "../WidgetCreator.h"
@@ -11,8 +11,8 @@
 
 TorchScreen::TorchScreen(GraphicsDriver &display) : IScreen{display}
 {
-    PrefUtil pref;
-    String bright = pref.get(STR_PREF_BRIGHT);
+    SettingsManager settings;
+    String bright = settings.get(STR_PREF_BRIGHT);
 
     if (bright.equals(""))
         _display_brightness = 100;
@@ -20,7 +20,8 @@ TorchScreen::TorchScreen(GraphicsDriver &display) : IScreen{display}
         _display_brightness = atoi(bright.c_str());
 
     _torch_brightness = _display_brightness;
-    DisplayUtil::setBrightness(_torch_brightness);
+    DisplayUtil displ_util;
+    displ_util.setBrightness(_torch_brightness);
 
     EmptyLayout *layout = new EmptyLayout(1, display);
     layout->setBackColor(TFT_RED);
@@ -41,16 +42,19 @@ void TorchScreen::update()
         _input.lock(KeyID::KEY_OK, 500);
         _is_light_on = !_is_light_on;
 
+        DisplayUtil displ_util;
+
         if (!_is_light_on)
-            DisplayUtil::setBrightness(0);
+            displ_util.setBrightness(0);
         else
-            DisplayUtil::setBrightness(_torch_brightness);
+            displ_util.setBrightness(_torch_brightness);
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
         _input.lock(KeyID::KEY_BACK, 500);
 
-        DisplayUtil::setBrightness(_display_brightness);
+        DisplayUtil displ_util;
+        displ_util.setBrightness(_display_brightness);
         openScreenByID(ID_SCREEN_HOME);
     }
     else if (_input.isReleased(KeyID::KEY_LEFT))
@@ -70,7 +74,8 @@ void TorchScreen::update()
         if (_torch_brightness < 240)
         {
             _torch_brightness += 10;
-            DisplayUtil::setBrightness(_torch_brightness);
+            DisplayUtil displ_util;
+            displ_util.setBrightness(_torch_brightness);
         }
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
@@ -80,7 +85,8 @@ void TorchScreen::update()
         if (_torch_brightness > 20)
         {
             _torch_brightness -= 10;
-            DisplayUtil::setBrightness(_torch_brightness);
+            DisplayUtil displ_util;
+            displ_util.setBrightness(_torch_brightness);
         }
     }
 }

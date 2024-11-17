@@ -1,14 +1,10 @@
 #include "BmpUtil.h"
-#include "../sd/SdUtil.h"
+#include <SD.h>
 
 namespace meow
 {
     BmpData BmpUtil::loadBmp(const char *path_to_bmp)
     {
-        SdUtil sd;
-        if (!sd.hasConnection())
-            return srcNotFound();
-
         File bmp_file = SD.open(path_to_bmp, "r");
         if (!bmp_file)
         {
@@ -56,9 +52,9 @@ namespace meow
 
         bmp_file.seek(bmp_header.data_offset);
 
-        size_t bytes_readed = bmp_file.read(data, data_size);
+        size_t bytes_read = bmp_file.read(data, data_size);
 
-        if (bytes_readed != data_size)
+        if (bytes_read != data_size)
         {
             log_e("Помилка читання файлу: %s", path_to_bmp);
             free(data);
@@ -126,10 +122,6 @@ namespace meow
 
     bool BmpUtil::saveBmp(BmpHeader &header, const uint16_t *buff, const char *path_to_bmp)
     {
-        SdUtil sd;
-        if (!sd.hasConnection())
-            return false;
-
         File bmp_file = SD.open(path_to_bmp, "w", true);
         if (!bmp_file)
         {
