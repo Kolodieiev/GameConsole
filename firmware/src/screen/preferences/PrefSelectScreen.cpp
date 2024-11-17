@@ -1,7 +1,5 @@
 #include "PrefSelectScreen.h"
 
-#include "meow/util/preferences/PrefUtil.h"
-
 #include "../resources/string.h"
 #include "../resources/color.h"
 #include "../resources/const.h"
@@ -13,6 +11,12 @@
 
 PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
 {
+    if (!_settings.hasConnection())
+    {
+        showSDErrTmpl();
+        return;
+    }
+
     WidgetCreator creator{_display};
 
     EmptyLayout *layout = creator.getEmptyLayout();
@@ -50,7 +54,7 @@ PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
     toggle_mono->setHeight(20);
     toggle_mono->setCornerRadius(7);
 
-    PrefUtil pref;
+    SettingsManager pref;
     String mono_mode = pref.get(STR_PREF_MONO_AUDIO);
     if (mono_mode == "" || mono_mode == "0")
         toggle_mono->off();
@@ -61,6 +65,11 @@ PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
     _menu->addItem(watch_item);
     Label *watch_lbl = creator.getItemLabel(STR_WATCH, 4, 2);
     watch_item->setLbl(watch_lbl);
+    //
+    MenuItem *file_server_item = creator.getMenuItem(ITEM_ID_FILE_SERVER);
+    _menu->addItem(file_server_item);
+    Label *file_server_lbl = creator.getItemLabel(STR_FILE_SERVER, 4, 2);
+    file_server_item->setLbl(file_server_lbl);
 
     _scrollbar = new ScrollBar(ID_SCROLLBAR, _display);
     layout->addWidget(_scrollbar);
@@ -70,12 +79,41 @@ PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
     _scrollbar->setMax(_menu->getSize());
 }
 
+void PrefSelectScreen::showSDErrTmpl()
+{
+    _mode = MODE_SD_UNCONN;
+    WidgetCreator creator{_display};
+    EmptyLayout *layout = creator.getEmptyLayout();
+    setLayout(layout);
+    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
+
+    Label *err_lbl = new Label(ID_ERR_LBL, _display);
+    layout->addWidget(err_lbl);
+    err_lbl->setText(STR_SD_ERR);
+    err_lbl->setAlign(IWidget::ALIGN_CENTER);
+    err_lbl->setGravity(IWidget::GRAVITY_CENTER);
+    err_lbl->setBackColor(COLOR_MAIN_BACK);
+    err_lbl->setWidth(_display.width());
+    err_lbl->setHeight(_display.height() - NAVBAR_HEIGHT);
+}
+
 void PrefSelectScreen::loop()
 {
 }
 
 void PrefSelectScreen::update()
 {
+    if (_mode == MODE_SD_UNCONN)
+    {
+        if (_input.isReleased(KeyID::KEY_BACK))
+        {
+            _input.lock(KeyID::KEY_BACK, 500);
+            openScreenByID(ID_SCREEN_MENU);
+        }
+
+        return;
+    }
+
     if (_input.isReleased(KeyID::KEY_OK))
     {
         _input.lock(KeyID::KEY_OK, 500);
@@ -108,17 +146,16 @@ void PrefSelectScreen::ok()
     {
         ToggleItem *toggle = (ToggleItem *)_menu->getCurrentItem();
 
-        PrefUtil pref;
         bool force_mono = toggle->isOn();
         if (force_mono)
         {
-            toggle->off();
-            pref.set(STR_PREF_MONO_AUDIO, "0");
+            if (_settings.set(STR_PREF_MONO_AUDIO, "0"))
+                toggle->off();
         }
         else
         {
-            toggle->on();
-            pref.set(STR_PREF_MONO_AUDIO, "1");
+            if (_settings.set(STR_PREF_MONO_AUDIO, "1"))
+                toggle->on();
         }
     }
     else if (id == ITEM_ID_WATCH)
@@ -128,5 +165,9 @@ void PrefSelectScreen::ok()
     else if (id == ITEM_ID_BRIGHT)
     {
         openScreenByID(ID_SCREEN_PREF_BRIGHT);
+    }
+    else if (id == ITEM_ID_FILE_SERVER)
+    {
+        openScreenByID(ID_SCREEN_PREF_FILE_SERVER);
     }
 }
