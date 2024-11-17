@@ -3,7 +3,7 @@
 #include "FileServer.h"
 #include <ESPmDNS.h>
 #include "./tmpl_html.cpp"
-#include "../../../util/sd/SdUtil.h"
+#include "../../../manager/sd/SD_Manager.h"
 
 namespace meow
 {
@@ -14,7 +14,7 @@ namespace meow
         stop();
     }
 
-    bool FileServer::begin(String server_dir, ServerMode mode)
+    bool FileServer::begin(const char *server_dir, ServerMode mode)
     {
         if (_is_working)
             return false;
@@ -24,33 +24,14 @@ namespace meow
         if (!_server_dir.equals("/") && _server_dir.endsWith("/"))
             _server_dir.remove(1, -1);
 
-        SdUtil sd;
+        if (_server_dir.isEmpty())
+            _server_dir = "/";
 
-        if (!sd.begin())
-        {
-            log_e("Помилка ініціалізації SD");
+        if (!_file_mngr.hasConnection())
             return false;
-        }
-        else
-        {
-            File f_dir = SD.open(_server_dir.c_str());
-            if (!f_dir)
-            {
-                log_e("Директорія %s не існує", _server_dir.c_str());
-                return false;
-            }
-            else
-            {
-                bool is_dir = f_dir.isDirectory();
-                f_dir.close();
 
-                if (!is_dir)
-                {
-                    log_e("Файл %s не є директорією", _server_dir.c_str());
-                    return false;
-                }
-            }
-        }
+        if (!_file_mngr.dirExist(_server_dir.c_str()))
+            return false;
 
         WiFi.softAP(_ssid, _pwd, 1, 0, 1);
         delay(10);
@@ -78,11 +59,19 @@ namespace meow
         if (result == pdPASS)
         {
             log_i("File server is working now");
+
+            if (_mode == SERVER_MODE_RECEIVE)
+                log_i("mode == SERVER_MODE_RECEIVE");
+            else
+                log_i("mode == SERVER_MODE_SEND");
+
             return true;
         }
         else
         {
             log_e("fileServerTask was not running");
+            WiFi.disconnect(true);
+            WiFi.mode(WIFI_OFF);
             return false;
         }
     }
@@ -94,49 +83,71 @@ namespace meow
 
         _must_work = false;
 
+        _server->close();
+
         WiFi.disconnect(true);
         WiFi.mode(WIFI_OFF);
+
+        delete _server;
     }
 
-    void FileServer::setDomainName(String domain_name)
+    void FileServer::setDomainName(const char *domain_name)
     {
-        if (domain_name.indexOf(" ") > -1 || domain_name.indexOf("/") > -1) // Очікується адекватне використання
-            return;
+        char ch = domain_name[0];
+        for (uint32_t i = 1; ch != '\0'; ++i)
+        {
+            if (ch == ' ' || ch == '/') // Очікується адекватне використання
+            {
+                log_e("Некоректний домен: [ %s ]", domain_name);
+                return;
+            }
+
+            ch = domain_name[i];
+        }
 
         _domain_name = domain_name;
     }
 
+    String FileServer::getAddress() const
+    {
+        if (_is_working)
+            return _server_addr;
+        else
+            return "";
+    }
+
     void FileServer::fileServerTask(void *params)
     {
+        _server = new WebServer(80);
+
         if (_mode == SERVER_MODE_RECEIVE)
         {
-            _server.on("/", HTTP_GET, [this]()
-                       { this->handleReceive(); });
-            _server.on("/upload", HTTP_POST, []() {}, [this]()
-                       { this->handleFile(); });
+            _server->on("/", HTTP_GET, [this]()
+                        { this->handleReceive(); });
+            _server->on("/upload", HTTP_POST, []() {}, [this]()
+                        { this->handleFile(); });
         }
         else
         {
-            _server.on("/", HTTP_GET, [this]()
-                       { this->handleSend(); });
+            _server->on("/", HTTP_GET, [this]()
+                        { this->handleSend(); });
         }
 
-        _server.onNotFound([this]()
-                           { this->handle404(); });
+        _server->onNotFound([this]()
+                            { this->handle404(); });
 
         _is_working = true;
         _must_work = true;
 
-        _server.begin();
+        _server->begin();
 
         while (_must_work)
         {
-            _server.handleClient();
+            _server->handleClient();
             vTaskDelay(1);
         }
 
         _is_working = false;
-        vTaskDelete(NULL);
     }
 
     void FileServer::handleReceive()
@@ -144,7 +155,8 @@ namespace meow
         String html = HEAD_HTML;
         html += RECEIVE_TITLE_STR;
         html += RECEIVE_FILE_HTML;
-        _server.send(200, "text/html", html);
+        _server->sendHeader("Cache-Control", "no-cache");
+        _server->send(200, "text/html", html);
     }
 
     void FileServer::handleSend()
@@ -155,26 +167,26 @@ namespace meow
         if (!root)
         {
             log_e("Помилка відкриття директорії %s", _server_dir.c_str());
-            _server.send(500, "text/html", "");
+            _server->send(500, "text/html", "");
             return;
         }
-        else if (_server.args() > 0)
+        else if (_server->args() > 0)
         {
             String path = _server_dir;
             path += "/";
-            path += _server.arg(0);
+            path += _server->arg(0);
 
-            File file = SD.open(path);
-
-            if (!file)
+            if (!_file_mngr.fileExist(path.c_str(), true))
                 handle404();
             else
             {
-                _server.sendHeader("Content-Type", "application/force-download");
-                _server.sendHeader("Content-Disposition", "attachment; filename=\"" + _server.arg(0) + "\"");
-                _server.sendHeader("Content-Transfer-Encoding", "binary");
-                _server.sendHeader("Cache-Control", "no-cache");
-                _server.streamFile(file, "application/octet-stream");
+                File file = SD.open(path);
+
+                _server->sendHeader("Content-Type", "application/force-download");
+                _server->sendHeader("Content-Disposition", "attachment; filename=\"" + _server->arg(0) + "\"");
+                _server->sendHeader("Content-Transfer-Encoding", "binary");
+                _server->sendHeader("Cache-Control", "no-cache");
+                _server->streamFile(file, "application/octet-stream");
                 file.close();
             }
         }
@@ -200,7 +212,8 @@ namespace meow
                 vTaskDelay(1);
             }
             html += FOOT_HTML;
-            _server.send(200, "text/html", html);
+            _server->sendHeader("Cache-Control", "no-cache");
+            _server->send(200, "text/html", html);
         }
     }
 
@@ -208,8 +221,8 @@ namespace meow
     {
         static File input_file;
 
-        HTTPUpload &uploadfile = _server.upload();
-        _server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+        HTTPUpload &uploadfile = _server->upload();
+        _server->setContentLength(CONTENT_LENGTH_UNKNOWN);
 
         if (uploadfile.status == UPLOAD_FILE_START)
         {
@@ -225,11 +238,11 @@ namespace meow
 
             if (input_file)
             {
-                if (input_file.isDirectory())
-                {
-                    input_file.close();
+                bool is_dir = input_file.isDirectory();
+                input_file.close();
+
+                if (is_dir)
                     file_open_fail = true;
-                }
                 else
                     SD.remove(file_name.c_str());
             }
@@ -247,7 +260,7 @@ namespace meow
             if (file_open_fail)
             {
                 log_e("Не можу відкрити файл %s на запис", file_name.c_str());
-                _server.send(500, "text/html", "");
+                _server->send(500, "text/html", "");
             }
         }
         else if (uploadfile.status == UPLOAD_FILE_WRITE)
@@ -274,7 +287,7 @@ namespace meow
             else
             {
                 log_e("Необроблений файл");
-                _server.send(500, "text/html", "");
+                _server->send(500, "text/html", "");
             }
         }
     }
@@ -288,12 +301,14 @@ namespace meow
         html += _server_addr;
         html += NOT_FOUND_BODY_END;
         html += FOOT_HTML;
-        _server.send(404, "text/html", html);
+        _server->send(404, "text/html", html);
     }
 
     void FileServer::startWebServer(void *params)
     {
         FileServer *instance = static_cast<FileServer *>(params);
         instance->fileServerTask(params);
+        log_i("FileServer task finished");
+        vTaskDelete(NULL);
     }
 }
