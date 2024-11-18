@@ -5,7 +5,10 @@
 namespace meow
 {
 
-    IWidgetContainer::IWidgetContainer(uint16_t widget_ID, GraphicsDriver &display) : IWidget(widget_ID, display) {}
+    IWidgetContainer::IWidgetContainer(uint16_t widget_ID, GraphicsDriver &display) : IWidget(widget_ID, display)
+    {
+        _is_container = true;
+    }
 
     IWidgetContainer::~IWidgetContainer()
     {
