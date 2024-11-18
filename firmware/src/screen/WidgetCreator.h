@@ -13,6 +13,7 @@
 #include "meow/ui/widget/menu/item/MenuItem.h"
 #include "meow/ui/widget/navbar/NavBar.h"
 #include "meow/ui/widget/menu/DynamicMenu.h"
+#include "meow/ui/widget/keyboard/Keyboard.h"
 
 using namespace meow;
 
@@ -28,6 +29,7 @@ public:
     NavBar *getNavbar(uint16_t id, const char *left, const char *middle, const char *right);
     DynamicMenu *getDynamicMenu(uint16_t id, IItemsLoader *loader);
     Label *getStatusMsgLable(uint16_t id, const char *text, uint8_t text_size = 1);
+    Keyboard *getStandardEnKeyboard(uint16_t id);
 
 private:
     GraphicsDriver &_display;

@@ -60,51 +60,6 @@ private:
         ID_ITEM_EXPORT,
     };
 
-    enum BTN_ID : uint8_t
-    {
-        ID_BTN_Q = 1,
-        ID_BTN_W,
-        ID_BTN_E,
-        ID_BTN_R,
-        ID_BTN_T,
-        ID_BTN_Y,
-        ID_BTN_U,
-        ID_BTN_I,
-        ID_BTN_O,
-        ID_BTN_P,
-        ID_BTN_A,
-        ID_BTN_S,
-        ID_BTN_D,
-        ID_BTN_F,
-        ID_BTN_G,
-        ID_BTN_H,
-        ID_BTN_J,
-        ID_BTN_K,
-        ID_BTN_L,
-        ID_BTN_Z,
-        ID_BTN_X,
-        ID_BTN_C,
-        ID_BTN_V,
-        ID_BTN_B,
-        ID_BTN_N,
-        ID_BTN_M,
-        //
-        ID_BTN_0,
-        ID_BTN_1,
-        ID_BTN_2,
-        ID_BTN_3,
-        ID_BTN_4,
-        ID_BTN_5,
-        ID_BTN_6,
-        ID_BTN_7,
-        ID_BTN_8,
-        ID_BTN_9,
-        //
-        ID_BTN_DOT,
-        ID_BTN_UNDERLINE,
-        ID_BTN_HYPHEN,
-    };
-
     enum Mode : uint8_t
     {
         MODE_NAVIGATION = 0,
