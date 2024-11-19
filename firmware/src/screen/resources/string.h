@@ -83,6 +83,9 @@ const char STR_FILE_SERVER[] = "Файловий сервер";
 //
 const char STR_AP_NAME[] = "SSID:";
 const char STR_AP_PWD[] = "PWD:";
+const char STR_DEF_SSID[] = "meow";
+const char STR_DEF_PWD[] = "12345678";
+
 //
 const char STR_UPD_LISTS[] = "Оновити списки";
 const char STR_STOPPED[] = "Зупинено";
