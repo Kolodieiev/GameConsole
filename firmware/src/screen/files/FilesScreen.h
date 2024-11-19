@@ -32,6 +32,7 @@ protected:
 
 private:
     const uint8_t MENU_ITEMS_NUM{10};
+    const uint16_t KEY_LOCK_DUR = 250;
 
     enum Widget_ID : uint8_t
     {

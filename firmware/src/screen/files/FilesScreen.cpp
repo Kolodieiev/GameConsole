@@ -16,7 +16,6 @@
 #include "./res/folder.h"
 
 const char FILES_DB_NAME[] = "files.ldb";
-const char DOMAIN_NAME[] = "meow";
 
 void FilesScreen::loop()
 {
@@ -83,11 +82,14 @@ void FilesScreen::showServerTmpl()
     layout->addWidget(_msg_lbl);
     _msg_lbl->setHeight(_msg_lbl->getCharHgt() + 4);
 
-    _qr_img = new Image(ID_QR_IMG, _display);
-    layout->addWidget(_qr_img);
-    _qr_img->init(_qr_width, _qr_width);
-    _qr_img->setSrc(_qr_img_buff);
-    _qr_img->setPos((DWIDTH - _qr_width) / 2, (DHEIGHT - _qr_width) / 2 - NAVBAR_HEIGHT);
+    if (_qr_img_buff)
+    {
+        _qr_img = new Image(ID_QR_IMG, _display);
+        layout->addWidget(_qr_img);
+        _qr_img->init(_qr_width, _qr_width);
+        _qr_img->setSrc(_qr_img_buff);
+        _qr_img->setPos((DWIDTH - _qr_width) / 2, (DHEIGHT - _qr_width) / 2 - NAVBAR_HEIGHT);
+    }
 
     _mode = MODE_FILE_SERVER;
     layout->enable();
@@ -468,8 +470,6 @@ void FilesScreen::showDialog(Mode mode)
 
 void FilesScreen::hideDialog()
 {
-    _mode = MODE_NAVIGATION;
-
     if (_dialog_success_res)
     {
         _dialog_success_res = false;
@@ -691,7 +691,7 @@ void FilesScreen::update()
     }
     else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 130);
+        _input.lock(KeyID::KEY_UP, KEY_LOCK_DUR);
         if (_mode == MODE_NAVIGATION)
         {
             _files_list->focusUp();
@@ -704,7 +704,7 @@ void FilesScreen::update()
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 130);
+        _input.lock(KeyID::KEY_DOWN, KEY_LOCK_DUR);
         if (_mode == MODE_NAVIGATION)
         {
             _files_list->focusDown();
@@ -717,24 +717,24 @@ void FilesScreen::update()
     }
     else if (_input.isHolded(KeyID::KEY_RIGHT))
     {
-        _input.lock(KeyID::KEY_RIGHT, 130);
+        _input.lock(KeyID::KEY_RIGHT, KEY_LOCK_DUR);
         if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusRight();
     }
     else if (_input.isHolded(KeyID::KEY_LEFT))
     {
-        _input.lock(KeyID::KEY_LEFT, 130);
+        _input.lock(KeyID::KEY_LEFT, KEY_LOCK_DUR);
         if (_mode == MODE_NEW_DIR_DIALOG || _mode == MODE_RENAME_DIALOG)
             _keyboard->focusLeft();
     }
     else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 200);
+        _input.lock(KeyID::KEY_OK, KEY_LOCK_DUR);
         ok();
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 300);
+        _input.lock(KeyID::KEY_BACK, KEY_LOCK_DUR);
         back();
     }
 
@@ -920,14 +920,14 @@ void FilesScreen::startFileServer(FileServer::ServerMode mode)
     String pwd = sm.get(STR_PREF_FS_AP_PWD);
 
     if (ssid.isEmpty())
-        ssid = DOMAIN_NAME;
+        ssid = STR_DEF_SSID;
     if (pwd.isEmpty())
-        pwd = "1234567890";
+        pwd = STR_DEF_PWD;
 
     _server.setSSID(ssid.c_str());
     _server.setPWD(pwd.c_str());
     //
-    _server.setDomainName(DOMAIN_NAME);
+    _server.setDomainName(ssid.c_str());
 
     String cur_path = makePathFromBreadcrumbs();
     if (_server.begin(cur_path.c_str(), mode))

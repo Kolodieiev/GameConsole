@@ -58,6 +58,8 @@ namespace meow
 
         if (result == pdPASS)
         {
+            _is_working = true;
+
             log_i("File server is working now");
 
             if (_mode == SERVER_MODE_RECEIVE)
@@ -136,7 +138,6 @@ namespace meow
         _server->onNotFound([this]()
                             { this->handle404(); });
 
-        _is_working = true;
         _must_work = true;
 
         _server->begin();
