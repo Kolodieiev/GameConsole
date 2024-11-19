@@ -1,13 +1,13 @@
-#pragma GCC optimize("Ofast")
-
+#pragma GCC optimize("O3")
 #include "TextBox.h"
 
 namespace meow
 {
-
     TextBox::TextBox(uint16_t widget_ID, GraphicsDriver &display) : Label(widget_ID, display)
     {
         _text_gravity = GRAVITY_CENTER;
+        _back_color = TFT_WHITE;
+        _text_color = TFT_BLACK;
     }
 
     TextBox *TextBox::clone(uint16_t id) const
