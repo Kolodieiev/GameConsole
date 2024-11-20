@@ -64,10 +64,11 @@ namespace meow
 
         bmp_file.close();
 
+        uint16_t *data_temp = (uint16_t *)data;
+
         if (is_flipped)
         {
             uint16_t temp;
-            uint16_t *data_temp = (uint16_t *)data;
             uint32_t d_size = width * height;
 
             for (uint32_t i = 0; i < d_size * 0.5; ++i)
@@ -75,6 +76,18 @@ namespace meow
                 temp = data_temp[i];
                 data_temp[i] = data_temp[d_size - i - 1];
                 data_temp[d_size - i - 1] = temp;
+            }
+        }
+
+        for (uint32_t y = 0; y < height; ++y)
+        {
+            uint16_t *row_start = data_temp + y * width;
+
+            for (uint32_t x = 0; x < width / 2; ++x)
+            {
+                uint16_t temp = row_start[x];
+                row_start[x] = row_start[width - x - 1];
+                row_start[width - x - 1] = temp;
             }
         }
 
