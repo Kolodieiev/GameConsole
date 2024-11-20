@@ -556,7 +556,7 @@ void Mp3Screen::update()
     }
     else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 2500);
+        _input.lock(KeyID::KEY_BACK, 1500);
         backPressed();
     }
 
