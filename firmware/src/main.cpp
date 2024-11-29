@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "meow/ui/ScreenManager.h"
+#include "meow/manager/screen/ScreenManager.h"
 
 void guiTask(void *params)
 {

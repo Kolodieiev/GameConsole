@@ -1,8 +1,8 @@
 #pragma GCC optimize("Ofast")
 #include "ScreenManager.h"
-#include "./screen/IScreen.h"
-#include "../setup/screen_id.h"
-#include "../setup/ui_setup.h"
+#include "../../ui/screen/IScreen.h"
+#include "../../setup/screen_id.h"
+#include "../../setup/ui_setup.h"
 
 namespace meow
 {
@@ -14,7 +14,6 @@ namespace meow
         _display.init();
 
         IScreen *screen = new START_SCREEN(_display);
-        screen->show();
 
         // Основний цикл GUI.
         while (1)
@@ -31,7 +30,6 @@ namespace meow
                     log_e("Некоректний screen_id: %i", screen->getNextScreenID());
                     esp_restart();
                 }
-                screen->show();
             }
         }
     }
