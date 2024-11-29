@@ -475,7 +475,7 @@ namespace meow
 
         clear();
 
-        if (_temp_width != 0)
+        if (_temp_width > 0)
         {
             _width = _temp_width;
             _temp_width = 0;
