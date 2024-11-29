@@ -22,14 +22,13 @@ namespace meow
         IScreen(const IScreen &rhs) = delete;
         IScreen &operator=(const IScreen &rhs) = delete;
         //
-        // Відобразити екран
-        void show();
         void tick();
         //
         inline ScreenID getNextScreenID() const { return _next_screen_ID; }
         inline bool isReleased() const { return _is_released; }
 
     protected:
+        bool _is_locked{false};
         //
         static Input _input;
         //

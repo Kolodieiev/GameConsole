@@ -41,12 +41,8 @@ FilesScreen::FilesScreen(GraphicsDriver &display) : IScreen(display)
 
 void FilesScreen::showSDErrTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
 
@@ -54,17 +50,13 @@ void FilesScreen::showSDErrTmpl()
     layout->addWidget(_msg_lbl);
 
     _mode = MODE_SD_UNCONN;
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showServerTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-    layout->deleteWidgets();
-    layout->setBackColor(COLOR_MAIN_BACK);
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_STOP));
 
@@ -92,17 +84,13 @@ void FilesScreen::showServerTmpl()
     }
 
     _mode = MODE_FILE_SERVER;
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showUpdatingTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
@@ -112,19 +100,13 @@ void FilesScreen::showUpdatingTmpl()
     _mode = MODE_UPDATING;
     _has_task = true;
 
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showCopyingTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
-
-    layout->setBackColor(COLOR_MAIN_BACK);
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
@@ -147,17 +129,13 @@ void FilesScreen::showCopyingTmpl()
     _mode = MODE_COPYING;
     _has_task = true;
 
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showRemovingTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
@@ -167,19 +145,13 @@ void FilesScreen::showRemovingTmpl()
     _mode = MODE_REMOVING;
     _has_task = true;
 
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showCancelingTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
-    layout->setBackColor(COLOR_MAIN_BACK);
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", ""));
 
@@ -189,17 +161,13 @@ void FilesScreen::showCancelingTmpl()
     _mode = MODE_CANCELING;
     _has_task = true;
 
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::showFilesTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->setBackColor(TFT_BLACK);
 
@@ -220,7 +188,7 @@ void FilesScreen::showFilesTmpl()
 
     _mode = MODE_NAVIGATION;
 
-    layout->enable();
+    setLayout(layout);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -434,10 +402,8 @@ void FilesScreen::hideContextMenu()
 
 void FilesScreen::showDialog(Mode mode)
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     _dialog_txt = new TextBox(ID_DIALOG_TXT, _display);
     _dialog_txt->setTextOffset(5);
@@ -459,13 +425,12 @@ void FilesScreen::showDialog(Mode mode)
 
     _keyboard = creator.getStandardEnKeyboard(ID_KEYBOARD);
 
-    layout->deleteWidgets();
     layout->setBackColor(TFT_BLACK);
     layout->addWidget(_dialog_txt);
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_ERASE));
     layout->addWidget(_keyboard);
 
-    layout->enable();
+    setLayout(layout);
 }
 
 void FilesScreen::hideDialog()

@@ -64,15 +64,12 @@ void ReaderScreen::savePref()
 
 void ReaderScreen::showBookMenu()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
     _dynamic_menu->disable();
 
     WidgetCreator creator{_display};
 
     _pl_menu = new FixedMenu(ID_BOOK_MENU, _display);
-    layout->addWidget(_pl_menu);
+    getLayout()->addWidget(_pl_menu);
     _pl_menu->setBackColor(COLOR_MENU_ITEM);
     _pl_menu->setBorderColor(TFT_ORANGE);
     _pl_menu->setBorder(true);
@@ -97,17 +94,12 @@ void ReaderScreen::showBookMenu()
     }
 
     _mode = MODE_BOOK_MENU;
-    layout->enable();
 }
 
 void ReaderScreen::showUpdating()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
@@ -115,28 +107,20 @@ void ReaderScreen::showUpdating()
     layout->addWidget(_msg_lbl);
 
     _mode = MODE_UPDATING;
+    setLayout(layout);
 }
 
 void ReaderScreen::hideBookMenu()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgetByID(ID_BOOK_MENU);
-
+    getLayout()->deleteWidgetByID(ID_BOOK_MENU);
     _dynamic_menu->enable();
-
     _mode = MODE_BOOK_SEL;
-    layout->enable();
 }
 
 void ReaderScreen::showBookDirs()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
 
@@ -173,17 +157,13 @@ void ReaderScreen::showBookDirs()
     _scrollbar->setMax(_fixed_menu->getSize());
 
     _mode = MODE_BOOK_DIR_SEL;
-    layout->enable();
+    setLayout(layout);
 }
 
 void ReaderScreen::showBooks(uint16_t pos)
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
 
@@ -213,7 +193,7 @@ void ReaderScreen::showBooks(uint16_t pos)
         _dynamic_menu->addItem(items[i]);
 
     _mode = MODE_BOOK_SEL;
-    layout->enable();
+    setLayout(layout);
 }
 
 void ReaderScreen::showRead()
@@ -221,14 +201,10 @@ void ReaderScreen::showRead()
     DisplayUtil display;
     display.setBrightness(_brightness);
 
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
-    layout->setBackColor(0);
+    layout->setBackColor(TFT_BLACK);
 
     _page = new Label(ID_PAGE_LBL, _display);
     layout->addWidget(_page);
@@ -257,16 +233,14 @@ void ReaderScreen::showRead()
     updateReadProgress();
 
     _mode = MODE_BOOK_READ;
+    
+    setLayout(layout);
 }
 
 void ReaderScreen::showSDErrTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
 
@@ -274,7 +248,7 @@ void ReaderScreen::showSDErrTmpl()
     layout->addWidget(_msg_lbl);
 
     _mode = MODE_SD_UNCONN;
-    layout->enable();
+    setLayout(layout);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -410,8 +384,7 @@ void ReaderScreen::ok()
         else if (item_ID == 2)
         {
             if (_bl_manager.updateBookDirs([this]
-                                           { 
-                                            showBookDirs(); }))
+                                           { showBookDirs(); }))
             {
                 showUpdating();
             }

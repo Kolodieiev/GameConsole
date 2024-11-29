@@ -21,9 +21,11 @@ namespace meow
 
             update();
 
-            if (_screen_enabled)
+            if (_screen_enabled && !_is_locked)
             {
+                _is_locked = true;
                 _layout->onDraw();
+                _is_locked = false;
 
 #ifdef DOUBLE_BUFFERRING
                 _display.pushBuffer();
@@ -33,22 +35,6 @@ namespace meow
     }
 
 #pragma region "don't touch this"
-
-    void IScreen::show()
-    {
-        if (_layout != nullptr)
-        {
-            _layout->onDraw();
-#ifdef DOUBLE_BUFFERRING
-            _display.pushBuffer();
-#endif
-        }
-        else
-        {
-            log_e("Layout не встановлено.");
-            esp_restart();
-        }
-    }
 
     IScreen::IScreen(GraphicsDriver &display) : _display{display}
     {
@@ -74,9 +60,15 @@ namespace meow
         if (_layout == layout)
             return;
 
-        delete _layout;
+        while (_is_locked)
+            vTaskDelay(1);
 
+        _is_locked = true;
+
+        delete _layout;
         _layout = layout;
+
+        _is_locked = false;
     }
 
     void IScreen::openScreenByID(ScreenID screen_ID)

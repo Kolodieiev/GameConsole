@@ -164,11 +164,8 @@ void Mp3Screen::showPlaying()
 {
     const uint8_t DISPLAY_PADDING{10};
 
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_PAUSE, "", STR_EXIT));
 
@@ -280,17 +277,13 @@ void Mp3Screen::showPlaying()
     updateTime();
 
     _mode = MODE_AUDIO_PLAY;
-    layout->enable();
+    setLayout(layout);
 }
 
 void Mp3Screen::showUpdating()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
 
@@ -298,17 +291,13 @@ void Mp3Screen::showUpdating()
     layout->addWidget(_msg_lbl);
 
     _mode = MODE_UPDATING;
-    layout->enable();
+    setLayout(layout);
 }
 
 void Mp3Screen::showTracks(uint16_t pos)
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
 
@@ -338,17 +327,13 @@ void Mp3Screen::showTracks(uint16_t pos)
         _dynamic_menu->addItem(items[i]);
 
     _mode = MODE_TRACK_SEL;
-    layout->enable();
+    setLayout(layout);
 }
 
 void Mp3Screen::showPlaylists()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
 
@@ -385,7 +370,7 @@ void Mp3Screen::showPlaylists()
     _scrollbar->setMax(_fixed_menu->getSize());
 
     _mode = MODE_PLST_SEL;
-    layout->enable();
+    setLayout(layout);
 }
 
 void Mp3Screen::showPlMenu()
@@ -423,24 +408,15 @@ void Mp3Screen::showPlMenu()
 
 void Mp3Screen::hidePlMenu()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgetByID(ID_PL_MENU);
-
+    getLayout()->deleteWidgetByID(ID_PL_MENU);
     _mode = MODE_TRACK_SEL;
     _dynamic_menu->enable();
-    layout->enable();
 }
 
 void Mp3Screen::showSDErrTmpl()
 {
-    IWidgetContainer *layout = getLayout();
-    layout->disable();
-
-    layout->deleteWidgets();
-
     WidgetCreator creator{_display};
+    IWidgetContainer *layout = creator.getEmptyLayout();
 
     layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
 
@@ -448,7 +424,7 @@ void Mp3Screen::showSDErrTmpl()
     layout->addWidget(_msg_lbl);
 
     _mode = MODE_SD_UNCONN;
-    layout->enable();
+    setLayout(layout);
 }
 
 //-------------------------------------------------------------------------------------------
