@@ -221,7 +221,7 @@ std::vector<MenuItem *> FilesScreen::getMenuFilesItems(const char *path, uint16_
         {
             Image *dir_img = new Image(1, _display);
             item->setImg(dir_img);
-            dir_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+            dir_img->setTransparentColor(Image::COLOR_TRANSPARENT);
             dir_img->init(16, 16);
             dir_img->setSrc(FOLDER_IMG);
             String clean_name = files[i].substring(3);

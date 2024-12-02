@@ -14,7 +14,7 @@ namespace meow
 
 
     public:
-        static const uint16_t TRANSPARENT_COLOR{0xF81F}; // Колір rgb(255, 0, 255)
+        static const uint16_t COLOR_TRANSPARENT{0xF81F}; // Колір rgb(255, 0, 255)
 
         Image(uint16_t widget_ID, GraphicsDriver &display);
         virtual ~Image();
@@ -46,7 +46,7 @@ namespace meow
 
     private:
         bool _is_transparent{false};
-        uint16_t _transparent_color{TRANSPARENT_COLOR};
+        uint16_t _transparent_color{COLOR_TRANSPARENT};
 
         const uint16_t *_img_ptr{nullptr};
         uint16_t *_psram_img_ptr{nullptr};

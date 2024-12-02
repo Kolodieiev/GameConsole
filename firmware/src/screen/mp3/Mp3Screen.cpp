@@ -212,7 +212,7 @@ void Mp3Screen::showPlaying()
     _play_btn->init(32, 32);
     _play_btn->setSrc(PAUSE_IMG);
     _play_btn->setBackColor(COLOR_MAIN_BACK);
-    _play_btn->setTransparentColor(_play_btn->TRANSPARENT_COLOR);
+    _play_btn->setTransparentColor(_play_btn->COLOR_TRANSPARENT);
     _play_btn->setPos((_display.width() - 32) / 2, (_display.height() - 32) / 2);
 
     _volume_lbl = new Label(ID_VOLUME_LBL, _display);
@@ -231,7 +231,7 @@ void Mp3Screen::showPlaying()
     volume_img->init(16, 16);
     volume_img->setSrc(SPEAKER_IMG);
     volume_img->setBackColor(COLOR_MAIN_BACK);
-    volume_img->setTransparentColor(volume_img->TRANSPARENT_COLOR);
+    volume_img->setTransparentColor(volume_img->COLOR_TRANSPARENT);
     volume_img->setPos(_volume_lbl->getXPos() - 16 - 2, _volume_lbl->getYPos());
 
     Image *forward_img = new Image(ID_FORWARD_IMG, _display);
@@ -239,7 +239,7 @@ void Mp3Screen::showPlaying()
     forward_img->init(24, 24);
     forward_img->setSrc(FORWARD_IMG);
     forward_img->setBackColor(COLOR_MAIN_BACK);
-    forward_img->setTransparentColor(forward_img->TRANSPARENT_COLOR);
+    forward_img->setTransparentColor(forward_img->COLOR_TRANSPARENT);
     forward_img->setPos(_play_btn->getXPos() + 32 * 2, _play_btn->getYPos() + 4);
 
     Image *rewind_img = new Image(ID_REWIND_IMG, _display);
@@ -247,7 +247,7 @@ void Mp3Screen::showPlaying()
     rewind_img->init(24, 24);
     rewind_img->setSrc(REWIND_IMG);
     rewind_img->setBackColor(COLOR_MAIN_BACK);
-    rewind_img->setTransparentColor(rewind_img->TRANSPARENT_COLOR);
+    rewind_img->setTransparentColor(rewind_img->COLOR_TRANSPARENT);
     rewind_img->setPos(_play_btn->getXPos() - 32 - 24, _play_btn->getYPos() + 4);
 
     Image *clock_img = new Image(ID_TIME_IMG, _display);
@@ -255,7 +255,7 @@ void Mp3Screen::showPlaying()
     clock_img->init(16, 16);
     clock_img->setSrc(CLOCK_IMG);
     clock_img->setBackColor(COLOR_MAIN_BACK);
-    clock_img->setTransparentColor(clock_img->TRANSPARENT_COLOR);
+    clock_img->setTransparentColor(clock_img->COLOR_TRANSPARENT);
     clock_img->setPos(5, _track_name_lbl->getHeight() + 5);
 
     _time_lbl = new Label(ID_TIME_LBL, _display);

@@ -48,7 +48,7 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
     _bat_cap_lbl->setBackImg(_bat_ico);
     _bat_ico->init(56, 35);
     _bat_ico->setSrc(ICO_BATTERY);
-    _bat_ico->setTransparentColor(_bat_ico->TRANSPARENT_COLOR);
+    _bat_ico->setTransparentColor(_bat_ico->COLOR_TRANSPARENT);
 
     updateBatCap();
 

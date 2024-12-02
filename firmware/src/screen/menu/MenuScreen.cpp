@@ -47,7 +47,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *mp3_img = new Image(1, _display);
     mp3_item->setImg(mp3_img);
-    mp3_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    mp3_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     mp3_img->init(35, 35);
     mp3_img->setSrc(HEADPHONES_IMG);
 
@@ -73,7 +73,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *read_img = new Image(1, _display);
     read_item->setImg(read_img);
-    read_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    read_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     read_img->init(35, 35);
     read_img->setSrc(BOOK_IMG);
 
@@ -86,7 +86,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *game_img = new Image(1, _display);
     game_item->setImg(game_img);
-    game_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    game_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     game_img->init(35, 35);
     game_img->setSrc(JOYSTICK_IMG);
 
@@ -99,7 +99,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *files_img = new Image(1, _display);
     files_item->setImg(files_img);
-    files_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    files_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     files_img->init(35, 35);
     files_img->setSrc(SD_IMG);
 
@@ -112,7 +112,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *pref_img = new Image(1, _display);
     pref_item->setImg(pref_img);
-    pref_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    pref_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     pref_img->init(35, 35);
     pref_img->setSrc(SETTINGS_IMG);
 
@@ -125,7 +125,7 @@ MenuScreen::MenuScreen(GraphicsDriver &display) : IScreen(display)
 
     Image *firm_img = new Image(1, _display);
     firm_item->setImg(firm_img);
-    firm_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    firm_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     firm_img->init(35, 35);
     firm_img->setSrc(CHIP_IMG);
 

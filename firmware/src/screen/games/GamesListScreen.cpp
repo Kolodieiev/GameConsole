@@ -45,7 +45,7 @@ GamesListScreen::GamesListScreen(GraphicsDriver &display) : IScreen(display)
     sokoban_item->setImg(soko_img);
     soko_img->init(32, 32);
     soko_img->setCornerRadius(5);
-    soko_img->setTransparentColor(Image::TRANSPARENT_COLOR);
+    soko_img->setTransparentColor(Image::COLOR_TRANSPARENT);
     soko_img->setSrc(ICO_SOKOBAN);
 
     Label *soko_lbl = creator.getItemLabel(STR_SOKOBAN_ITEM, 4, 2);
