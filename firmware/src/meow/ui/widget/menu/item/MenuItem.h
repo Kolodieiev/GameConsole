@@ -16,6 +16,7 @@ namespace meow
         virtual void onDraw() override;
         MenuItem *clone(uint16_t id) const override;
 
+        // Зображення не буде видалено автоматично.
         void setImg(Image *img);
         void setLbl(Label *lbl);
         String getText() const;

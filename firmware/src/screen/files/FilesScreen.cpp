@@ -23,6 +23,12 @@ void FilesScreen::loop()
 
 FilesScreen::FilesScreen(GraphicsDriver &display) : IScreen(display)
 {
+    _dir_img = new Image(1, _display);
+    _dir_img->setTransparentColor(Image::COLOR_TRANSPARENT);
+    _dir_img->init(16, 16);
+    _dir_img->setSrc(FOLDER_IMG);
+    _dir_img->setSkipClear(true);
+
     WidgetCreator creator{_display};
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
@@ -219,11 +225,7 @@ std::vector<MenuItem *> FilesScreen::getMenuFilesItems(const char *path, uint16_
 
         if (files[i].startsWith(FileManager::STR_DIR_PREFIX))
         {
-            Image *dir_img = new Image(1, _display);
-            item->setImg(dir_img);
-            dir_img->setTransparentColor(Image::COLOR_TRANSPARENT);
-            dir_img->init(16, 16);
-            dir_img->setSrc(FOLDER_IMG);
+            item->setImg(_dir_img);
             String clean_name = files[i].substring(3);
             lbl->setText(clean_name);
         }

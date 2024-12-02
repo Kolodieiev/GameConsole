@@ -11,7 +11,7 @@ class GamesListScreen : public IScreen
 {
 public:
     GamesListScreen(GraphicsDriver &display);
-    virtual ~GamesListScreen(){}
+    virtual ~GamesListScreen();
 
 protected:
     virtual void loop() override;
@@ -27,6 +27,8 @@ private:
 
     FixedMenu *_menu;
     ScrollBar *_scrollbar;
+
+    std::vector<IWidget *> _bin;
 
     void up();
     void down();

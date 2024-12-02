@@ -8,7 +8,6 @@ namespace meow
 
     MenuItem::~MenuItem()
     {
-        delete _image;
         delete _label;
     }
 
@@ -41,13 +40,16 @@ namespace meow
 
         if (_image)
         {
+            _image->setParent(this);
             img_width = _image->getWidth() + ITEM_PADDING;
             _image->setPos(ITEM_PADDING, (_height - _image->getHeight()) * 0.5);
 
-            if (_has_focus)
-                _image->setFocus();
-            else
-                _image->removeFocus();
+            uint16_t bk_color = _back_color;
+
+            if (_has_focus && _need_change_back)
+                _image->setBackColor(_focus_back_color);
+
+            _image->setBackColor(bk_color);
 
             _image->onDraw();
         }
@@ -94,16 +96,6 @@ namespace meow
 
         _image = img;
         _is_changed = true;
-
-        if (!_image)
-            return;
-
-        _image->setParent(this);
-        _image->setBorder(false);
-        _image->setBackColor(_back_color);
-        _image->setFocusBackColor(_focus_back_color);
-        _image->setChangingBack(_need_change_back);
-        _image->setChangingBorder(false);
     }
 
     void MenuItem::setLbl(Label *lbl)

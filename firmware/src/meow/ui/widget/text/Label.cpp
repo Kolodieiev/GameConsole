@@ -68,7 +68,6 @@ namespace meow
     void Label::setBackImg(Image *back_img)
     {
         _back_img = back_img;
-        _back_img->setParent(this);
         _is_changed = true;
     }
 
@@ -475,7 +474,7 @@ namespace meow
 
         clear();
 
-        if (_temp_width > 0)
+        if (_temp_width != 0)
         {
             _width = _temp_width;
             _temp_width = 0;
@@ -498,7 +497,10 @@ namespace meow
         }
 
         if (_back_img)
+        {
+            _back_img->setParent(this);
             _back_img->forcedDraw();
+        }
 
         if (str_pix_num + _text_offset < _width)
         {
@@ -570,5 +572,4 @@ namespace meow
             }
         }
     }
-
 }

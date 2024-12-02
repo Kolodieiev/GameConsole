@@ -12,7 +12,7 @@ class MenuScreen : public IScreen
 {
 public:
     MenuScreen(GraphicsDriver &display);
-    virtual ~MenuScreen() {}
+    virtual ~MenuScreen();
 
 protected:
     virtual void loop() override;
@@ -28,6 +28,8 @@ private:
 
     FixedMenu *_menu;
     ScrollBar *_scrollbar;
+
+    std::vector<IWidget *> _bin;
 
     void up();
     void down();

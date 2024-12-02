@@ -12,7 +12,7 @@ namespace meow
     {
     public:
         Label(uint16_t widget_ID, GraphicsDriver &display);
-        virtual ~Label(){};
+        virtual ~Label() {};
         virtual void onDraw() override;
         virtual Label *clone(uint16_t id) const override;
 
@@ -148,6 +148,7 @@ namespace meow
          *       Вказівник на повністю ініціалізоване зображення.
          */
         void setBackImg(Image *back_img);
+        Image *getBackImg() const { return _back_img; }
 
         /*!
          * @brief

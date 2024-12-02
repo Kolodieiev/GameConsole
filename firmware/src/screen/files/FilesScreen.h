@@ -21,7 +21,7 @@ class FilesScreen : public IScreen, public IItemsLoader
 {
 public:
     FilesScreen(GraphicsDriver &display);
-    virtual ~FilesScreen() {}
+    virtual ~FilesScreen() { delete _dir_img; }
 
     virtual std::vector<MenuItem *> loadPrev(uint8_t size, uint16_t current_ID) override;
     virtual std::vector<MenuItem *> loadNext(uint8_t size, uint16_t current_ID) override;
@@ -97,6 +97,7 @@ private:
     ScrollBar *_scrollbar;
     ProgressBar *_task_progress;
     DynamicMenu *_files_list;
+    Image *_dir_img;
     //
     Keyboard *_keyboard;
     TextBox *_dialog_txt;

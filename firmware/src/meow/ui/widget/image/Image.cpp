@@ -32,6 +32,7 @@ namespace meow
             clone->_img_buf.setColorDepth(16);
             clone->_img_buf.setAttribute(PSRAM_ENABLE, true);
             clone->_img_buf.createSprite(_width, _height, 1);
+            clone->_skip_clear = _skip_clear;
 
             if (!clone->_img_buf.getPointer())
             {
@@ -100,7 +101,8 @@ namespace meow
             return;
         }
 
-        clear();
+        if (!_skip_clear)
+            clear();
 
         uint16_t x_offset{0};
         uint16_t y_offset{0};
