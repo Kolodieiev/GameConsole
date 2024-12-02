@@ -17,7 +17,7 @@ void setup()
         // Файл до якого потрібно застосувати патч C:\.platformio\packages\framework-arduinoespressif32\cores\esp32\esp32-hal-spi.c
     #endif
 
-    xTaskCreatePinnedToCore(guiTask, "guiTask", (1024 / 2) * 100, NULL, 10, NULL, 1);
+    xTaskCreatePinnedToCore(guiTask, "guiTask", (1024 / 2) * 70, NULL, 10, NULL, 1);
 }
 
 void loop()
