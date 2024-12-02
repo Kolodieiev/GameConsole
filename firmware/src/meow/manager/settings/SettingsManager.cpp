@@ -5,7 +5,7 @@
 namespace meow
 {
     const char DATA_ROOT[] = "/.data";
-    const char PREF_DIR[] = "/preferences";
+    const char PREF_ROOT[] = "/.data/preferences";
 
     bool SettingsManager::set(const char *pref_name, const char *value)
     {
@@ -52,12 +52,11 @@ namespace meow
             if (!createDir(DATA_ROOT))
                 return "";
 
-        if (!dirExist(PREF_DIR))
-            if (!createDir(PREF_DIR))
+        if (!dirExist(PREF_ROOT))
+            if (!createDir(PREF_ROOT))
                 return "";
 
-        String path = DATA_ROOT;
-        path += PREF_DIR;
+        String path = PREF_ROOT;
         path += "/";
         path += pref_name;
 
