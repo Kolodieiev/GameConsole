@@ -3,9 +3,12 @@
 #pragma once
 #include <Arduino.h>
 
-enum TriggerID : int16_t
+namespace sokoban
 {
-    TRIGGER_NEXT_SCENE = 0,
-    TRIGGER_GAME_FINISHED,
-    TRIGGER_GAME_LOST,
-};
+    enum TriggerID : int16_t
+    {
+        TRIGGER_NEXT_SCENE = 0,
+        TRIGGER_GAME_FINISHED,
+        TRIGGER_GAME_LOST,
+    };
+}

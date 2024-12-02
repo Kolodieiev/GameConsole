@@ -8,35 +8,38 @@
 
 using namespace meow;
 
-class SokobanScreen : public IScreen
+namespace sokoban
 {
-
-public:
-    SokobanScreen(GraphicsDriver &display);
-    virtual ~SokobanScreen() {}
-
-protected:
-    virtual void loop() override;
-    virtual void update() override;
-
-private:
-    const uint8_t MENU_ITEMS_NUM{10};
-    const uint8_t LEVEL_NUM{70};
-
-    enum Widget_ID : uint8_t
+    class SokobanScreen : public IScreen
     {
-        ID_NAVBAR = 1,
-        ID_LVL_LIST,
-        ID_SCROLL
+
+    public:
+        SokobanScreen(GraphicsDriver &display);
+        virtual ~SokobanScreen() {}
+
+    protected:
+        virtual void loop() override;
+        virtual void update() override;
+
+    private:
+        const uint8_t MENU_ITEMS_NUM{10};
+        const uint8_t LEVEL_NUM{70};
+
+        enum Widget_ID : uint8_t
+        {
+            ID_NAVBAR = 1,
+            ID_LVL_LIST,
+            ID_SCROLL
+        };
+
+        bool _is_game_started{false};
+
+        FixedMenu *_lvl_menu;
+        ScrollBar *_scrollbar;
+
+        IGameScene *_scene;
+        std::vector<IObjShape *> _stored_objs;
+
+        void showLvlMenu();
     };
-
-    bool _is_game_started{false};
-
-    FixedMenu *_lvl_menu;
-    ScrollBar *_scrollbar;
-
-    IGameScene *_scene;
-    std::vector<IObjShape *> _stored_objs;
-
-    void showLvlMenu();
-};
+}

@@ -3,9 +3,12 @@
 #pragma once
 #include <Arduino.h>
 
-enum ClassID : int16_t
+namespace sokoban
 {
-    CLASS_HERO = 0,
-    CLASS_BOX,
-    CLASS_BOX_POINT
-};
+    enum ClassID : int16_t
+    {
+        CLASS_HERO = 0,
+        CLASS_BOX,
+        CLASS_BOX_POINT
+    };
+}

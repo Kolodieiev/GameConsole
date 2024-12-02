@@ -1,5 +1,8 @@
 #include "SceneUI.h"
 
-void SceneUI::onDraw()
+namespace sokoban
 {
+    void SceneUI::onDraw()
+    {
+    }
 }
