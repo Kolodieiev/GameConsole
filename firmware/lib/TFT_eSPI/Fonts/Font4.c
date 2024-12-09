@@ -1,4 +1,5 @@
 // Font 4
+#include "./defines.h"
 
 const unsigned char chr_f4_20[] =
     {

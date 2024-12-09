@@ -13,51 +13,17 @@
   Last update by Bodmer 20/03/20
  ****************************************************/
 #pragma GCC optimize("O3")
+#include "./TFT_eSPI.h"
 
-#include "TFT_eSPI.h"
-
-#if defined (ESP32)
-  #if defined(CONFIG_IDF_TARGET_ESP32S3)
-    #include "Processors/TFT_eSPI_ESP32_S3.c" // Tested with SPI and 8 bit parallel
-  #elif defined(CONFIG_IDF_TARGET_ESP32C3)
-    #include "Processors/TFT_eSPI_ESP32_C3.c" // Tested with SPI (8 bit parallel will probably work too!)
-  #else
-    #include "Processors/TFT_eSPI_ESP32.c"
-  #endif
-#elif defined (ARDUINO_ARCH_ESP8266)
-  #include "Processors/TFT_eSPI_ESP8266.c"
-#elif defined (STM32) // (_VARIANT_ARDUINO_STM32_) stm32_def.h
-  #include "Processors/TFT_eSPI_STM32.c"
-#elif defined (ARDUINO_ARCH_RP2040)  || defined (ARDUINO_ARCH_MBED) // Raspberry Pi Pico
-  #include "Processors/TFT_eSPI_RP2040.c"
-#else
-  #include "Processors/TFT_eSPI_Generic.c"
+#if defined(CONFIG_IDF_TARGET_ESP32S3)
+    #include "Processors/TFT_eSPI_ESP32_S3.cpp" // Tested with SPI and 8 bit parallel
+#elif defined(CONFIG_IDF_TARGET_ESP32)
+    #include "Processors/TFT_eSPI_ESP32.cpp"
 #endif
 
 #ifndef SPI_BUSY_CHECK
   #define SPI_BUSY_CHECK
 #endif
-
-// Clipping macro for pushImage
-#define PI_CLIP                                        \
-  if (_vpOoB) return;                                  \
-  x+= _xDatum;                                         \
-  y+= _yDatum;                                         \
-                                                       \
-  if ((x >= _vpW) || (y >= _vpH)) return;              \
-                                                       \
-  int32_t dx = 0;                                      \
-  int32_t dy = 0;                                      \
-  int32_t dw = w;                                      \
-  int32_t dh = h;                                      \
-                                                       \
-  if (x < _vpX) { dx = _vpX - x; dw -= dx; x = _vpX; } \
-  if (y < _vpY) { dy = _vpY - y; dh -= dy; y = _vpY; } \
-                                                       \
-  if ((x + dw) > _vpW ) dw = _vpW - x;                 \
-  if ((y + dh) > _vpH ) dh = _vpH - y;                 \
-                                                       \
-  if (dw < 1 || dh < 1) return;
 
 /***************************************************************************************
 ** Function name:           Legacy - deprecated
@@ -5531,11 +5497,4 @@ void TFT_eSPI::getSetup(setup_t &tft_settings)
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////
-#ifdef TOUCH_CS
-  #include "Extensions/Touch.cpp"
-#endif
-
-#include "Extensions/Sprite.cpp"
-////////////////////////////////////////////////////////////////////////////////////////
-
+#include "./TFT_eSprite.h"

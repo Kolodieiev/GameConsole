@@ -1,5 +1,5 @@
 #pragma once
-// #pragma GCC optimize("Ofast")
+// #pragma GCC optimize("O3")
 #include <Arduino.h>
 #include <list>
 #include <unordered_map>
@@ -12,7 +12,7 @@ namespace meow
     public:
         ~WavManager();
 
-        bool init(uint8_t PIN_I2S_BCLK, uint8_t PIN_I2S_LRC, uint8_t PIN_I2S_DOUT);
+        bool init(uint8_t I2S_BCLK_PIN, uint8_t I2S_LRC_PIN, uint8_t I2S_DOUT_PIN);
 
         /*!
          * @brief

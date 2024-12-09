@@ -1,4 +1,4 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 #include "Label.h"
 namespace meow
 {
@@ -572,4 +572,5 @@ namespace meow
             }
         }
     }
+
 }

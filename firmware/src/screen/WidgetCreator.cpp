@@ -1,7 +1,7 @@
 #include "WidgetCreator.h"
 #include "./resources/const.h"
 #include "./resources/color.h"
-#include "meow/setup/kb_btn_id.h"
+#include "meowui_setup/kb_btn_id.h"
 
 WidgetCreator::WidgetCreator(GraphicsDriver &display) : _display{display} {}
 

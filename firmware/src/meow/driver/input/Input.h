@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #pragma GCC optimize("O3")
 
-#include "../../setup/input_setup.h"
+#include "meowui_setup/input_setup.h"
 
 #include "Pin.h"
 #include "ITouchscreen.h"

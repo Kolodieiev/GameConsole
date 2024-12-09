@@ -14,7 +14,7 @@
 #include "BodyDescription.h"
 #include "SpriteDescription.h"
 
-#include "meow/driver/audio/wav/WavTrack.h"
+#include "../../driver/audio/wav/WavTrack.h"
 
 namespace meow
 {

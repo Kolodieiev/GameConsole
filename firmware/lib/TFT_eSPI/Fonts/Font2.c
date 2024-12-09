@@ -1,4 +1,5 @@
 // Font 2
+#include "./defines.h"
 
 const unsigned char chr_f2_20[15] =
     {
@@ -2678,8 +2679,6 @@ const unsigned char chr_f2_unk[15] =
         0x7c,
         0x00,
         0x00};
-
-#define CHRS_NMBR 167
 
 const unsigned char widtbl_f2[CHRS_NMBR] =
     {

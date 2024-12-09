@@ -9,7 +9,7 @@
  */
 
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 #include <vector>
 #include <Arduino.h>
 #include <libb64/cencode.h>

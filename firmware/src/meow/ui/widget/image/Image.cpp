@@ -1,7 +1,7 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include "Image.h"
-#include "meow/util/bmp/BmpUtil.h"
+#include "../../../util/bmp/BmpUtil.h"
 
 namespace meow
 {

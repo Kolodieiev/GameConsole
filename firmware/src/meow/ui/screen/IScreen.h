@@ -2,7 +2,7 @@
 #pragma GCC optimize("O3")
 
 #include <Arduino.h>
-#include "../../setup/screen_id.h"
+#include "meowui_setup/screen_id.h"
 
 #include "../../driver/input/Input.h"
 #include "../../driver/graphics/GraphicsDriver.h"

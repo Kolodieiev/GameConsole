@@ -1,8 +1,8 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 #include <Arduino.h>
 #include <TFT_eSPI.h>
-#include "../../setup/graphics_setup.h"
+#include "meowui_setup/graphics_setup.h"
 
 namespace meow
 {

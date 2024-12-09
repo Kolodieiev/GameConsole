@@ -1,10 +1,10 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include <Arduino.h>
 
-#include "meow/ui/widget/image/Image.h"
-#include "meow/ui/widget/text/Label.h"
+#include "../../../widget/image/Image.h"
+#include "../../../widget/text/Label.h"
 
 namespace meow
 {

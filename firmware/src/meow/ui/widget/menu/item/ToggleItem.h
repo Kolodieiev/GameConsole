@@ -1,10 +1,10 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include <Arduino.h>
 
 #include "./MenuItem.h"
-#include "meow/ui/widget/toggle/ToggleSwitch.h"
+#include "../../../widget/toggle/ToggleSwitch.h"
 
 namespace meow
 {

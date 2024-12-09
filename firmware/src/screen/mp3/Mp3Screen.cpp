@@ -19,7 +19,7 @@
 
 #include "meow/manager/sd/SD_Manager.h"
 #include "meow/util/display/DisplayUtil.h"
-#include "meow/setup/i2s_setup.h"
+#include "meowui_setup/i2s_setup.h"
 
 const char STR_PLAYLIST_PREF[] = "Playlist";
 const char STR_TRACK_NAME_PREF[] = "TrackName";
@@ -657,7 +657,8 @@ bool Mp3Screen::playTrack(bool contn)
 
     if (!_audio.connecttoFS(SD, track_path.c_str(), _track_time))
     {
-        setStopState();
+        if (_mode == MODE_AUDIO_PLAY)
+            setStopState();
         return false;
     }
 

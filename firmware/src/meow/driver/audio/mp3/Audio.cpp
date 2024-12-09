@@ -8,7 +8,7 @@
  *      Author: Wolle (schreibfaul1)
  *
  */
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include "Audio.h"
 #include "mp3_decoder/mp3_decoder.h"

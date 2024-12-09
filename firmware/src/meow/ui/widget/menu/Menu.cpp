@@ -1,5 +1,5 @@
 #include "Menu.h"
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 namespace meow
 {

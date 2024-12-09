@@ -1,10 +1,10 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include "Pin.h"
 #include "driver/touch_sensor.h"
 #include "esp32-hal-touch.h"
 #include "hal/gpio_hal.h"
-#include "../../setup/input_setup.h"
+#include "meowui_setup/input_setup.h"
 
 namespace meow
 {

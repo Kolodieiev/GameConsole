@@ -1,5 +1,5 @@
 #pragma once
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 
 #include <Arduino.h>
 #include "./IWidget.h"

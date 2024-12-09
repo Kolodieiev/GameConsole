@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-#include "../../setup/diplay_setup.h"
+#include "meowui_setup/display_setup.h"
 
 namespace meow
 {

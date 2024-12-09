@@ -13,7 +13,7 @@
 #include "./res/paw_src.h"
 #include "./res/logo_txt_src.h"
 
-#include "meow/setup/sd_setup.h"
+#include "meowui_setup/sd_setup.h"
 
 #define RES_X_OFFSET 5
 #define LBL_X_OFFSET 70

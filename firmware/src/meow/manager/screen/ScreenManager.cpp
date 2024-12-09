@@ -1,8 +1,9 @@
-#pragma GCC optimize("Ofast")
+#pragma GCC optimize("O3")
 #include "ScreenManager.h"
 #include "../../ui/screen/IScreen.h"
-#include "../../setup/screen_id.h"
-#include "../../setup/ui_setup.h"
+
+#include "meowui_setup/screen_id.h"
+#include "meowui_setup/ui_setup.h"
 
 namespace meow
 {

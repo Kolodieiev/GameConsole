@@ -24,7 +24,7 @@ namespace meow
         _track_id = 0;
     }
 
-    bool WavManager::init(uint8_t I2S_BCLK, uint8_t I2S_LRC, uint8_t I2S_DOUT)
+    bool WavManager::init(uint8_t I2S_BCLK_PIN, uint8_t I2S_LRC_PIN, uint8_t I2S_DOUT_PIN)
     {
         i2s_config_t i2s_config = {};
 
@@ -48,9 +48,9 @@ namespace meow
 
         i2s_pin_config_t pin_config = {};
 
-        pin_config.bck_io_num = I2S_BCLK;
-        pin_config.ws_io_num = I2S_LRC;
-        pin_config.data_out_num = I2S_DOUT;
+        pin_config.bck_io_num = I2S_BCLK_PIN;
+        pin_config.ws_io_num = I2S_LRC_PIN;
+        pin_config.data_out_num = I2S_DOUT_PIN;
         pin_config.data_in_num = I2S_PIN_NO_CHANGE;
         pin_config.mck_io_num = I2S_PIN_NO_CHANGE;
 
