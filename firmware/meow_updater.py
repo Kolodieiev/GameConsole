@@ -10,12 +10,15 @@ import shutil
 import subprocess
 import errno
 import stat
+import filecmp
 from pathlib import Path
 
 GITHUB_REPO_URL = "https://github.com/Kolodieiev/meowui.git" 
-ROOT_FOLDER = Path(".")  
-VERSION_FILE = ROOT_FOLDER / "src/meow/version.txt"  
-TEMP_FOLDER = Path(ROOT_FOLDER) / "temp_meowui"
+ROOT_DIR = Path(".")  
+VERSION_FILE = ROOT_DIR / "src/meow/version.txt"  
+TEMP_DIR =  ROOT_DIR / "temp_meowui"
+LIB_DIR = ROOT_DIR / "lib/TFT_eSPI"
+MEOW_DIR = ROOT_DIR / "src/meow"
 
 def get_latest_commit(repo_url):
     
@@ -38,7 +41,7 @@ def read_local_version():
     return None
 
 def read_remote_version():
-    version_file = TEMP_FOLDER / VERSION_FILE
+    version_file = TEMP_DIR / VERSION_FILE
     if version_file.exists():
         with open(version_file, "r") as f:
             return f.read().strip()
@@ -54,32 +57,36 @@ def remove_unwanted_files(folder_path, files_to_remove):
             except Exception as e:
                 print(f"Помилка під час видалення файлу '{file_name}': {e}")
 
-def clone_library(repo_url, target_folder):
+def clone_repo(repo_url, target_folder):
     try:
-        remove_folder(target_folder)
+        remove_dir(target_folder)
         subprocess.run(
             ["git", "clone", "--depth", "1", repo_url, str(target_folder)],
             check=True
         )
         print(f"Бібліотека успішно клонована в {target_folder}")
+
+        remove_dir(target_folder / ".git")
         remove_unwanted_files(target_folder, ["README.md", ".gitignore"])
     except Exception as e:
         print(f"Помилка під час клонування: {e}")
 
-def merge_folders(src_folder, dst_folder):
-    for src_dir, _, files in os.walk(src_folder):
-        dst_dir = src_dir.replace(str(src_folder), str(dst_folder), 1)
-        os.makedirs(dst_dir, exist_ok=True)
-        for file in files:
-            src_file = Path(src_dir) / file
-            dst_file = Path(dst_dir) / file
-            if dst_file.exists():
-                if dst_file.is_file():
-                    dst_file.unlink() 
-            shutil.move(str(src_file), str(dst_file))
-    shutil.rmtree(src_folder) 
+def merge_dirs(src_folder, dst_folder):
+    src_folder = Path(src_folder)
+    dst_folder = Path(dst_folder)
+    
+    for src_path in src_folder.rglob('*'):
+        relative_path = src_path.relative_to(src_folder)
+        dst_path = dst_folder / relative_path
 
-def remove_folder(folder_path):
+        if src_path.is_dir():
+            dst_path.mkdir(parents=True, exist_ok=True)
+        elif src_path.is_file():
+            if not dst_path.exists() or not filecmp.cmp(src_path, dst_path, shallow=False):
+                shutil.copy2(src_path, dst_path)  
+                print(f"Файл {dst_path} оновлено.")
+
+def remove_dir(folder_path):
     try:
         if folder_path.exists():
             shutil.rmtree(folder_path, onerror=onerror)
@@ -103,7 +110,7 @@ def main():
         local_version = read_local_version()
         print(f"Локальна версія: {local_version if local_version else 'немає'}")
 
-        clone_library(GITHUB_REPO_URL, TEMP_FOLDER)
+        clone_repo(GITHUB_REPO_URL, TEMP_DIR)
 
         remote_version = read_remote_version()
         print(f"Віддалена версія: {remote_version if remote_version else 'немає'}")
@@ -114,15 +121,15 @@ def main():
 
         if local_version != remote_version:
             print("Оновлення бібліотеки...")
-            merge_folders(TEMP_FOLDER, ROOT_FOLDER)
+            merge_dirs(TEMP_DIR, ROOT_DIR)
             print(f"Фреймворк оновлено до версії {remote_version}.")
         else:
             print("Версія meowui вже актуальна.")
     except Exception as e:
         print(f"Сталася помилка: {e}")
     finally:
-        if TEMP_FOLDER.exists():
-            remove_folder(TEMP_FOLDER)
+        if TEMP_DIR.exists():
+            remove_dir(TEMP_DIR)
 
 
 if __name__ == "__main__":
