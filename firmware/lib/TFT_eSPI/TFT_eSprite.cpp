@@ -45,6 +45,39 @@ TFT_eSprite::TFT_eSprite(TFT_eSPI *tft)
   lockTransaction = true;
 }
 
+//
+void TFT_eSprite::swapBuffs16(TFT_eSprite &other)
+{
+  uint16_t *buf_tmp = other._img;
+  other._img = _img;
+  _img = buf_tmp;
+  bool swap_tmp = other._swapBytes;
+  other._swapBytes = _swapBytes;
+  _swapBytes = swap_tmp;
+}
+
+void TFT_eSprite::swapBuffs8(TFT_eSprite &other)
+{
+  uint8_t *buf_tmp = other._img8;
+  other._img8 = _img8;
+  _img8 = buf_tmp;
+  bool swap_tmp = other._swapBytes;
+  other._swapBytes = _swapBytes;
+  _swapBytes = swap_tmp;
+}
+
+void TFT_eSprite::fastCopy16(TFT_eSprite &to)
+{
+  memcpy(to._img, _img, _dwidth * _dheight * sizeof(uint16_t));
+  to._swapBytes = _swapBytes;
+}
+
+void TFT_eSprite::fastCopy8(TFT_eSprite &to)
+{
+  memcpy(to._img8, _img8, _dwidth * _dheight);
+  to._swapBytes = _swapBytes;
+}
+
 /***************************************************************************************
 ** Function name:           createSprite
 ** Description:             Create a sprite (bitmap) of defined width and height
