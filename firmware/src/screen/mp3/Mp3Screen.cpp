@@ -146,6 +146,7 @@ Mp3Screen::Mp3Screen(GraphicsDriver &display) : IScreen(display)
     if (_volume == 0)
         _volume = 5;
 
+    _audio.setTone(3, -1, -3); // TODO eq
     _audio.setVolumeSteps(31);
     _audio.setVolume(_volume);
 
@@ -654,6 +655,9 @@ bool Mp3Screen::playTrack(bool contn)
         _track_time = 0;
 
     String track_path = _pl_manager.getTrackPath(_playlist_name.c_str(), _track_name.c_str());
+
+    if (_track_time < 10)
+        _track_time = 0;
 
     if (!_audio.connecttoFS(SD, track_path.c_str(), _track_time))
     {
