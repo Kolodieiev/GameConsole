@@ -10,8 +10,8 @@
 
 namespace meow
 {
-#define DWIDTH _display.width()
-#define DHEIGHT _display.height()
+#define D_WIDTH _display.width()
+#define D_HEIGHT _display.height()
 
     class IScreen
     {
@@ -24,11 +24,11 @@ namespace meow
         //
         void tick();
         //
-        inline ScreenID getNextScreenID() const { return _next_screen_ID; }
-        inline bool isReleased() const { return _is_released; }
+        ScreenID getNextScreenID() const { return _next_screen_ID; }
+        bool isReleased() const { return _is_released; }
 
     protected:
-        bool _is_locked{false};
+        SemaphoreHandle_t _layout_mutex;
         //
         static Input _input;
         //
@@ -43,8 +43,14 @@ namespace meow
         virtual void loop() = 0;
         //
         void setLayout(IWidgetContainer *layout);
-        inline IWidgetContainer *getLayout() const { return _layout; }
+        IWidgetContainer *getLayout() const { return _layout; }
         void openScreenByID(ScreenID screen_ID);
+
+        // Повертає х-координату, на якій віджет буде встановлено по центру відносно екрану.
+        uint16_t getCenterX(IWidget *widget) const { return widget ? (D_WIDTH - widget->getWidth()) / 2 : 0; }
+
+        // Повертає y-координату, на якій віджет буде встановлено по центру відносно екрану.
+        uint16_t getCenterY(IWidget *widget) const { return widget ? (D_HEIGHT - widget->getHeight()) / 2 : 0; }
 
     private:
         const uint8_t UI_UPDATE_DELAY = 25; // затримка між фреймами. 40FPS

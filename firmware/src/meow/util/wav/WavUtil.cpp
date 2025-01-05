@@ -1,3 +1,4 @@
+#pragma GCC optimize("O3")
 #include "WavUtil.h"
 namespace meow
 {
@@ -18,7 +19,7 @@ namespace meow
             return wav_data;
         }
 
-        if (!psramFound() || !psramInit())
+        if (!psramInit())
         {
             log_e("Помилка ініціалізації PSRAM");
             return wav_data;

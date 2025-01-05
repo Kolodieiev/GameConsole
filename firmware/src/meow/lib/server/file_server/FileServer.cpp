@@ -1,9 +1,7 @@
 #pragma GCC optimize("O3")
-
 #include "FileServer.h"
 #include <ESPmDNS.h>
 #include "./tmpl_html.cpp"
-#include "../../../manager/sd/SD_Manager.h"
 
 namespace meow
 {
@@ -27,10 +25,10 @@ namespace meow
         if (_server_dir.isEmpty())
             _server_dir = "/";
 
-        if (!_file_mngr.hasConnection())
+        if (!_f_mgr.isSdMounted())
             return false;
 
-        if (!_file_mngr.dirExist(_server_dir.c_str()))
+        if (!_f_mgr.dirExist(_server_dir.c_str()))
             return false;
 
         WiFi.softAP(_ssid, _pwd, 1, 0, 1);
@@ -145,7 +143,7 @@ namespace meow
         while (_must_work)
         {
             _server->handleClient();
-            vTaskDelay(1);
+            taskYIELD();
         }
 
         _is_working = false;
@@ -162,56 +160,54 @@ namespace meow
 
     void FileServer::handleSend()
     {
-        // Відкрити директорію з файлами на SD
-        File root = SD.open(_server_dir.c_str());
-
-        if (!root)
-        {
-            log_e("Помилка відкриття директорії %s", _server_dir.c_str());
-            _server->send(500, "text/html", "");
-            return;
-        }
-        else if (_server->args() > 0)
+        if (_server->args() > 0)
         {
             String path = _server_dir;
             path += "/";
             path += _server->arg(0);
 
-            if (!_file_mngr.fileExist(path.c_str(), true))
+            FILE *file = _f_mgr.getFileDescriptor(path.c_str(), "rb");
+
+            if (!file || !_f_mgr.fileExist(path.c_str()))
                 handle404();
             else
             {
-                File file = SD.open(path);
+                size_t f_size = _f_mgr.getFileSize(path.c_str());
+                FileStream f_stream(file, _server->arg(0).c_str(), f_size);
 
                 _server->sendHeader("Content-Type", "application/force-download");
                 _server->sendHeader("Content-Disposition", "attachment; filename=\"" + _server->arg(0) + "\"");
                 _server->sendHeader("Content-Transfer-Encoding", "binary");
                 _server->sendHeader("Cache-Control", "no-cache");
-                _server->streamFile(file, "application/octet-stream");
-                file.close();
+                _server->streamFile(f_stream, "application/octet-stream");
             }
         }
         // Якщо відсутні параметри, відобразити список файлів в директорії
         else
         {
+            if (!_f_mgr.dirExist(_server_dir.c_str()))
+            {
+                log_e("Помилка відкриття директорії %s", _server_dir.c_str());
+                _server->send(500, "text/html", "");
+                return;
+            }
+
             String html = HEAD_HTML;
             html += SEND_TITLE_STR; // Заголовок
             html += MID_HTML;
 
-            File file;
-            while ((file = root.openNextFile()))
+            std::vector<FileInfo> f_infos;
+            _f_mgr.indexFiles(f_infos, _server_dir.c_str());
+
+            for (auto &info : f_infos)
             {
-                if (!file.isDirectory())
-                {
-                    html += HREF_HTML;
-                    html += file.name();
-                    html += "\">";
-                    html += file.name();
-                    html += "</a>";
-                }
-                file.close();
-                vTaskDelay(1);
+                html += HREF_HTML;
+                html += info.getName();
+                html += "\">";
+                html += info.getName();
+                html += "</a>";
             }
+
             html += FOOT_HTML;
             _server->sendHeader("Cache-Control", "no-cache");
             _server->send(200, "text/html", html);
@@ -220,7 +216,7 @@ namespace meow
 
     void FileServer::handleFile()
     {
-        static File input_file;
+        static FILE *in_file;
 
         HTTPUpload &uploadfile = _server->upload();
         _server->setContentLength(CONTENT_LENGTH_UNKNOWN);
@@ -233,50 +229,38 @@ namespace meow
 
             log_i("Запит на створення файлу %s", file_name.c_str());
 
-            input_file = SD.open(file_name.c_str(), FILE_READ);
+            _f_mgr.closeFile(in_file);
 
-            bool file_open_fail = false;
-
-            if (input_file)
+            if (_f_mgr.exists(file_name.c_str(), true))
             {
-                bool is_dir = input_file.isDirectory();
-                input_file.close();
+                String temp_name = file_name;
+                temp_name += "_copy";
 
-                if (is_dir)
-                    file_open_fail = true;
-                else
-                    SD.remove(file_name.c_str());
+                while (_f_mgr.fileExist(temp_name.c_str(), true))
+                    temp_name += "_copy";
+
+                file_name = temp_name;
             }
 
-            if (!file_open_fail)
-            {
-                input_file = SD.open(file_name.c_str(), FILE_APPEND, true);
+            in_file = _f_mgr.getFileDescriptor(file_name.c_str(), "ab");
 
-                if (!input_file)
-                    file_open_fail = true;
-                else
-                    log_i("Файл створено");
-            }
-
-            if (file_open_fail)
+            if (!in_file)
             {
                 log_e("Не можу відкрити файл %s на запис", file_name.c_str());
                 _server->send(500, "text/html", "");
+                return;
             }
         }
         else if (uploadfile.status == UPLOAD_FILE_WRITE)
         {
-            if (input_file)
-            {
-                input_file.write(uploadfile.buf, uploadfile.currentSize);
-                vTaskDelay(1);
-            }
+            _f_mgr.writeToFile(in_file, (const char *)uploadfile.buf, uploadfile.currentSize);
+            taskYIELD();
         }
         else if (uploadfile.status == UPLOAD_FILE_END || uploadfile.status == UPLOAD_FILE_ABORTED)
         {
-            if (input_file)
+            if (in_file)
             {
-                input_file.close();
+                _f_mgr.closeFile(in_file);
 
                 handleReceive();
 

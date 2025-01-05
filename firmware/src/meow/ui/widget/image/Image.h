@@ -19,16 +19,16 @@ namespace meow
         virtual void onDraw() override;
         virtual Image *clone(uint16_t id) const override;
 
-        inline void setTransparentColor(uint16_t color)
+        void setTransparentColor(uint16_t color)
         {
-            _is_transparent = true;
+            _has_transp_color = true;
             _transparent_color = color;
             _is_changed = true;
         }
 
-        inline void clearTransparency()
+        void clearTransparency()
         {
-            _is_transparent = false;
+            _has_transp_color = false;
             _is_changed = true;
         }
 
@@ -42,13 +42,8 @@ namespace meow
         void init(uint16_t width, uint16_t height);
 #endif
 
-        // Пропустити очищення місця для малювання.
-        // Дозволяє використовувати одне і те ж зображення в декількох віджетах.
-        void setSkipClear(bool state) { _skip_clear = state; }
-
     private:
-        bool _is_transparent{false};
-        bool _skip_clear{false};
+        bool _has_transp_color{false};
         uint16_t _transparent_color{COLOR_TRANSPARENT};
 
         const uint16_t *_img_ptr{nullptr};

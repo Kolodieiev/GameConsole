@@ -1,6 +1,7 @@
 #pragma once
-#include <Arduino.h>
 #pragma GCC optimize("O3")
+
+#include <Arduino.h>
 
 #include "meowui_setup/input_setup.h"
 
@@ -25,6 +26,8 @@ namespace meow
         bool isPressed(KeyID key_id) const { return _buttons.at(key_id)->isPressed(); }
         bool isReleased(KeyID key_id) const { return _buttons.at(key_id)->isReleased(); }
         void lock(KeyID key_id, unsigned long lock_duration) { _buttons.at(key_id)->lock(lock_duration); }
+
+        void printPinMode(KeyID key_id);
 
 #ifdef TOUCHSCREEN_SUPPORT
         bool isHolded() const { return _touchscreen->isHolded(); }

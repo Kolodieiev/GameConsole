@@ -1,23 +1,17 @@
 #pragma GCC optimize("O3")
-#include "./FileManager.h"
-#include <SD.h>
-#include <dirent.h>
-
-#include "../sd/SD_Manager.h"
+#include "meowui_setup/sd_setup.h"
 #include "FileManager.h"
+#include "../sd/SD_Manager.h"
+#include "esp_task_wdt.h"
+#include <errno.h>
 
 namespace meow
 {
-    const char FileManager::STR_DIR_PREFIX[] = "_D ";
-    const char STR_TEMP_EXT[] = "_tmp";
-    const char STR_DB_EXT[] = ".ldb";
-    const char STR_DELIMITER[] = "|";
-
-    bool FileManager::hasConnection()
+    bool FileManager::isSdMounted()
     {
         bool result = true;
 
-        if (!SD_MNGR.mount() || !SD_MNGR.testConection())
+        if (!SD_Manager::getInst().mount())
         {
             log_e("Карту пам'яті не примонтовано");
             result = false;
@@ -26,198 +20,409 @@ namespace meow
         return result;
     }
 
+    void FileManager::makeFullPath(String &out_path, const char *path)
+    {
+        out_path = "";
+        out_path = SD_MOUNTPOINT;
+        out_path += path;
+    }
+
+    uint8_t FileManager::getEntryType(const char *path, dirent *entry)
+    {
+        if (entry && entry->d_type != DT_UNKNOWN)
+            return entry->d_type;
+        else
+        {
+            struct stat st;
+            if (stat(path, &st) == 0)
+            {
+                if (S_ISREG(st.st_mode))
+                    return DT_REG;
+                else if (S_ISDIR(st.st_mode))
+                    return DT_DIR;
+            }
+
+            return DT_UNKNOWN;
+        }
+    }
+
+    size_t FileManager::getFileSize(const char *path)
+    {
+        String full_path;
+        makeFullPath(full_path, path);
+
+        struct stat st;
+        if (stat(full_path.c_str(), &st) != 0 || !S_ISREG(st.st_mode))
+            return 0;
+
+        return static_cast<size_t>(st.st_size);
+    }
+
+    bool FileManager::readStat(struct stat &out_stat, const char *path)
+    {
+        String full_path;
+        makeFullPath(full_path, path);
+
+        if (stat(full_path.c_str(), &out_stat) != 0)
+            return false;
+
+        return true;
+    }
+
     bool FileManager::fileExist(const char *path, bool silently)
     {
-        bool result = SD.exists(path);
+        String full_path;
+        makeFullPath(full_path, path);
 
-        if (result)
-        {
-            File f = SD.open(path);
-            if (f.isDirectory())
-                result = false;
-
-            f.close();
-        }
+        bool result = getEntryType(full_path.c_str()) == DT_REG;
 
         if (!result && !silently)
-            log_e("File %s not found", path);
+            log_e("File %s not found", full_path.c_str());
 
         return result;
     }
 
     bool FileManager::dirExist(const char *path, bool silently)
     {
-        bool result = SD.exists(path);
+        String full_path;
+        makeFullPath(full_path, path);
 
-        if (result)
-        {
-            File f = SD.open(path);
-            if (!f.isDirectory())
-                result = false;
-
-            f.close();
-        }
+        bool result = getEntryType(full_path.c_str()) == DT_DIR;
 
         if (!result && !silently)
-            log_e("Dir %s not found", path);
+            log_e("Dir %s not found", full_path.c_str());
 
         return result;
     }
 
     bool FileManager::exists(const char *path, bool silently)
     {
-        bool result = SD.exists(path);
-        if (!result && !silently)
-            log_e("[ %s ] not exist", path);
+        String full_path;
+        makeFullPath(full_path, path);
 
-        return result;
+        uint8_t type = getEntryType(full_path.c_str());
+
+        if (type == DT_REG || type == DT_DIR)
+            return true;
+
+        log_e("[ %s ] not exist", full_path.c_str());
+        return false;
     }
 
     bool FileManager::createDir(const char *path)
     {
-        bool result = SD.mkdir(path);
+        String full_path;
+        makeFullPath(full_path, path);
+
+        errno = 0;
+
+        bool result = !mkdir(full_path.c_str(), 0777);
 
         if (!result)
+        {
             log_e("Помилка створення директорії: %s", path);
+            if (errno == EEXIST)
+                log_e("Директорія існує");
+        }
 
         return result;
     }
 
-    size_t FileManager::readFile(char *out_buffer, const char *path, uint32_t size, uint32_t seek_pos)
+    bool FileManager::createFile(const char *path)
     {
-        if (!fileExist(path))
-            return 0;
+        String full_path;
+        makeFullPath(full_path, path);
 
-        File f = SD.open(path, FILE_READ);
-        uint64_t bytes_read = 0;
-
-        if (seek_pos > 0 && !f.seek(seek_pos))
-        {
-            log_e("Помилка встановлення позиції(%lu) у файлі %s", seek_pos, path);
-            goto exit;
-        }
-
-        bytes_read = f.read((uint8_t *)out_buffer, size);
-
-    exit:
-        f.close();
-        return bytes_read;
-    }
-
-    bool FileManager::writeFile(const char *path, const char *str_buffer)
-    {
-        bool result = true;
-
-        File f = SD.open(path, FILE_WRITE, true);
+        FILE *f = fopen(full_path.c_str(), "w");
 
         if (!f)
         {
-            log_e("Помилка запису файла %s", path);
-            result = false;
-            goto exit;
+            log_e("Помилка створення фалйу: %s", path);
+            return false;
         }
 
-        f.print(str_buffer);
-
-    exit:
-        f.close();
-
-        return result;
+        fclose(f);
+        return true;
     }
 
-    size_t FileManager::getFileSize(const char *path)
+    size_t FileManager::readFile(char *out_buffer, const char *path, size_t len, int32_t seek_pos)
     {
-        if (!fileExist(path))
+        String full_path;
+        makeFullPath(full_path, path);
+
+        FILE *f = fopen(full_path.c_str(), "rb");
+
+        if (!f)
+        {
+            log_e("Помилка відркиття файлу: %s", path);
+            return 0;
+        }
+
+        if (seek_pos > 0 && fseek(f, seek_pos, SEEK_SET))
+        {
+            log_e("Помилка встановлення позиції(%d) у файлі %s", seek_pos, path);
+            return 0;
+        }
+
+        uint64_t bytes_read = bytes_read = fread(out_buffer, len, 1, f) * len;
+
+        if (bytes_read != len)
+            log_e("Прочитано: [ %zu ]  Очікувалося: [ %zu ]", bytes_read, len);
+
+        fclose(f);
+        return bytes_read;
+    }
+
+    size_t FileManager::readFromFile(FILE *file, void *out_buffer, size_t len, int32_t seek_pos)
+    {
+        if (!file)
+        {
+            log_e("Bad arguments");
+            return 0;
+        }
+
+        if (seek_pos > 0 && fseek(file, seek_pos, SEEK_SET))
+        {
+            log_e("Помилка встановлення позиції: %d", seek_pos);
+            return 0;
+        }
+
+        size_t bytes_read = fread(out_buffer, len, 1, file) * len;
+
+        if (bytes_read != len)
+            log_e("Прочитано: [ %zu ]  Очікувалося: [ %zu ]", bytes_read, len);
+
+        return bytes_read;
+    }
+
+    size_t FileManager::writeFile(const char *path, const void *buffer, size_t len)
+    {
+        if (!path || !buffer)
+        {
+            log_e("Bad arguments");
+            return 0;
+        }
+
+        String full_path;
+        makeFullPath(full_path, path);
+
+        FILE *f = fopen(full_path.c_str(), "wb");
+
+        if (!f)
+        {
+            log_e("Помилка відркиття файлу: %s", path);
+            return 0;
+        }
+
+        if (len == 0)
+            len = strlen((const char *)buffer);
+
+        if (len == 0)
+        {
+            fclose(f);
+            return 0;
+        }
+
+        size_t written = writeOptimal(f, buffer, len);
+
+        fclose(f);
+
+        return written;
+    }
+
+    size_t FileManager::writeToFile(FILE *file, const void *buffer, size_t len)
+    {
+        if (!file || !buffer || len == 0)
+        {
+            log_e("Bad arguments");
+            return 0;
+        }
+
+        return writeOptimal(file, buffer, len);
+    }
+
+    size_t FileManager::writeOptimal(FILE *file, const void *buffer, size_t len)
+    {
+        size_t opt_size = 256;
+        size_t total_written = 0;
+
+        size_t full_blocks = len / opt_size;
+        size_t remaining_bytes = len % opt_size;
+
+        for (size_t i = 0; i < full_blocks; ++i)
+            total_written += fwrite((uint8_t *)buffer + total_written, opt_size, 1, file) * opt_size;
+
+        if (remaining_bytes > 0)
+            total_written += fwrite((uint8_t *)buffer + total_written, remaining_bytes, 1, file) * remaining_bytes;
+
+        fflush(file);
+
+        if (total_written != len)
+            log_e("Записано: [ %zu ]  Очікувалося: [ %zu ]", total_written, len);
+
+        return total_written;
+    }
+
+    FILE *FileManager::getFileDescriptor(const char *path, const char *mode)
+    {
+        String full_path;
+        makeFullPath(full_path, path);
+
+        FILE *f = fopen(full_path.c_str(), mode);
+
+        if (!f)
+            log_e("Помилка взяття дескриптора для %s", full_path.c_str());
+
+        return f;
+    }
+
+    void FileManager::closeFile(FILE *&file)
+    {
+        if (file)
+        {
+            fclose(file);
+            file = nullptr;
+        }
+    }
+
+    bool FileManager::seekPos(FILE *&file, int32_t pos, uint8_t mode)
+    {
+        if (!file)
+            return false;
+
+        if (fseek(file, pos, mode))
+        {
+            log_e("Помилка встановлення позиції [%d]", pos);
+            return false;
+        }
+        return true;
+    }
+
+    size_t FileManager::getPos(FILE *&file)
+    {
+        if (!file)
             return 0;
 
-        File f = SD.open(path, FILE_READ);
+        return ftell(file);
+    }
 
-        size_t f_size = f.size();
-        f.close();
+    size_t FileManager::available(size_t size, FILE *file)
+    {
+        if (!file || feof(file))
+            return 0;
 
-        return f_size;
+        long tell = ftell(file);
+
+        if (size < tell)
+            return 0;
+
+        return size - tell;
     }
 
     void FileManager::rm()
     {
         bool result = false;
-        File root = SD.open(_rm_path.c_str());
-        bool is_dir = root.isDirectory();
-        root.close();
+
+        String full_path;
+        makeFullPath(full_path, _rm_path.c_str());
+
+        bool is_dir = dirExist(_rm_path.c_str(), true);
 
         if (!is_dir)
-            result = rmFile(_rm_path.c_str());
+            result = rmFile(full_path.c_str());
         else
-            result = rmDir(_rm_path.c_str());
+            result = rmDir(full_path.c_str());
 
         if (!result)
-            log_e("Помилка видалення: %s", _rm_path.c_str());
+            log_e("Помилка видалення:");
         else
-            _is_successfully = true;
+            log_i("Файл успішно видалено:");
 
-        doFinish();
+        log_i("%s", full_path.c_str());
+
+        taskDone(result);
     }
 
-    bool FileManager::rmFile(const char *path)
+    bool FileManager::rmFile(const char *path, bool make_full)
     {
-        // int core_id = xPortGetCoreID();
-        // int core_id = 0;
-        // TaskHandle_t idle = xTaskGetIdleTaskHandleForCPU(core_id);
+        bool result;
 
-        // if (idle == NULL || esp_task_wdt_delete(idle) != ESP_OK)
-        //     log_e("Failed to remove Core %d IDLE task from WDT", core_id);
+        if (make_full)
+        {
+            String full_path;
+            makeFullPath(full_path, path);
+            result = !remove(full_path.c_str());
+        }
+        else
+            result = !remove(path);
 
-        bool result = SD.remove(path);
-
-        // if (idle == NULL || esp_task_wdt_add(idle) != ESP_OK)
-        //     log_e("Failed to add Core %d IDLE task to WDT", core_id);
-
-        // if (!result)
-        //     log_e("Помилка видалення файла: %s", path);
+        if (!result)
+            log_e("Помилка видалення файлу: %s", path);
 
         return result;
     }
 
     bool FileManager::rmDir(const char *path)
     {
-        File root = SD.open(path);
-        bool result = true;
+        bool result = false;
 
-        bool is_dir;
-        String file_name;
+        DIR *dir = opendir(path);
+        dirent *dir_entry{nullptr};
+
+        if (!dir)
+            goto exit;
+
+        errno = 0;
 
         while (!_is_canceled)
         {
-            file_name = root.getNextFileName(&is_dir).c_str();
-
-            if (file_name.isEmpty())
-                break;
-
-            if (!is_dir)
+            dir_entry = readdir(dir);
+            if (!dir_entry)
             {
-                result = rmFile(file_name.c_str());
+                if (!errno)
+                    result = true;
+                break;
+            }
+
+            if (std::strcmp(dir_entry->d_name, ".") == 0 || std::strcmp(dir_entry->d_name, "..") == 0)
+                continue;
+
+            String full_path = path;
+            full_path += "/";
+            full_path += dir_entry->d_name;
+
+            uint8_t entr_type = getEntryType(full_path.c_str(), dir_entry);
+
+            if (entr_type == DT_REG)
+            {
+                result = rmFile(full_path.c_str());
+                if (!result)
+                    goto exit;
+            }
+            else if (entr_type == DT_DIR)
+            {
+                result = rmDir(full_path.c_str());
+
                 if (!result)
                     goto exit;
             }
             else
             {
-                result = rmDir(file_name.c_str());
-
-                if (!result)
-                {
-                    log_e("Помилка видалення каталога: %s", file_name.c_str());
-                    goto exit;
-                }
+                log_e("Невідомий тип або не вдалося прочитати: %s", path);
+                goto exit;
             }
 
-            vTaskDelay(1);
+            taskYIELD();
         }
 
     exit:
-        root.close();
+        if (dir)
+            closedir(dir);
 
-        if (!_is_canceled && result)
-            result = SD.rmdir(path);
+        if (result)
+            result = !rmdir(path);
+        else
+            log_e("Помилка під час видалення: %s", path);
 
         return result;
     }
@@ -226,32 +431,28 @@ namespace meow
     {
         FileManager *instance = static_cast<FileManager *>(params);
         instance->rm();
-        vTaskDelete(NULL);
     }
 
-    bool FileManager::startRemoving(const char *path, std::function<void()> on_finish)
+    bool FileManager::startRemoving(const char *path)
     {
-        File f = SD.open(path);
-
-        if (!f)
+        if (_task_handler)
         {
-            log_e("Path [ %s ] not found", path);
+            log_e("Вже працює інша задача");
             return false;
         }
 
-        f.close();
+        if (!exists(path))
+            return false;
 
         _rm_path = path;
-        _task_finished_callback = on_finish;
         _is_canceled = false;
-        _is_successfully = false;
 
-        BaseType_t result = xTaskCreatePinnedToCore(rmTask, "rmTask", TASK_SIZE, this, 10, NULL, 1);
+        BaseType_t result = xTaskCreatePinnedToCore(rmTask, "rmTask", TASK_SIZE, this, 10, &_task_handler, 1);
 
         if (result == pdPASS)
         {
-            log_i("rmTask is working now. Path %s", path);
             _is_working = true;
+            log_i("rmTask is working now");
             return true;
         }
         else
@@ -263,163 +464,158 @@ namespace meow
 
     bool FileManager::rename(const char *old_name, const char *new_name)
     {
-        File f = SD.open(old_name);
-
-        if (!f)
-        {
-            log_e("Path [ %s ] not found", old_name);
+        if (!exists(old_name))
             return false;
-        }
 
-        f.close();
+        String old_n;
+        makeFullPath(old_n, old_name);
+        String new_n;
+        makeFullPath(new_n, new_name);
 
-        return SD.rename(old_name, new_name);
-    }
-
-    std::vector<String> FileManager::readFilesFromDB(const char *db_path, uint16_t start_pos, uint16_t size)
-    {
-        std::vector<String> result;
-
-        if (!fileExist(db_path))
-            return result;
-
-        if (size == 0)
-            size = 50;
-
-        result.reserve(size);
-
-        File db = SD.open(db_path, FILE_READ);
-
-        db.readStringUntil('|');
-
-        uint16_t pos{0};
-        while (pos != start_pos && db.available())
-        {
-            char ch = db.read();
-            if (ch == '|')
-                ++pos;
-        }
-
-        uint16_t i{0};
-        while (db.available() && i < size)
-        {
-            result.emplace_back(db.readStringUntil('|'));
-            ++i;
-        }
-
-        db.close();
-
-        return result;
+        return !::rename(old_n.c_str(), new_n.c_str());
     }
 
     void FileManager::copyFile()
     {
-        bool nf_exist = fileExist(_copy_to_path.c_str(), true);
+        String from;
+        String to;
 
-        if (nf_exist)
+        makeFullPath(from, _copy_from_path.c_str());
+        makeFullPath(to, _copy_to_path.c_str());
+
+        if (fileExist(_copy_to_path.c_str(), true))
         {
-            if (!rmFile(_copy_to_path.c_str()))
+            if (!rmFile(to.c_str()))
             {
-                doFinish();
+                taskDone(false);
                 return;
             }
         }
 
-        File new_file = SD.open(_copy_to_path.c_str(), FILE_APPEND, true);
+        FILE *n_f = fopen(to.c_str(), "a");
 
-        if (!new_file)
+        if (!n_f)
         {
-            log_e("Помилка створення файлу [ %s ]", _copy_to_path.c_str());
-            doFinish();
+            log_e("Помилка створення файлу: %s", to.c_str());
+            taskDone(false);
             return;
         }
 
-        File old_file = SD.open(_copy_from_path.c_str(), FILE_READ);
+        FILE *o_f = fopen(from.c_str(), "r");
 
-        bool has_psram = psramFound() && psramInit();
+        if (!o_f)
+        {
+            log_e("Помилка читання файлу: %s", from.c_str());
+            fclose(n_f);
+            taskDone(false);
+            return;
+        }
+
         size_t buf_size = 1024;
         uint8_t *buffer;
 
-        if (has_psram)
+        if (psramInit())
         {
-            buf_size *= 500;
+            buf_size *= 160;
             buffer = (uint8_t *)ps_malloc(buf_size);
         }
         else
         {
-            buf_size *= 20;
+            buf_size *= 16;
             buffer = (uint8_t *)malloc(buf_size);
         }
 
         if (!buffer)
         {
-            old_file.close();
-            new_file.close();
-            SD_MNGR.unmount();
+            fclose(n_f);
+            fclose(o_f);
 
             log_e("Помилка виділення пам'яті: %zu b", buf_size);
             esp_restart();
         }
 
-        size_t file_size = old_file.size();
+        size_t file_size = getFileSize(_copy_from_path.c_str());
+
+        if (file_size == 0)
+        {
+            log_e("Некоректний розмір файлу");
+            taskDone(false);
+            return;
+        }
+
+        log_i("Починаю копіювання");
+        log_i("Із: %s", from.c_str());
+        log_i("До: %s", to.c_str());
+
         size_t writed_bytes_counter{0};
         size_t bytes_read;
 
         uint8_t cycles_counter = 0;
 
-        while (!_is_canceled && old_file.available())
+        while (!_is_canceled && !feof(o_f))
         {
-            bytes_read = old_file.read(buffer, buf_size);
-            new_file.write(buffer, bytes_read);
-            writed_bytes_counter += bytes_read;
+            bytes_read = fread(buffer, 1, buf_size, o_f);
+            writed_bytes_counter += writeOptimal(n_f, buffer, bytes_read);
             _copy_progress = ((float)writed_bytes_counter / file_size) * 100;
-
-            if (cycles_counter > 10)
+            if (cycles_counter > 5)
             {
                 cycles_counter = 0;
-                vTaskDelay(1);
+                taskYIELD();
             }
             ++cycles_counter;
         }
 
         free(buffer);
 
-        old_file.close();
-        new_file.close();
+        fclose(n_f);
+        fclose(o_f);
 
         if (_is_canceled)
+        {
             rmFile(_copy_to_path.c_str());
+            taskDone(false);
+        }
         else
-            _is_successfully = true;
-
-        doFinish();
+        {
+            taskDone(true);
+        }
     }
 
     void FileManager::copyFileTask(void *params)
     {
         FileManager *instance = static_cast<FileManager *>(params);
         instance->copyFile();
-        vTaskDelete(NULL);
     }
 
-    bool FileManager::startCopyingFile(const char *from, const char *to, std::function<void()> on_finish)
+    bool FileManager::startCopyFile(const char *from, const char *to)
     {
+        if (!from || !to)
+        {
+            log_e("Bad arguments");
+            return false;
+        }
+
+        if (_task_handler)
+        {
+            log_e("Вже працює інша задача");
+            return false;
+        }
+
         if (!fileExist(from))
             return false;
 
         _copy_from_path = from;
         _copy_to_path = to;
-        _task_finished_callback = on_finish;
+
         _is_canceled = false;
-        _is_successfully = false;
         _copy_progress = 0;
 
-        BaseType_t result = xTaskCreatePinnedToCore(copyFileTask, "copyFileTask", TASK_SIZE, this, 10, NULL, 1);
+        BaseType_t result = xTaskCreatePinnedToCore(copyFileTask, "copyFileTask", TASK_SIZE, this, 10, &_task_handler, 1);
 
         if (result == pdPASS)
         {
-            log_i("copyFileTask is working now. Path from %s", from);
             _is_working = true;
+            log_i("copyFileTask is working now");
             return true;
         }
         else
@@ -429,217 +625,185 @@ namespace meow
         }
     }
 
-    void FileManager::index()
+    void FileManager::startIndex(std::vector<FileInfo> &out_vec, const char *dir_path, IndexMode mode, const char *file_ext)
     {
-        String tmp_db_path = _db_path;
-        tmp_db_path += STR_TEMP_EXT;
+        if (!dirExist(dir_path))
+            return;
 
-        bool tmp_exist = fileExist(tmp_db_path.c_str(), true);
+        String full_path;
+        makeFullPath(full_path, dir_path);
 
-        if (tmp_exist)
+        DIR *dir = opendir(full_path.c_str());
+        if (!dir)
         {
-            if (!rmFile(tmp_db_path.c_str()))
-            {
-                doFinish();
-                return;
-            }
-        }
-
-        File tmp_db = SD.open(tmp_db_path, FILE_APPEND, true);
-
-        if (!tmp_db)
-        {
-            log_e("Помилка відкриття файлу %s", tmp_db_path);
-            doFinish();
+            log_e("Помилка відкриття директорії %s", full_path.c_str());
+            taskDone(false);
             return;
         }
 
-        File dir = SD.open(_dir_path);
+        out_vec.clear();
 
+        dirent *dir_entry{nullptr};
         String file_name;
-        uint16_t counter{0};
-
         bool is_dir;
-        while (!_is_canceled)
-        {
-            file_name = basename(dir.getNextFileName(&is_dir).c_str());
 
-            if (file_name.isEmpty())
+        while (1)
+        {
+            dir_entry = readdir(dir);
+            if (!dir_entry)
                 break;
 
-            switch (_index_mode)
+            file_name = dir_entry->d_name;
+
+            if (file_name == "." || file_name == "..")
+                continue;
+
+            uint8_t entr_type = getEntryType(full_path.c_str(), dir_entry);
+
+            if (entr_type == DT_REG)
+                is_dir = false;
+            else if (entr_type == DT_DIR)
+                is_dir = true;
+            else
+                continue;
+
+            switch (mode)
             {
             case INDX_MODE_DIR:
                 if (is_dir)
-                {
-                    file_name += STR_DELIMITER;
-                    tmp_db.print(file_name);
-                    ++counter;
-                }
+                    out_vec.emplace_back(file_name, true);
                 break;
             case INDX_MODE_FILES:
-                if (!is_dir && !file_name.endsWith(STR_TEMP_EXT) && !file_name.endsWith(STR_DB_EXT))
-                {
-                    file_name += STR_DELIMITER;
-                    tmp_db.print(file_name);
-                    ++counter;
-                }
+                if (!is_dir)
+                    out_vec.emplace_back(file_name, false);
                 break;
             case INDX_MODE_FILES_EXT:
-                if (!is_dir && file_name.endsWith(_file_ext))
-                {
-                    file_name += STR_DELIMITER;
-                    tmp_db.print(file_name);
-                    ++counter;
-                }
+                if (!is_dir && file_name.endsWith(file_ext))
+                    out_vec.emplace_back(file_name, false);
                 break;
             case INDX_MODE_ALL:
-
                 if (is_dir)
-                    file_name = STR_DIR_PREFIX + file_name;
-                else if (file_name.endsWith(STR_TEMP_EXT) || file_name.endsWith(STR_DB_EXT))
-                    break;
-
-                file_name += STR_DELIMITER;
-                tmp_db.print(file_name);
-                ++counter;
-
+                    out_vec.emplace_back(file_name, true);
+                else
+                    out_vec.emplace_back(file_name, false);
                 break;
             }
 
-            vTaskDelay(1 / portTICK_PERIOD_MS);
+            taskYIELD();
         }
 
-        dir.close();
-        tmp_db.close();
+        std::sort(out_vec.begin(), out_vec.end());
 
-        if (!_is_canceled)
-        {
-            if (fileExist(_db_path.c_str(), true))
-                rmFile(_db_path.c_str());
-
-            tmp_db = SD.open(tmp_db_path, FILE_READ);
-            File db = SD.open(_db_path, FILE_APPEND, true);
-
-            if (!db)
-            {
-                log_e("Помилка відкриття %s", _db_path);
-            }
-            else
-            {
-                String num_str = "";
-                num_str += counter;
-                num_str += "|";
-                db.print(num_str);
-
-                const uint16_t buf_size{1024};
-                uint8_t buffer[buf_size];
-
-                size_t bytes_read;
-                while (!_is_canceled && tmp_db.available())
-                {
-                    bytes_read = tmp_db.read(buffer, buf_size);
-                    db.write(buffer, bytes_read);
-                    vTaskDelay(1);
-                }
-
-                db.close();
-
-                if (!_is_canceled)
-                    _is_successfully = true;
-            }
-        }
-
-        tmp_db.close();
-        rmFile(tmp_db_path.c_str());
-
-        doFinish();
+        if (dir)
+            closedir(dir);
     }
 
-    void FileManager::indexTask(void *params)
+    void FileManager::indexFilesExt(std::vector<FileInfo> &out_vec, const char *dir_path, const char *file_ext)
     {
-        FileManager *instance = static_cast<FileManager *>(params);
-        instance->index();
-        vTaskDelete(NULL);
+        return startIndex(out_vec, dir_path, INDX_MODE_FILES_EXT, file_ext);
     }
 
-    bool FileManager::startIndexTask(IndexMode mode, const char *dir_path, const char *db_path, std::function<void()> on_finish)
+    void FileManager::indexFiles(std::vector<FileInfo> &out_vec, const char *dir_path)
     {
-        if (!dirExist(dir_path))
-            return false;
-
-        _index_mode = mode;
-        _dir_path = dir_path;
-        _db_path = db_path;
-        _task_finished_callback = on_finish;
-
-        _is_canceled = false;
-        _is_successfully = false;
-
-        BaseType_t result = xTaskCreatePinnedToCore(indexTask, "indexTask", TASK_SIZE, this, 10, NULL, 1);
-
-        if (result == pdPASS)
-        {
-            log_i("indexTask is working now. Dir path %s", dir_path);
-            _is_working = true;
-            return true;
-        }
-        else
-        {
-            log_e("indexTask was not running");
-            return false;
-        }
+        return startIndex(out_vec, dir_path, INDX_MODE_FILES);
     }
 
-    bool FileManager::indexFilesExt(const char *dir_path, const char *file_ext, const char *db_path, std::function<void()> on_finish)
+    void FileManager::indexDirs(std::vector<FileInfo> &out_vec, const char *dir_path)
     {
-        _file_ext = file_ext;
-        return startIndexTask(INDX_MODE_FILES_EXT, dir_path, db_path, on_finish);
+        return startIndex(out_vec, dir_path, INDX_MODE_DIR);
     }
 
-    bool FileManager::indexFiles(const char *dir_path, const char *db_path, std::function<void()> on_finish)
+    void FileManager::indexAll(std::vector<FileInfo> &out_vec, const char *dir_path)
     {
-        return startIndexTask(INDX_MODE_FILES, dir_path, db_path, on_finish);
+        return startIndex(out_vec, dir_path, INDX_MODE_ALL);
     }
 
-    bool FileManager::indexDirs(const char *dir_path, const char *db_path, std::function<void()> on_finish)
-    {
-        return startIndexTask(INDX_MODE_DIR, dir_path, db_path, on_finish);
-    }
-
-    bool FileManager::indexAll(const char *dir_path, const char *db_path, std::function<void()> on_finish)
-    {
-        return startIndexTask(INDX_MODE_ALL, dir_path, db_path, on_finish);
-    }
-
-    uint16_t FileManager::getDBSize(const char *db_path)
-    {
-        if (!fileExist(db_path))
-            return 0;
-
-        File f = SD.open(db_path, FILE_READ);
-
-        String temp = f.readStringUntil('|');
-        uint16_t result;
-        if (temp.isEmpty())
-            result = 0;
-        else
-            result = atoi(temp.c_str());
-
-        f.close();
-
-        return result;
-    }
-
-    void FileManager::doFinish()
+    void FileManager::taskDone(bool result)
     {
         _is_working = false;
-        if (_task_finished_callback)
-            _task_finished_callback();
+
+        if (_doneHandler)
+            _doneHandler(result, _doneArg);
+
+        if (_task_handler)
+        {
+            TaskHandle_t temp_handler = _task_handler;
+            _task_handler = nullptr;
+            vTaskDelete(temp_handler);
+        }
     }
 
-    void FileManager::cancelTask()
+    void FileManager::cancel()
     {
         _is_canceled = true;
+    }
+
+    void FileManager::setTaskDoneHandler(TaskDoneHandler handler, void *arg)
+    {
+        _doneHandler = handler;
+        _doneArg = arg;
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------
+
+    FileInfo::FileInfo(const String &name, bool is_dir) : _is_dir{is_dir}
+    {
+        if (psramInit())
+            _name = (char *)ps_malloc(name.length() + 1);
+        else
+            _name = (char *)malloc(name.length() + 1);
+
+        if (!_name)
+        {
+            log_e("Помилка виділення буферу");
+            esp_restart();
+        }
+
+        _name[name.length()] = '\0';
+
+        std::memcpy(_name, name.c_str(), name.length());
+    }
+
+    //------------------------------------------------------------------------------------------------------------------------
+
+    int FileStream::available()
+    {
+        if (!_file || feof(_file))
+            return 0;
+
+        return _size - ftell(_file);
+    }
+
+    size_t FileStream::readBytes(char *buffer, size_t length)
+    {
+        if (!_file)
+            return 0;
+        return fread(buffer, length, 1, _file) * length;
+    }
+
+    int FileStream::read()
+    {
+        if (!_file || feof(_file))
+            return -1;
+        return fgetc(_file);
+    }
+
+    size_t FileStream::write(uint8_t byte)
+    {
+        if (!_file)
+            return 0;
+
+        return fwrite(&byte, 1, 1, _file);
+    }
+
+    int FileStream::peek()
+    {
+        if (!_file || feof(_file))
+            return -1;
+
+        int c = fgetc(_file);
+        if (c != EOF)
+            ungetc(c, _file);
+        return c;
     }
 }

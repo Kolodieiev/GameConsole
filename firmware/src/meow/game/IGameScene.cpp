@@ -1,12 +1,27 @@
 #include "IGameScene.h"
+#pragma GCC optimize("O3")
 #include <algorithm>
 
 namespace meow
 {
+    IGameScene::IGameScene(GraphicsDriver &display, Input &input, DataStream &stored_objs) : _display{display},
+                                                                                             _input{input},
+                                                                                             _game_map{GameMap(display)},
+                                                                                             _stored_objs{stored_objs}
+    {
+        _obj_mutex = xSemaphoreCreateMutex();
+
+        if (!_obj_mutex)
+        {
+            log_e("Не вдалося створити _obj_mutex");
+            esp_restart();
+        }
+    }
+
     IGameScene::~IGameScene()
     {
-        for (auto &&it : _game_objs)
-            delete it;
+        for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
+            delete it->second;
 
         delete _game_UI;
         delete _game_menu;
@@ -17,6 +32,11 @@ namespace meow
         if (_is_paused)
             return;
 
+        if (!_main_obj)
+            return;
+
+        takeLock();
+
         _game_map.setCameraPos(_main_obj->_x_global, _main_obj->_y_global);
         _game_map.onDraw();
 
@@ -25,17 +45,16 @@ namespace meow
 
         for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
         {
-            obj = *it;
+            obj = it->second;
 
             if (!obj->isDestroyed())
             {
-
                 obj->update();
 
                 if (obj->isTriggered())
                 {
                     obj->resetTrigger();
-                    onTriggered(obj->getTriggerID());
+                    onTrigger(obj->getTriggerID());
                 }
 
                 if (_game_map.isInView(obj->_x_global, obj->_y_global, obj->_sprite.width, obj->_sprite.height))
@@ -69,7 +88,7 @@ namespace meow
             }
             else
             {
-                delete (*it);
+                delete it->second;
                 _game_objs.erase(it);
             }
         }
@@ -83,7 +102,26 @@ namespace meow
         for (auto it = view_obj.begin(), last_it = view_obj.end(); it != last_it; ++it)
             (*it)->onDraw();
 
+        giveLock();
+
         _game_UI->onDraw();
     }
 
+    size_t IGameScene::getObjsSize()
+    {
+        size_t sum{0};
+        takeLock();
+        for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
+            sum += it->second->getDataSize();
+        giveLock();
+        return sum;
+    }
+
+    void IGameScene::serialize(DataStream &ds)
+    {
+        takeLock();
+        for (auto it = _game_objs.begin(), last_it = _game_objs.end(); it != last_it; ++it)
+            it->second->serialize(ds);
+        giveLock();
+    }
 }

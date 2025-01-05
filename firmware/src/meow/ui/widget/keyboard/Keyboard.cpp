@@ -8,6 +8,8 @@ namespace meow
 
     Keyboard *Keyboard::clone(uint16_t id) const
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         try
         {
             Keyboard *clone = new Keyboard(id, _display);
@@ -20,6 +22,7 @@ namespace meow
             clone->_back_color = _back_color;
             clone->_border_color = _border_color;
             clone->_corner_radius = _corner_radius;
+            clone->_is_transparent = _is_transparent;
 
             for (const auto &widget_ptr : _widgets)
             {
@@ -27,6 +30,7 @@ namespace meow
                 clone->addWidget(item);
             }
 
+            xSemaphoreGive(_widg_mutex);
             return clone;
         }
         catch (const std::bad_alloc &e)
@@ -48,6 +52,8 @@ namespace meow
 
     void Keyboard::focusUp()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         KeyboardRow *row = getFocusRow();
 
         uint16_t focusPos = row->getCurFocusPos();
@@ -61,10 +67,14 @@ namespace meow
 
         row = reinterpret_cast<KeyboardRow *>(_widgets[_cur_focus_row_pos]);
         row->setFocus(focusPos);
+
+        xSemaphoreGive(_widg_mutex);
     }
 
     void Keyboard::focusDown()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         KeyboardRow *row = getFocusRow();
 
         uint16_t focusPos = row->getCurFocusPos();
@@ -78,28 +88,38 @@ namespace meow
 
         row = reinterpret_cast<KeyboardRow *>(_widgets[_cur_focus_row_pos]);
         row->setFocus(focusPos);
+
+        xSemaphoreGive(_widg_mutex);
     }
 
     void Keyboard::focusLeft()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         KeyboardRow *row = getFocusRow();
 
-        if (row->focusUp())
-            return;
+        if (!row->focusUp())
+        {
+            row->removeFocus();
+            row->setFocus(row->getSize() - 1);
+        }
 
-        row->removeFocus();
-        row->setFocus(row->getSize() - 1);
+        xSemaphoreGive(_widg_mutex);
     }
 
     void Keyboard::focusRight()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         KeyboardRow *row = getFocusRow();
 
-        if (row->focusDown())
-            return;
+        if (!row->focusDown())
+        {
+            row->removeFocus();
+            row->setFocus(0);
+        }
 
-        row->removeFocus();
-        row->setFocus(0);
+        xSemaphoreGive(_widg_mutex);
     }
 
     KeyboardRow *Keyboard::getFocusRow() const
@@ -123,10 +143,12 @@ namespace meow
 
     void Keyboard::onDraw()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         if (!_is_changed)
         {
-            if (_visibility != INVISIBLE)
-                for (uint16_t i{0}; _is_enabled && i < _widgets.size(); ++i)
+            if (_visibility != INVISIBLE && _is_enabled)
+                for (uint16_t i{0}; i < _widgets.size(); ++i)
                     _widgets[i]->onDraw();
         }
         else
@@ -135,11 +157,14 @@ namespace meow
 
             if (_visibility == INVISIBLE)
             {
-                hide();
+                if (!_is_transparent)
+                    hide();
+                xSemaphoreGive(_widg_mutex);
                 return;
             }
 
-            clear();
+            if (!_is_transparent)
+                clear();
 
             if (_first_drawing)
             {
@@ -160,5 +185,7 @@ namespace meow
                 y += _widgets[i]->getHeight();
             }
         }
+
+        xSemaphoreGive(_widg_mutex);
     }
 }

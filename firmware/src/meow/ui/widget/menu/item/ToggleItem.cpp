@@ -14,8 +14,8 @@ namespace meow
     {
         if (!_is_changed)
         {
-            if (_image)
-                _image->onDraw();
+            if (_ico)
+                _ico->onDraw();
             if (_label)
                 _label->onDraw();
             if (_toggle)
@@ -25,7 +25,8 @@ namespace meow
 
         _is_changed = false;
 
-        clear();
+        if (!_is_transparent)
+            clear();
 
         uint8_t img_width{0};
         uint8_t toggle_width{0};
@@ -38,17 +39,17 @@ namespace meow
             _toggle->onDraw();
         }
 
-        if (_image)
+        if (_ico)
         {
-            img_width = _image->getWidth() + ITEM_PADDING;
-            _image->setPos(ITEM_PADDING, (_height - _image->getHeight()) * 0.5);
+            img_width = _ico->getWidth() + ITEM_PADDING;
+            _ico->setPos(ITEM_PADDING, (_height - _ico->getHeight()) * 0.5);
 
             if (_has_focus)
-                _image->setFocus();
+                _ico->setFocus();
             else
-                _image->removeFocus();
+                _ico->removeFocus();
 
-            _image->onDraw();
+            _ico->onDraw();
         }
 
         if (_label)
@@ -68,26 +69,29 @@ namespace meow
 
     ToggleItem *ToggleItem::clone(uint16_t id) const
     {
-        ToggleItem *clone = new ToggleItem(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            ToggleItem *clone = new ToggleItem(*this);
+
+            clone->_id = id;
+
+            if (_ico)
+                clone->setIco(_ico->clone(_ico->getID()));
+
+            if (_label)
+                clone->setLbl(_label->clone(_label->getID()));
+
+            if (_toggle)
+                clone->setToggle(_toggle->clone(_toggle->getID()));
+
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+
+            log_e("%s", e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-
-        if (_image)
-            clone->setImg(_image->clone(_image->getID()));
-
-        if (_label)
-            clone->setLbl(_label->clone(_label->getID()));
-
-        if (_toggle)
-            clone->setToggle(_toggle->clone(_toggle->getID()));
-
-        return clone;
     }
 
     void ToggleItem::setToggle(ToggleSwitch *toggle)

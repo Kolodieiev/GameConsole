@@ -7,12 +7,7 @@ namespace meow
 
     IWidget *Menu::findItemByID(uint16_t itemID) const
     {
-        IWidget *widget = findWidgetByID(itemID);
-
-        if (widget == nullptr)
-            return nullptr;
-        else
-            return widget;
+        return findWidgetByID(itemID);
     }
 
     void Menu::deleteWidgets()
@@ -40,12 +35,12 @@ namespace meow
         return item->getText();
     }
 
-    IWidget *Menu::getCurrentItem()
+    MenuItem *Menu::getCurrentItem()
     {
-        if (_widgets.size() == 0)
+        if (_widgets.empty())
             return nullptr;
 
-        return _widgets[_cur_focus_pos];
+        return static_cast<MenuItem *>(_widgets[_cur_focus_pos]);
     }
 
     bool Menu::addItem(MenuItem *item)
@@ -55,49 +50,59 @@ namespace meow
 
     void Menu::onDraw()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         if (!_is_changed)
         {
-            if (_visibility != INVISIBLE)
+            if (_visibility != INVISIBLE && _is_enabled)
             {
                 uint16_t cycles_count = getCyclesCount();
-                for (uint16_t i{_first_item_index}; _is_enabled && i < _first_item_index + cycles_count; ++i)
+                for (uint16_t i{_first_item_index}; i < _first_item_index + cycles_count; ++i)
                     _widgets[i]->onDraw();
             }
+
+            xSemaphoreGive(_widg_mutex);
+            return;
         }
-        else
+
+        _is_changed = false;
+
+        if (_visibility == INVISIBLE)
         {
-            _is_changed = false;
-
-            if (_visibility == INVISIBLE)
-            {
+            if (!_is_transparent)
                 hide();
-                return;
-            }
-
-            if (_widgets.size() == 0)
-            {
-                clear();
-                return;
-            }
-
-            uint16_t cyclesCount = getCyclesCount();
-
-            if (_first_item_index >= _widgets.size())
-                _first_item_index = _widgets.size() - 1;
-
-            if (_cur_focus_pos >= _widgets.size())
-                _cur_focus_pos = _widgets.size() - 1;
-
-            IWidget *item = _widgets[_cur_focus_pos];
-            item->setFocus();
-
-            drawItems(_first_item_index, cyclesCount);
+            xSemaphoreGive(_widg_mutex);
+            return;
         }
+
+        if (_widgets.size() == 0)
+        {
+            if (!_is_transparent)
+                clear();
+            xSemaphoreGive(_widg_mutex);
+            return;
+        }
+
+        uint16_t cyclesCount = getCyclesCount();
+
+        if (_first_item_index >= _widgets.size())
+            _first_item_index = _widgets.size() - 1;
+
+        if (_cur_focus_pos >= _widgets.size())
+            _cur_focus_pos = _widgets.size() - 1;
+
+        IWidget *item = _widgets[_cur_focus_pos];
+        item->setFocus();
+
+        drawItems(_first_item_index, cyclesCount);
+
+        xSemaphoreGive(_widg_mutex);
     }
 
     void Menu::drawItems(uint16_t start, uint16_t count)
     {
-        clear();
+        if (!_is_transparent)
+            clear();
 
         if (_widgets.size() == 0)
             return;

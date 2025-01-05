@@ -10,10 +10,12 @@ namespace meow
 
     void EmptyLayout::onDraw()
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         if (!_is_changed)
         {
-            if (_visibility != INVISIBLE)
-                for (uint16_t i{0}; _is_enabled && i < _widgets.size(); ++i)
+            if (_visibility != INVISIBLE && _is_enabled)
+                for (uint16_t i{0}; i < _widgets.size(); ++i)
                     _widgets[i]->onDraw();
         }
         else
@@ -22,19 +24,26 @@ namespace meow
 
             if (_visibility == INVISIBLE)
             {
-                hide();
+                if (!_is_transparent)
+                    hide();
+                xSemaphoreGive(_widg_mutex);
                 return;
             }
 
-            clear();
+            if (!_is_transparent)
+                clear();
 
             for (uint16_t i{0}; i < _widgets.size(); ++i)
                 _widgets[i]->forcedDraw();
         }
+
+        xSemaphoreGive(_widg_mutex);
     }
 
     EmptyLayout *EmptyLayout::clone(uint16_t id) const
     {
+        xSemaphoreTake(_widg_mutex, portMAX_DELAY);
+
         try
         {
             EmptyLayout *clone = new EmptyLayout(id, IWidgetContainer::_display);
@@ -46,6 +55,7 @@ namespace meow
             clone->_back_color = _back_color;
             clone->_border_color = _border_color;
             clone->_corner_radius = _corner_radius;
+            clone->_is_transparent = _is_transparent;
 
             for (const auto &widget_ptr : _widgets)
             {
@@ -53,6 +63,7 @@ namespace meow
                 clone->addWidget(item);
             }
 
+            xSemaphoreGive(_widg_mutex);
             return clone;
         }
         catch (const std::bad_alloc &e)

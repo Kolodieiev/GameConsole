@@ -25,8 +25,8 @@ namespace meow
     {
         if (!_is_changed)
         {
-            if (_image)
-                _image->onDraw();
+            if (_ico)
+                _ico->onDraw();
             if (_label)
                 _label->onDraw();
             return;
@@ -34,24 +34,25 @@ namespace meow
 
         _is_changed = false;
 
-        clear();
+        if (!_is_transparent)
+            clear();
 
         uint8_t img_width{0};
 
-        if (_image)
+        if (_ico)
         {
-            _image->setParent(this);
-            img_width = _image->getWidth() + ITEM_PADDING;
-            _image->setPos(ITEM_PADDING, (_height - _image->getHeight()) * 0.5);
+            _ico->setParent(this);
+            img_width = _ico->getWidth() + ITEM_PADDING;
+            _ico->setPos(ITEM_PADDING, (_height - _ico->getHeight()) * 0.5);
 
             uint16_t bk_color = _back_color;
 
             if (_has_focus && _need_change_back)
-                _image->setBackColor(_focus_back_color);
+                _ico->setBackColor(_focus_back_color);
 
-            _image->setBackColor(bk_color);
+            _ico->setBackColor(bk_color);
 
-            _image->onDraw();
+            _ico->onDraw();
         }
 
         if (_label)
@@ -71,30 +72,33 @@ namespace meow
 
     MenuItem *MenuItem::clone(uint16_t id) const
     {
-        MenuItem *clone = new MenuItem(*this);
-
-        if (!clone)
+        try
         {
-            log_e("Помилка клонування");
+            MenuItem *clone = new MenuItem(*this);
+
+            clone->_id = id;
+
+            if (_ico)
+                clone->setIco(_ico->clone(_ico->getID()));
+
+            if (_label)
+                clone->setLbl(_label->clone(_label->getID()));
+
+            return clone;
+        }
+        catch (const std::bad_alloc &e)
+        {
+
+            log_e("%s", e.what());
             esp_restart();
         }
-
-        clone->_id = id;
-
-        if (_image)
-            clone->setImg(_image->clone(_image->getID()));
-
-        if (_label)
-            clone->setLbl(_label->clone(_label->getID()));
-
-        return clone;
     }
 
-    void MenuItem::setImg(Image *img)
+    void MenuItem::setIco(Image *img)
     {
-        delete _image;
+        delete _ico;
 
-        _image = img;
+        _ico = img;
         _is_changed = true;
     }
 
@@ -118,5 +122,6 @@ namespace meow
         _label->setChangingBack(_need_change_back);
         _label->setChangingBorder(false);
         _label->setGravity(GRAVITY_CENTER);
+        _label->setTransparency(_is_transparent);
     }
 }

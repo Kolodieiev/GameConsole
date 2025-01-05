@@ -1,7 +1,8 @@
 #pragma once
+#pragma GCC optimize("O3")
 #include <Arduino.h>
 //
-#include <list>
+#include <unordered_map>
 //
 #include "../driver/graphics/GraphicsDriver.h"
 #include "../driver/input/Input.h"
@@ -12,39 +13,37 @@
 #include "./IGameMenu.h"
 #include "./gmap/GameMap.h"
 #include "./object/IGameObject.h"
-#include "./object/IObjShape.h"
+#include "./IdGen.h"
 
 namespace meow
 {
     class IGameScene
     {
     public:
-        IGameScene(GraphicsDriver &display, Input &input, std::vector<IObjShape *> &stored_objs) : _display{display},
-                                                                                                   _input{input},
-                                                                                                   _game_map{GameMap(display)},
-                                                                                                   _stored_objs{stored_objs}
-        {
-        }
-
+        IGameScene(GraphicsDriver &display, Input &input, DataStream &stored_objs);
         virtual ~IGameScene() = 0;
 
         // Метод, що викликається керуючим екраном кожний кадр
         virtual void update() = 0;
 
-        // Метод-обробник тригерів сцени
-        virtual void onTriggered(int16_t id) {}
-        //
         IGameScene(const IGameScene &rhs) = delete;
         IGameScene &operator=(const IGameScene &rhs) = delete;
         //
         // Службовий метод, необхідний екрану для перевірки стану гри
-        inline bool isFinished() const { return _is_finished; }
+        bool isFinished() const { return _is_finished; }
         // Службовий метод, необхідний екрану для перевірки стану сцени
-        inline bool isReleased() const { return _is_released; }
+        bool isReleased() const { return _is_released; }
         // Службовий метод, який повідомляє екрану ідентифікатор наступої сцени, яка повинна бути відкрита після поточної
-        inline uint8_t getNextSceneID() const { return _next_scene_ID; }
-        //
+        uint8_t getNextSceneID() const { return _next_scene_ID; }
+
     protected:
+        // Мютекс для синхронізації доступу до об'єктів
+        SemaphoreHandle_t _obj_mutex;
+        // Взяти блокування доступу до об'єктів
+        void takeLock() { xSemaphoreTake(_obj_mutex, portMAX_DELAY); }
+        // Повернути блокування доступу до об'єктів
+        void giveLock() { xSemaphoreGive(_obj_mutex); }
+
         // Прапор встановлення сцени на паузу
         bool _is_paused{false};
         // Прапор, який вказує, що поточна сцена готова звільнити своє місце для наступної сцени
@@ -61,7 +60,7 @@ namespace meow
         // Самий нижній шар сцени
         GameMap _game_map;
         // Список усіх ігрових об'єктів на сцені, які повинні взаємодіяти один з одним
-        std::list<IGameObject *> _game_objs;
+        std::unordered_map<uint32_t, IGameObject *> _game_objs;
         // Драйвер графіки
         GraphicsDriver &_display;
         // Ввід
@@ -72,10 +71,10 @@ namespace meow
         ResManager _res_manager;
 
         // Контейнер для перенесення відбитків об'єктів до наступної сцени.
-        std::vector<IObjShape *> &_stored_objs;
+        DataStream &_stored_objs;
 
         // Знищити поточну сцену і відкрити наступну із вказаним ідентифікатором
-        inline void openSceneByID(uint16_t scene_ID)
+        void openSceneByID(uint16_t scene_ID)
         {
             _next_scene_ID = scene_ID;
             _is_released = true;
@@ -94,6 +93,16 @@ namespace meow
                 log_e("%s", e.what());
                 esp_restart();
             }
+        }
+
+        // Повертає загальний розмір корисних даних усіх об'єктів
+        size_t getObjsSize();
+        // Записує усі об'єкти на сцені в DataStream
+        void serialize(DataStream &ds);
+        // Метод-обробник тригерів сцени
+        virtual void onTrigger(uint8_t id)
+        {
+            log_i("Викликано тригер: %d", id);
         }
     };
 
