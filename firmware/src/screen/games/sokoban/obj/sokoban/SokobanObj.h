@@ -14,13 +14,15 @@ namespace sokoban
                    ResManager &res,
                    WavManager &audio,
                    GameMap &game_map,
-                   std::list<IGameObject *> &game_objs) : IGameObject(display, res, audio, game_map, game_objs) {}
+                   std::unordered_map<uint32_t, IGameObject *> &game_objs) : IGameObject(display, res, audio, game_map, game_objs) {}
         virtual ~SokobanObj() {}
 
         virtual void init() override;
         virtual void update() override;
-        virtual IObjShape *getShape() override;
-        virtual void reborn(IObjShape *shape) override;
+        virtual void serialize(DataStream &ds) override;
+        virtual void deserialize(DataStream &ds) override;
+        virtual size_t getDataSize() const override;
+ 
         virtual void onDraw() override; // Необов'язковий метод
 
         void move(MovingDirection direction);

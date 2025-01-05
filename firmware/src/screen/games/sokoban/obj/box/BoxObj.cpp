@@ -1,8 +1,8 @@
 #include "BoxObj.h"
 #include "../ClassID.h"
 
-#include "./res/sprite_box.h"
-#include "./res/sprite_box_ok.h"
+#include "../../../common_res/box_img/sprite_box.h"
+#include "../../../common_res/box_img/sprite_box_ok.h"
 
 #include "../../ResID.h"
 
@@ -10,6 +10,7 @@ namespace sokoban
 {
     void BoxObj::init()
     {
+        _obj_id = IdGen::genID();
         _class_ID = ClassID::CLASS_BOX;
         _layer = 1; // Об'єкт повинен бути вище об'єктів точок
         _sprite.img_ptr = SPRITE_BOX;
@@ -39,17 +40,17 @@ namespace sokoban
         }
     }
 
-    IObjShape *BoxObj::getShape()
+    void BoxObj::serialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен повертати свій образ");
-        esp_restart();
-        return nullptr;
     }
 
-    void BoxObj::reborn(IObjShape *shape)
+    void BoxObj::deserialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен бути відновлений");
-        esp_restart();
+    }
+
+    size_t BoxObj::getDataSize() const
+    {
+        return 0;
     }
 
     bool BoxObj::moveTo(uint16_t x, uint16_t y)

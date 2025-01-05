@@ -11,17 +11,16 @@ namespace sokoban
 {
     class SokobanScene : public IGameScene
     {
-
     public:
-        SokobanScene(GraphicsDriver &display, Input &input, std::vector<IObjShape *> &stored_objs, bool is_loaded = false, uint8_t lvl = 1);
+        SokobanScene(GraphicsDriver &display, Input &input, DataStream &stored_objs, bool is_loaded = false, uint8_t lvl = 1);
         // Деструктор обов'язковий до реалізації.
         virtual ~SokobanScene();
 
         // Метод обов'язковий до реалізації. Викликається кожен кадр екраном для оновлення та відрисовки сцени.
         virtual void update() override;
 
-        // Метод обов'язковий до реалізації. Його буде викликано, якщо будь-який об'єкт повідомить про свій тригер. В параметр буде передано id тригера
-        virtual void onTriggered(int16_t id) override;
+        // Метод який буде викликано, якщо будь-який об'єкт повідомить про свій тригер. В параметр буде передано id тригера
+        virtual void onTrigger(uint8_t id) override;
 
     private:
         // ----------------------------------------

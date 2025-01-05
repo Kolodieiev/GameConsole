@@ -22,8 +22,7 @@ protected:
 private:
     enum Widget_ID : uint8_t
     {
-        ID_NAVBAR = 2,
-        ID_MENU,
+        ID_MENU = 2,
         ID_SCROLLBAR,
         ID_TOGGLE,
         ID_ERR_LBL,

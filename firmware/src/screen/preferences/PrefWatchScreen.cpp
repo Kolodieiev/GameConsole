@@ -13,7 +13,6 @@ PrefWatchScreen::PrefWatchScreen(GraphicsDriver &display) : IScreen(display)
 
     if (!_watch_inited)
     {
-        log_e("Помилка ініціалізації RTC");
         openScreenByID(ID_SCREEN_PREF_SEL);
         return;
     }
@@ -92,9 +91,6 @@ PrefWatchScreen::PrefWatchScreen(GraphicsDriver &display) : IScreen(display)
     header_lbl->setTextColor(TFT_WHITE);
     header_lbl->setAlign(IWidget::ALIGN_CENTER);
     header_lbl->setGravity(IWidget::GRAVITY_CENTER);
-
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_SAVE, "", STR_BACK);
-    layout->addWidget(navbar);
 }
 
 void PrefWatchScreen::loop()
@@ -105,19 +101,19 @@ void PrefWatchScreen::update()
 {
     if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 500);
+        _input.lock(KeyID::KEY_OK, CLICK_LOCK);
 
         _watch.setDateTime(_cur_date_time);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
         openScreenByID(ID_SCREEN_PREF_SEL);
     }
     else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(KeyID::KEY_LEFT, 200);
+        _input.lock(KeyID::KEY_LEFT, CLICK_LOCK);
 
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->removeFocus();
@@ -132,7 +128,7 @@ void PrefWatchScreen::update()
     }
     else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(KeyID::KEY_RIGHT, 200);
+        _input.lock(KeyID::KEY_RIGHT, CLICK_LOCK);
 
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->removeFocus();
@@ -147,14 +143,14 @@ void PrefWatchScreen::update()
     }
     else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 150);
+        _input.lock(KeyID::KEY_UP, HOLD_LOCK);
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->up();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 150);
+        _input.lock(KeyID::KEY_DOWN, HOLD_LOCK);
         SpinBox *spinBox = (SpinBox *)getLayout()->getWidgetByIndx(_curent_focus_pos);
         spinBox->down();
         changeCurDateTime(spinBox->getID(), spinBox->getValue());

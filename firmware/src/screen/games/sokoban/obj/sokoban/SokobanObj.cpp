@@ -9,6 +9,7 @@ namespace sokoban
 {
     void SokobanObj::init()
     {
+        _obj_id = IdGen::genID();
         _class_ID = ClassID::CLASS_HERO;  // Встановити ідентифікатор типу
         _layer = 1;                       // Об'єкт повинен бути вище об'єктів точок
         _sprite.img_ptr = SPRITE_SOKOBAN; // Встановити зображення спрайта
@@ -41,13 +42,17 @@ namespace sokoban
         }
     }
 
-    IObjShape *SokobanObj::getShape()
+    void SokobanObj::serialize(DataStream &ds)
     {
-        return nullptr;
     }
 
-    void SokobanObj::reborn(IObjShape *shape)
+    void SokobanObj::deserialize(DataStream &ds)
     {
+    }
+
+    size_t SokobanObj::getDataSize() const
+    {
+        return 0;
     }
 
     void SokobanObj::onDraw()
@@ -61,6 +66,9 @@ namespace sokoban
 
     void SokobanObj::move(MovingDirection direction)
     {
+        if (direction == DIRECTION_NONE)
+            return;
+
         if (direction == DIRECTION_UP)
             stepTo(_x_global, _y_global - PIX_PER_STEP, _x_global, _y_global - PIX_PER_STEP * 2);
         else if (direction == DIRECTION_DOWN)

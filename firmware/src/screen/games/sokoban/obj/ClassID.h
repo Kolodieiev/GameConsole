@@ -5,7 +5,7 @@
 
 namespace sokoban
 {
-    enum ClassID : int16_t
+    enum ClassID : uint8_t
     {
         CLASS_HERO = 0,
         CLASS_BOX,

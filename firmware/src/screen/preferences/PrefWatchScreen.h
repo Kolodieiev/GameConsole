@@ -20,8 +20,7 @@ protected:
 private:
     enum Widget_ID : uint8_t
     {
-        ID_NAVBAR = 2,
-        ID_HEADER,
+        ID_HEADER = 2,
         // Watch
         ID_HOURS_SPIN,
         ID_MINUTES_SPIN,

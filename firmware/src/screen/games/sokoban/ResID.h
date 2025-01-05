@@ -17,6 +17,7 @@ namespace sokoban
         FX_ID_STEP_4,
         FX_ID_STEP_5
     };
+
 }
 // enum BmpID : uint8_t
 // {

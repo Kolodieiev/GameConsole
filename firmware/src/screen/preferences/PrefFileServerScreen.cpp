@@ -32,7 +32,6 @@ void PrefFileServerScreen::showMainTmpl()
     WidgetCreator creator{_display};
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
 
     //----------------------------------------------------
 
@@ -54,7 +53,7 @@ void PrefFileServerScreen::showMainTmpl()
     _ssid_txt->setFocusBorderColor(TFT_ORANGE);
     _ssid_txt->setChangingBorder(true);
     _ssid_txt->setTextSize(2);
-    _ssid_txt->setWidth(DWIDTH - LEFT_PADDING * 2);
+    _ssid_txt->setWidth(D_WIDTH - LEFT_PADDING * 2);
     _ssid_txt->setPos(LEFT_PADDING, _ssid_lbl->getYPos() + _ssid_lbl->getHeight() + 1);
 
     //----------------------------------------------------
@@ -99,7 +98,6 @@ void PrefFileServerScreen::showDialogTmpl()
     layout->setBackColor(TFT_BLACK);
 
     WidgetCreator creator{_display};
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_ERASE));
 
     _dialog_txt = new TextBox(ID_TXT_DIALOG, _display);
     layout->addWidget(_dialog_txt);

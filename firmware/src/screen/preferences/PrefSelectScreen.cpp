@@ -11,7 +11,7 @@
 
 PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
 {
-    if (!_settings.hasConnection())
+    if (!_settings.isSdMounted())
     {
         showSDErrTmpl();
         return;
@@ -22,15 +22,12 @@ PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
 
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK);
-    layout->addWidget(navbar);
-
     _menu = new FixedMenu(ID_MENU, _display);
     layout->addWidget(_menu);
     _menu->setBackColor(COLOR_MENU_ITEM);
-    _menu->setWidth(_display.width() - SCROLLBAR_WIDTH - 2);
-    _menu->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _menu->setItemHeight((_display.height() - NAVBAR_HEIGHT) / 5);
+    _menu->setWidth(D_WIDTH - SCROLLBAR_WIDTH - 2);
+    _menu->setHeight(D_HEIGHT);
+    _menu->setItemHeight((_menu->getHeight() - 2) / 5);
 
     //
     MenuItem *bright_item = creator.getMenuItem(ITEM_ID_BRIGHT);
@@ -74,8 +71,8 @@ PrefSelectScreen::PrefSelectScreen(GraphicsDriver &display) : IScreen(display)
     _scrollbar = new ScrollBar(ID_SCROLLBAR, _display);
     layout->addWidget(_scrollbar);
     _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+    _scrollbar->setHeight(D_HEIGHT);
+    _scrollbar->setPos(D_WIDTH - SCROLLBAR_WIDTH, 0);
     _scrollbar->setMax(_menu->getSize());
 }
 
@@ -85,7 +82,6 @@ void PrefSelectScreen::showSDErrTmpl()
     WidgetCreator creator{_display};
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
 
     Label *err_lbl = new Label(ID_ERR_LBL, _display);
     layout->addWidget(err_lbl);
@@ -93,8 +89,8 @@ void PrefSelectScreen::showSDErrTmpl()
     err_lbl->setAlign(IWidget::ALIGN_CENTER);
     err_lbl->setGravity(IWidget::GRAVITY_CENTER);
     err_lbl->setBackColor(COLOR_MAIN_BACK);
-    err_lbl->setWidth(_display.width());
-    err_lbl->setHeight(_display.height() - NAVBAR_HEIGHT);
+    err_lbl->setWidth(D_WIDTH);
+    err_lbl->setHeight(D_HEIGHT);
 }
 
 void PrefSelectScreen::loop()
@@ -107,7 +103,7 @@ void PrefSelectScreen::update()
     {
         if (_input.isReleased(KeyID::KEY_BACK))
         {
-            _input.lock(KeyID::KEY_BACK, 500);
+            _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
             openScreenByID(ID_SCREEN_MENU);
         }
 
@@ -116,23 +112,23 @@ void PrefSelectScreen::update()
 
     if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 500);
+        _input.lock(KeyID::KEY_OK, CLICK_LOCK);
         ok();
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
         openScreenByID(ID_SCREEN_MENU);
     }
     else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 200);
+        _input.lock(KeyID::KEY_UP, HOLD_LOCK);
         _menu->focusUp();
         _scrollbar->scrollUp();
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 200);
+        _input.lock(KeyID::KEY_DOWN, HOLD_LOCK);
         _menu->focusDown();
         _scrollbar->scrollDown();
     }

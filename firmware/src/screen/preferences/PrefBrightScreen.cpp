@@ -24,9 +24,6 @@ PrefBrightScreen::PrefBrightScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
     //
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_SAVE, "", STR_BACK);
-    layout->addWidget(navbar);
-    //
     Label *header_lbl = new Label(ID_HEADER, _display);
     layout->addWidget(header_lbl);
     header_lbl->setText(STR_BRIGHT);

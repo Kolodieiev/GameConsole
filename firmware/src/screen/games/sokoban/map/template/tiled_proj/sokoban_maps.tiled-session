@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "65.tmx",
+    "activeFile": "31.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -12,16 +12,16 @@
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 358,
-                "y": 341.5
+                "x": 357,
+                "y": 340.5
             }
         },
         "31.tmx": {
             "scale": 1,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 347,
-                "y": 314.5
+                "x": 346,
+                "y": 313.5
             }
         },
         "32.tmx": {
@@ -292,7 +292,7 @@
             "scale": 1.0674005681818182,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 350.3839244128019,
+                "x": 349.44706899993344,
                 "y": 239.3665579878901
             }
         },
@@ -332,8 +332,8 @@
             "scale": 0.75,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 437.33333333333326,
-                "y": 241.99999999999994
+                "x": 416,
+                "y": 255.33333333333326
             }
         },
         "D:/Downloads/tiled_proj/map_scene_11.tmx": {
@@ -634,12 +634,16 @@
     "map.width": 26,
     "openFiles": [
         "70.tmx",
-        "65.tmx"
+        "65.tmx",
+        "30.tmx",
+        "31.tmx"
     ],
     "project": "sokoban_maps.tiled-project",
     "recentFiles": [
         "70.tmx",
         "65.tmx",
+        "30.tmx",
+        "31.tmx",
         "59.tmx",
         "60.tmx",
         "61.tmx",
@@ -647,9 +651,7 @@
         "63.tmx",
         "64.tmx",
         "66.tmx",
-        "67.tmx",
-        "68.tmx",
-        "69.tmx"
+        "67.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.type": 1

@@ -1,7 +1,7 @@
 #include "WidgetCreator.h"
 #include "./resources/const.h"
 #include "./resources/color.h"
-#include "meowui_setup/kb_btn_id.h"
+#include "./resources/kb_btn_id.h"
 
 WidgetCreator::WidgetCreator(GraphicsDriver &display) : _display{display} {}
 
@@ -84,50 +84,14 @@ MenuItem *WidgetCreator::getMenuItem(uint16_t id)
     }
 }
 
-NavBar *WidgetCreator::getNavbar(uint16_t id, const char *left, const char *middle, const char *right)
+DynamicMenu *WidgetCreator::getDynamicMenu(uint16_t id)
 {
     try
     {
-        Label *sel_txt = new Label(1, _display);
-        sel_txt->setText(left);
-        sel_txt->setAlign(IWidget::ALIGN_CENTER);
-        sel_txt->setGravity(IWidget::GRAVITY_CENTER);
-        sel_txt->setTextColor(TFT_WHITE);
-        sel_txt->setTextOffset(1);
-        sel_txt->initWidthToFit();
-
-        Label *mid_txt = sel_txt->clone(2);
-        mid_txt->setText(middle);
-        mid_txt->initWidthToFit();
-
-        Label *back_txt = sel_txt->clone(3);
-        back_txt->setText(right);
-        back_txt->initWidthToFit();
-
-        NavBar *navbar = new NavBar(id, _display);
-        navbar->setBackColor(COLOR_NAV_PANEL_BACK);
-        navbar->setHeight(NAVBAR_HEIGHT);
-        navbar->setWidth(_display.width());
-        navbar->setPos(0, _display.height() - NAVBAR_HEIGHT);
-        navbar->setWidgets(sel_txt, mid_txt, back_txt);
-
-        return navbar;
-    }
-    catch (const std::bad_alloc &e)
-    {
-        log_e("%s", e.what());
-        esp_restart();
-    }
-}
-
-DynamicMenu *WidgetCreator::getDynamicMenu(uint16_t id, IItemsLoader *loader)
-{
-    try
-    {
-        DynamicMenu *menu = new DynamicMenu(loader, id, _display);
+        DynamicMenu *menu = new DynamicMenu(id, _display);
         menu->setBackColor(TFT_BLACK);
         menu->setWidth(_display.width());
-        menu->setHeight(_display.height() - NAVBAR_HEIGHT);
+        menu->setHeight(_display.height() - 2);
         return menu;
     }
     catch (const std::bad_alloc &e)
@@ -146,7 +110,7 @@ Label *WidgetCreator::getStatusMsgLable(uint16_t id, const char *text, uint8_t t
     lbl->setGravity(IWidget::GRAVITY_CENTER);
     lbl->setBackColor(COLOR_MAIN_BACK);
     lbl->setWidth(_display.width());
-    lbl->setHeight(_display.height() - NAVBAR_HEIGHT);
+    lbl->setHeight(_display.height());
 
     return lbl;
 }
@@ -155,14 +119,14 @@ Keyboard *WidgetCreator::getStandardEnKeyboard(uint16_t id)
 {
     Keyboard *_keyboard = new Keyboard(id, _display);
     _keyboard->setWidth(_display.width());
-    _keyboard->setHeight(_display.height() - 50 - NAVBAR_HEIGHT);
+    _keyboard->setHeight(_display.height() - 50);
     _keyboard->setPos(0, 50);
     _keyboard->setCornerRadius(5);
 
     KeyboardRow *row1 = new KeyboardRow(1, _display); // Цифри
     _keyboard->addWidget(row1);
-    row1->setHeight(40);
-    row1->setBtnHeight(25);
+    row1->setHeight(25);
+    row1->setBtnHeight(23);
     row1->setBtnWidth(18);
     //
     KeyboardRow *row2 = row1->clone(2);

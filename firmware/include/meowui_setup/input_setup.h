@@ -57,5 +57,8 @@ namespace meow
 #define KEY_TOUCH_TRESHOLD 65
 #endif
 
-// -------------------------------- Час, після спливання якого дія вважається утримуваною.
-#define PRESS_DURATION (unsigned long)1500
+#define PRESS_DURATION (unsigned long)1000
+//
+#define PRESS_LOCK (unsigned long)700
+#define CLICK_LOCK (unsigned long)250
+#define HOLD_LOCK (unsigned long)150

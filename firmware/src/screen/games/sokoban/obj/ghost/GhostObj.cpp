@@ -11,17 +11,17 @@ namespace sokoban
     {
     }
 
-    IObjShape *GhostObj::getShape()
+    void GhostObj::serialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен повертати свій образ");
-        esp_restart();
-        return nullptr;
     }
 
-    void GhostObj::reborn(IObjShape *shape)
+    void GhostObj::deserialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен бути відроджений");
-        esp_restart();
+    }
+
+    size_t GhostObj::getDataSize() const
+    {
+        return 0;
     }
 
     void GhostObj::move(MovingDirection direction)

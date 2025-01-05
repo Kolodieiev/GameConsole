@@ -11,7 +11,6 @@
 #include "meow/ui/widget/text/Label.h"
 #include "meow/ui/widget/image/Image.h"
 #include "meow/ui/widget/menu/item/MenuItem.h"
-#include "meow/ui/widget/navbar/NavBar.h"
 #include "meow/ui/widget/menu/DynamicMenu.h"
 #include "meow/ui/widget/keyboard/Keyboard.h"
 
@@ -26,8 +25,7 @@ public:
     Label *getDisplayDescription(uint16_t id, const char *text);
     Label *getItemLabel(const char *text, uint8_t font_id = 2, uint8_t text_size = 1);
     MenuItem *getMenuItem(uint16_t id = 1);
-    NavBar *getNavbar(uint16_t id, const char *left, const char *middle, const char *right);
-    DynamicMenu *getDynamicMenu(uint16_t id, IItemsLoader *loader);
+    DynamicMenu *getDynamicMenu(uint16_t id);
     Label *getStatusMsgLable(uint16_t id, const char *text, uint8_t text_size = 1);
     Keyboard *getStandardEnKeyboard(uint16_t id);
 

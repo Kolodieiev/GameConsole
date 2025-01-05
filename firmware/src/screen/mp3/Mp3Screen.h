@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "meow/lib/DS3231/DS3231.h"
+
 #include "meow/driver/audio/mp3/Audio.h"
 #include "meow/manager/settings/SettingsManager.h"
 
@@ -14,44 +15,37 @@
 #include "meow/ui/widget/progress/ProgressBar.h"
 #include "meow/ui/widget/image/Image.h"
 
-#include "./PlaylistManager.h"
-
 using namespace meow;
 
-class Mp3Screen : public IScreen, public IItemsLoader
+class Mp3Screen : public IScreen
 {
 public:
     Mp3Screen(GraphicsDriver &display);
-    virtual ~Mp3Screen(){}
+    virtual ~Mp3Screen() {}
 
 protected:
     virtual void loop() override;
     virtual void update() override;
 
-    virtual std::vector<MenuItem *> loadPrev(uint8_t size, uint16_t current_ID) override;
-    virtual std::vector<MenuItem *> loadNext(uint8_t size, uint16_t current_ID) override;
-
 private:
     enum Mode : uint8_t
     {
         MODE_PLST_SEL = 0,
-        MODE_UPDATING,
         MODE_TRACK_SEL,
         MODE_AUDIO_PLAY,
         MODE_PLST_MENU,
         MODE_SD_UNCONN
     };
 
-    enum PlMenuItemsID : uint8_t
+    enum MenuItemID : uint8_t
     {
-        ID_ITEM_DEL = 1,
-        ID_ITEM_UPD,
+        ID_CONT_ITEM = 1,
+        ID_ITEM_DEL,
     };
 
     enum Widget_ID : uint8_t
     {
-        ID_NAVBAR = 1,
-        ID_F_MENU,
+        ID_F_MENU = 1,
         ID_PL_MENU,
         ID_D_MENU,
         ID_SCROLL,
@@ -69,20 +63,12 @@ private:
         ID_MSG_LBL,
     };
 
-    const uint8_t PLAYLIST_ITEMS_NUM{6};
-    const uint8_t TRACKS_ITEMS_NUM{10};
+    const uint8_t PLAYLIST_ITEMS_NUM{7};
+    const uint8_t TRACKS_ITEMS_NUM{7};
 
     SettingsManager _settings;
 
-    uint8_t _brightness;
-    bool _is_locked{false};
-
     Mode _mode{MODE_PLST_SEL};
-
-    ScrollBar *_scrollbar;
-    FixedMenu *_fixed_menu;
-    FixedMenu *_pl_menu;
-    DynamicMenu *_dynamic_menu;
 
     Label *_track_name_lbl;
     Image *_play_btn;
@@ -97,6 +83,9 @@ private:
     unsigned long _upd_time_time{0};
     DS3231DateTime _temp_date_time;
 
+    uint8_t _brightness;
+    bool _is_locked{false};
+
     Label *_msg_lbl;
     uint8_t _upd_counter{0};
 
@@ -105,7 +94,6 @@ private:
     unsigned long _upd_msg_time{0};
 
     Audio _audio;
-    PlaylistManager _pl_manager;
 
     String _playlist_name;
     String _track_name;
@@ -118,16 +106,28 @@ private:
     bool _is_new_track{true};
     bool _is_playing{false};
     //
+    //
+    FileManager _f_mgr;
+    //
+    ScrollBar *_scrollbar;
+    FixedMenu *_context_menu;
+    DynamicMenu *_tracks_list;
+    FixedMenu *_playlists_list;
+    //
+    std::vector<FileInfo> _playlists;
+    std::vector<FileInfo> _tracks;
+    //
     void savePref();
     //
-    void showPlaylists();
-    void fillPlaylists(Menu *menu_ptr, uint16_t from_id);
-    std::vector<MenuItem *> getTracksItems(uint8_t size, uint16_t from_id);
-
-    void showTracks(uint16_t pos = 0);
+    void showPlaylistsTmpl();
+    void fillPlaylists();
+    void makeMenuPlaylistsItems(std::vector<MenuItem *> &items);
+    //
+    void showTracksTmpl();
+    void fillTracks(uint16_t track_pos);
+    void makeMenuTracksItems(std::vector<MenuItem *> &items, uint16_t file_pos, uint8_t size);
+    //
     void showPlaying();
-    void showUpdating();
-
     //
     bool playTrack(bool contn = false);
     bool playNext();
@@ -135,7 +135,6 @@ private:
 
     void volumeUp();
     void volumeDown();
-
     //
     void setStopState();
 
@@ -145,8 +144,6 @@ private:
     void up();
     void down();
 
-    void changeBackLight();
-
     void left();
     void leftPressed();
 
@@ -155,6 +152,7 @@ private:
 
     void ok();
     void okPressed();
+    void changeBackLight();
 
     void back();
     void backPressed();
@@ -162,10 +160,20 @@ private:
     void showPlMenu();
     void hidePlMenu();
     //
-    void updateTime();
-
     void showSDErrTmpl();
-
     //
     void updateTrackPos();
+    //
+    void indexPlaylists();
+    void indexTracks();
+
+    String getTrackPath(const char *dir_name, const char *track_name);
+
+    void handleNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id);
+    static void onNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg);
+    //
+    void handlePrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id);
+    static void onPrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg);
+
+    void updateTime();
 };

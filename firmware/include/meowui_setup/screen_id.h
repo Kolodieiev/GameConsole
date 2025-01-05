@@ -25,6 +25,7 @@ namespace meow
         // Ігрові екрани
         ID_SCREEN_SNAKE,
         ID_SCREEN_SOKOBAN,
+        ID_SCREEN_TEST_SERVER,
         //
     };
 }

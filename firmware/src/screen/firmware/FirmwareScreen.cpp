@@ -16,11 +16,6 @@ FirmwareScreen::FirmwareScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
 
-    if (_file_mngr.fileExist(STR_FIRMWARE_FN))
-        layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_UPDATE, "", STR_BACK));
-    else
-        layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_BACK));
-
     Label *title = new Label(ID_TITLE, _display);
     layout->addWidget(title);
     title->setText(STR_UPDATE_FIRMWARE);
@@ -35,7 +30,7 @@ FirmwareScreen::FirmwareScreen(GraphicsDriver &display) : IScreen(display)
     Label *author = title->clone(ID_AUTHOR);
     layout->addWidget(author);
     author->setText(STR_AUTHOR);
-    author->setPos(0, (_display.height() - NAVBAR_HEIGHT - 55) / 2);
+    author->setPos(0, getCenterY(author));
     author->setBackColor(COLOR_MAIN_BACK);
     author->setTextSize(2);
     author->setFontID(4);
@@ -43,7 +38,7 @@ FirmwareScreen::FirmwareScreen(GraphicsDriver &display) : IScreen(display)
     Label *version = author->clone(ID_VERSION);
     layout->addWidget(version);
     version->setText(STR_FIRM_VERSION);
-    version->setPos(0, (_display.height() - NAVBAR_HEIGHT + 10) / 2);
+    version->setPos(0, author->getYPos() + author->getHeight() + 10);
     version->setTextSize(1);
     version->setFontID(2);
 }

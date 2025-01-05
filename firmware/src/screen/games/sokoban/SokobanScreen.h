@@ -1,6 +1,8 @@
 #pragma once
 #include <Arduino.h>
 //
+#include "meow/game/DataStream.h"
+//
 #include "meow/ui/screen/IScreen.h"
 #include "meow/ui/widget/menu/FixedMenu.h"
 #include "meow/ui/widget/scrollbar/ScrollBar.h"
@@ -12,7 +14,6 @@ namespace sokoban
 {
     class SokobanScreen : public IScreen
     {
-
     public:
         SokobanScreen(GraphicsDriver &display);
         virtual ~SokobanScreen() {}
@@ -27,8 +28,7 @@ namespace sokoban
 
         enum Widget_ID : uint8_t
         {
-            ID_NAVBAR = 1,
-            ID_LVL_LIST,
+            ID_LVL_LIST = 1,
             ID_SCROLL
         };
 
@@ -38,7 +38,7 @@ namespace sokoban
         ScrollBar *_scrollbar;
 
         IGameScene *_scene;
-        std::vector<IObjShape *> _stored_objs;
+        DataStream _stored_objs{1024};
 
         void showLvlMenu();
     };

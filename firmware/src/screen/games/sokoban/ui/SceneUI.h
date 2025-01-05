@@ -10,7 +10,6 @@ namespace sokoban
 {
     class SceneUI : public IGameUI
     {
-
     public:
         SceneUI(GraphicsDriver &display) : IGameUI(display) {}
         virtual void onDraw() override;

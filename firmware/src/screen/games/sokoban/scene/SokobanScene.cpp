@@ -77,8 +77,8 @@
 #include "../ResID.h"
 
 // Додати зображення плиток
-#include "../map/tile_img/tile_0.h"
-#include "../map/tile_img/tile_1.h"
+#include "../../common_res/tile_img/tile_0.h"
+#include "../../common_res/tile_img/tile_1.h"
 //
 #include "../ui/SceneUI.h"
 // Ігрові об'єкти
@@ -527,9 +527,10 @@ namespace sokoban
             POINT_POS_69,
             POINT_POS_70};
 
-    SokobanScene::SokobanScene(GraphicsDriver &display, Input &input, std::vector<IObjShape *> &stored_objs, bool is_loaded, uint8_t lvl)
+    SokobanScene::SokobanScene(GraphicsDriver &display, Input &input, DataStream &stored_objs, bool is_loaded, uint8_t lvl)
         : IGameScene(display, input, stored_objs)
     {
+        IdGen::reset(); // Скинути лічильник ідентифікаторів
 
         _level = --lvl;
 
@@ -562,19 +563,19 @@ namespace sokoban
 
         if (_input.isPressed(KeyID::KEY_OK))
         {
-            _input.lock(KeyID::KEY_OK, 500);
+            _input.lock(KeyID::KEY_OK, PRESS_LOCK);
             openSceneByID(++_level);
             return;
         }
         else if (_input.isPressed(KeyID::KEY_BACK))
         {
-            _input.lock(KeyID::KEY_BACK, 500);
+            _input.lock(KeyID::KEY_BACK, PRESS_LOCK);
             _is_finished = true;
             return;
         }
         else if (_input.isReleased(KeyID::KEY_OK))
         {
-            _input.lock(KeyID::KEY_OK, 400);
+            _input.lock(KeyID::KEY_OK, CLICK_LOCK);
             _is_ghost_selected = !_is_ghost_selected;
             _input.reset();
         }
@@ -620,14 +621,13 @@ namespace sokoban
                 direction = IGameObject::DIRECTION_LEFT;
             }
 
-            if (direction != IGameObject::DIRECTION_NONE)
-                _sokoban->move(direction);
+            _sokoban->move(direction);
         }
 
         IGameScene::update(); // Необхідно обов'язково перевикликати метод кожен кадр у базовму класі. Інакше сцена не буде перемальовуватися.
     }
 
-    void SokobanScene::onTriggered(int16_t id)
+    void SokobanScene::onTrigger(uint8_t id)
     {
         if (id == TriggerID::TRIGGER_NEXT_SCENE)
         {
@@ -662,7 +662,7 @@ namespace sokoban
     {
         _sokoban = createObject<SokobanObj>();
         _sokoban->init();
-        _game_objs.push_back(_sokoban);
+        _game_objs.emplace(_sokoban->getObjId(), _sokoban);
         _sokoban->_x_global = SOKOBAN_POS[_level][0];
         _sokoban->_y_global = SOKOBAN_POS[_level][1];
     }
@@ -676,8 +676,8 @@ namespace sokoban
             box->_x_global = LVL_BOX[_level][i][0];
             box->_y_global = LVL_BOX[_level][i][1];
 
-            _sokoban->addBoxPtr(box);  // Додати вказівник на об'єкт до комірника.
-            _game_objs.push_back(box); // Додати об'єкт до ігрового світу
+            _sokoban->addBoxPtr(box);                 // Додати вказівник на об'єкт до комірника.
+            _game_objs.emplace(box->getObjId(), box); // Додати об'єкт до ігрового світу
         }
     }
 
@@ -690,7 +690,7 @@ namespace sokoban
             point->_x_global = LVL_POINT[_level][i][0];
             point->_y_global = LVL_POINT[_level][i][1];
 
-            _game_objs.push_back(point);
+            _game_objs.emplace(point->getObjId(), point);
         }
     }
 

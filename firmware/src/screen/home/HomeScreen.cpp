@@ -6,16 +6,12 @@
 //
 #include "../WidgetCreator.h"
 #include "meow/ui/widget/layout/EmptyLayout.h"
-#include "meow/ui/widget/navbar/NavBar.h"
 //
 #include "meow/util/bmp/BmpUtil.h"
 
 HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
 {
     _watch_inited = _watch.begin();
-
-    if (!_watch_inited)
-        log_e("Помилка ініціалізації RTC");
 
     WidgetCreator creator{_display};
 
@@ -43,12 +39,14 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
     _bat_cap_lbl->setAlign(Label::ALIGN_CENTER);
     _bat_cap_lbl->setGravity(Label::GRAVITY_CENTER);
     _bat_cap_lbl->setPos(_display.width() - 60, 3);
+    _bat_cap_lbl->setTransparency(true);
 
     _bat_ico = new Image(1, _display);
     _bat_cap_lbl->setBackImg(_bat_ico);
     _bat_ico->init(56, 35);
     _bat_ico->setSrc(ICO_BATTERY);
-    _bat_ico->setTransparentColor(_bat_ico->COLOR_TRANSPARENT);
+    _bat_ico->setTransparency(true);
+    _bat_ico->setTransparentColor(Image::COLOR_TRANSPARENT);
 
     updateBatCap();
 
@@ -62,6 +60,7 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
     _time_lbl->setTextSize(2);
     _time_lbl->initWidthToFit();
     _time_lbl->setPos(5, 0);
+    _time_lbl->setTransparency(true);
 
     _date_lbl = new Label(ID_DATE_LBL, _display);
     layout->addWidget(_date_lbl);
@@ -70,39 +69,18 @@ HomeScreen::HomeScreen(GraphicsDriver &display) : IScreen{display}
     _date_lbl->setGravity(Label::GRAVITY_CENTER);
     _date_lbl->setPos(5, _time_lbl->getHeight() + 3);
     _date_lbl->initWidthToFit();
+    _date_lbl->setTransparency(true);
 
     _day_lbl = _date_lbl->clone(ID_DAY_LBL);
     layout->addWidget(_day_lbl);
     _day_lbl->setText("------");
     _day_lbl->setPos(5, _date_lbl->getYPos() + _date_lbl->getHeight() + 3);
     _day_lbl->initWidthToFit();
+    _day_lbl->setTransparency(true);
 
     updateWatch();
 
     //
-
-    if (!_wallpaper_ptr)
-    {
-        _bat_ico->setBackColor(COLOR_MAIN_BACK);
-        _time_lbl->setBackColor(COLOR_MAIN_BACK);
-        _date_lbl->setBackColor(COLOR_MAIN_BACK);
-        _day_lbl->setBackColor(COLOR_MAIN_BACK);
-    }
-    else
-    {
-        uint16_t back_bat_color = *(_wallpaper_ptr + _bat_cap_lbl->getYPos() * bmp.width + _bat_cap_lbl->getXPos());
-
-        _bat_ico->setBackColor(back_bat_color);
-
-        uint16_t back_lbl_color = *(_wallpaper_ptr + _time_lbl->getYPos() * bmp.width + _time_lbl->getXPos());
-
-        _time_lbl->setBackColor(back_lbl_color);
-        _date_lbl->setBackColor(back_lbl_color);
-        _day_lbl->setBackColor(back_lbl_color);
-    }
-
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_MENU, "", STR_TORCH);
-    layout->addWidget(navbar);
 }
 
 HomeScreen::~HomeScreen()
@@ -119,14 +97,14 @@ void HomeScreen::update()
 {
     if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 500);
+        _input.lock(KeyID::KEY_OK, CLICK_LOCK);
         openScreenByID(ID_SCREEN_MENU);
         return;
     }
 
     if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
         openScreenByID(ID_SCREEN_TORCH);
         return;
     }
@@ -170,62 +148,10 @@ void HomeScreen::updateWatch()
 
     _temp_date_time = date_time;
 
-    String temp_str;
-
-    // Час
-    if (date_time.hour < 10)
-    {
-        temp_str = "0";
-        temp_str += String(date_time.hour);
-        temp_str += ":";
-    }
-    else
-    {
-        temp_str = String(date_time.hour);
-        temp_str += ":";
-    }
-
-    if (date_time.minute < 10)
-    {
-        temp_str += "0";
-        temp_str += String(date_time.minute);
-    }
-    else
-    {
-        temp_str += String(date_time.minute);
-    }
-
-    _time_lbl->setText(temp_str);
+    _time_lbl->setText(_temp_date_time.timeToStr());
     _time_lbl->updateWidthToFit();
 
-    // Дата
-    if (date_time.day_of_month < 10)
-    {
-        temp_str = "0";
-        temp_str += String(date_time.day_of_month);
-        temp_str += ".";
-    }
-    else
-    {
-        temp_str = String(date_time.day_of_month);
-        temp_str += ".";
-    }
-
-    if (date_time.month < 10)
-    {
-        temp_str += "0";
-        temp_str += String(date_time.month);
-        temp_str += ".";
-    }
-    else
-    {
-        temp_str += String(date_time.month);
-        temp_str += ".";
-    }
-
-    temp_str += String(date_time.year);
-
-    _date_lbl->setText(temp_str);
+    _date_lbl->setText(_temp_date_time.dateToStr());
     _date_lbl->updateWidthToFit();
 
     // День тижня

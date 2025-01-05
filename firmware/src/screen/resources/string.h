@@ -50,6 +50,7 @@ const char STR_PREFERENCES_ITEM[] = "Налаштування";
 const char STR_FIRMWARE_ITEM[] = "Прошивка";
 // games
 const char STR_SOKOBAN_ITEM[] = "Комірник";
+const char STR_TEST_SERV_ITEM[] = "Тестовий сервер";
 //
 const char MON_STR[] = "Понеділок";
 const char TUE_STR[] = "Вівторок";

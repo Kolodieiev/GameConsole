@@ -1,206 +1,220 @@
 #pragma GCC optimize("O3")
-
 #include "ReaderScreen.h"
 
 #include "../WidgetCreator.h"
 
+#include "meow/util/display/DisplayUtil.h"
+
 #include "../resources/string.h"
 #include "../resources/color.h"
 #include "../resources/const.h"
-
-#include "meow/util/display/DisplayUtil.h"
 
 const char STR_BOOK_DIR_PREF[] = "book_dir";
 const char STR_BOOK_NAME_PREF[] = "book_name";
 const char STR_READ_POS_PREF[] = "read_pos";
 const char STR_BOOK_BRIGHT_PREF[] = "book_bright";
 
+const char ROOT_PATH[] = "/books";
+const char BOOK_EXT[] = ".txt";
+
 void ReaderScreen::loop()
 {
 }
 
-std::vector<MenuItem *> ReaderScreen::loadPrev(uint8_t size, uint16_t current_ID)
-{
-    // Не отримали ID
-    if (current_ID == 0)
-        return std::vector<MenuItem *>();
-
-    uint16_t item_pos = current_ID - 1;
-
-    // Вже перший елемент
-    if (item_pos == 0)
-        return std::vector<MenuItem *>();
-
-    // Вирахувати першу позицію звідки потрібно читати файл.
-    if (current_ID > size)
-        item_pos = current_ID - size - 1;
-    else
-    {
-        item_pos = 0;
-        // Вирівняти скролбар, якщо меню було завантажене не з першого елемента
-        _scrollbar->setValue(current_ID);
-    }
-
-    return getBooksItems(size, item_pos);
-}
-
-std::vector<MenuItem *> ReaderScreen::loadNext(uint8_t size, uint16_t current_ID)
-{
-    if (current_ID == 0)
-        return std::vector<MenuItem *>();
-
-    return getBooksItems(size, current_ID);
-}
-
 void ReaderScreen::savePref()
 {
-    _settings.set(STR_BOOK_DIR_PREF, _book_dir_name.c_str());
+    _settings.set(STR_BOOK_DIR_PREF, _dir_name.c_str());
     _settings.set(STR_BOOK_NAME_PREF, _book_name.c_str());
     _settings.set(STR_READ_POS_PREF, String(_read_pos).c_str());
-    _settings.set(STR_BOOK_BRIGHT_PREF, String(_brightness).c_str());
 }
 
 //-------------------------------------------------------------------------------------------
 
-void ReaderScreen::showBookMenu()
+void ReaderScreen::showContextMenuTmpl()
 {
-    _dynamic_menu->disable();
+    IWidgetContainer *layout = getLayout();
+    layout->disable();
+
+    _books_list_menu->disable();
 
     WidgetCreator creator{_display};
 
-    _pl_menu = new FixedMenu(ID_BOOK_MENU, _display);
-    getLayout()->addWidget(_pl_menu);
-    _pl_menu->setBackColor(COLOR_MENU_ITEM);
-    _pl_menu->setBorderColor(TFT_ORANGE);
-    _pl_menu->setBorder(true);
-    _pl_menu->setItemHeight(20);
-    _pl_menu->setWidth(120);
-    _pl_menu->setHeight(44);
-    _pl_menu->setPos(_display.width() - _pl_menu->getWidth(), _display.height() - _pl_menu->getHeight() - NAVBAR_HEIGHT);
+    _context_menu = new FixedMenu(ID_BOOK_MENU, _display);
+    layout->addWidget(_context_menu);
+    _context_menu->setBackColor(COLOR_MENU_ITEM);
+    _context_menu->setBorderColor(TFT_ORANGE);
+    _context_menu->setBorder(true);
+    _context_menu->setItemHeight(20);
+    _context_menu->setWidth(120);
+    _context_menu->setHeight(44);
+    _context_menu->setPos(D_WIDTH - _context_menu->getWidth(), D_HEIGHT - _context_menu->getHeight());
 
-    MenuItem *upd_item = creator.getMenuItem(ID_ITEM_UPD);
-    _pl_menu->addItem(upd_item);
-
-    Label *upd_lbl = creator.getItemLabel(STR_UPDATE, 4, 2);
-    upd_item->setLbl(upd_lbl);
-
-    if (_dynamic_menu->getCurrentItemID() != 0)
+    if (_books_list_menu->getCurrentItemID() != 0)
     {
         MenuItem *del_item = creator.getMenuItem(ID_ITEM_DEL);
-        _pl_menu->addItem(del_item);
+        _context_menu->addItem(del_item);
 
         Label *upd_lbl = creator.getItemLabel(STR_DELETE, 4, 2);
         del_item->setLbl(upd_lbl);
     }
 
-    _mode = MODE_BOOK_MENU;
+    _mode = MODE_CONTEXT_MENU;
+    layout->enable();
 }
 
-void ReaderScreen::showUpdating()
-{
-    WidgetCreator creator{_display};
-    IWidgetContainer *layout = creator.getEmptyLayout();
-
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_CANCEL));
-
-    _msg_lbl = creator.getStatusMsgLable(ID_MSG_LBL, STR_UPDATING, 2);
-    layout->addWidget(_msg_lbl);
-
-    _mode = MODE_UPDATING;
-    setLayout(layout);
-}
-
-void ReaderScreen::hideBookMenu()
+void ReaderScreen::hideContextMenu()
 {
     getLayout()->deleteWidgetByID(ID_BOOK_MENU);
-    _dynamic_menu->enable();
+    _books_list_menu->enable();
     _mode = MODE_BOOK_SEL;
 }
 
-void ReaderScreen::showBookDirs()
+void ReaderScreen::showBookDirsTmpl()
 {
     WidgetCreator creator{_display};
     IWidgetContainer *layout = creator.getEmptyLayout();
 
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
-
-    _fixed_menu = new FixedMenu(ID_F_MENU, _display);
-    layout->addWidget(_fixed_menu);
-    _fixed_menu->setBackColor(COLOR_MENU_ITEM);
-    _fixed_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
-    _fixed_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
-    _fixed_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 1) / BOOK_DIR_ITEMS_NUM);
+    _book_dirs_menu = new FixedMenu(ID_F_MENU, _display);
+    layout->addWidget(_book_dirs_menu);
+    _book_dirs_menu->setBackColor(COLOR_MENU_ITEM);
+    _book_dirs_menu->setWidth(D_WIDTH - SCROLLBAR_WIDTH);
+    _book_dirs_menu->setHeight(D_HEIGHT);
+    _book_dirs_menu->setItemHeight((_book_dirs_menu->getHeight()) / BOOK_DIR_ITEMS_NUM);
 
     _scrollbar = new ScrollBar(ID_SCROLL, _display);
     layout->addWidget(_scrollbar);
     _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+    _scrollbar->setHeight(D_HEIGHT);
+    _scrollbar->setPos(D_WIDTH - SCROLLBAR_WIDTH, 0);
 
     if (!_book_name.isEmpty())
     {
-        MenuItem *cont_item = creator.getMenuItem(1);
-        _fixed_menu->addItem(cont_item);
+        MenuItem *cont_item = creator.getMenuItem(ID_CONT_ITEM);
+        _book_dirs_menu->addItem(cont_item);
 
         Label *cont_lbl = creator.getItemLabel(STR_CONTINUE, 4, 2);
         cont_item->setLbl(cont_lbl);
     }
 
-    fillBookDirs(_fixed_menu, 3);
-
-    MenuItem *upd_item = creator.getMenuItem(2);
-    _fixed_menu->addItem(upd_item);
-
-    Label *upd_lbl = creator.getItemLabel(STR_UPD_LISTS, 4, 2);
-    upd_item->setLbl(upd_lbl);
-
-    _scrollbar->setMax(_fixed_menu->getSize());
-
     _mode = MODE_BOOK_DIR_SEL;
+
     setLayout(layout);
 }
 
-void ReaderScreen::showBooks(uint16_t pos)
+void ReaderScreen::fillBookDirs()
+{
+    std::vector<MenuItem *> items;
+    makeBookDirsItems(items);
+
+    uint16_t size = items.size();
+
+    for (size_t i = 0; i < size; ++i)
+        _book_dirs_menu->addItem(items[i]);
+
+    _scrollbar->setValue(0);
+    _scrollbar->setMax(_book_dirs_menu->getSize());
+}
+
+void ReaderScreen::makeBookDirsItems(std::vector<MenuItem *> &items)
+{
+    WidgetCreator creator{_display};
+    items.clear();
+
+    uint16_t books_num = _dirs.size();
+    items.reserve(books_num);
+
+    for (uint16_t i = 0, counter = ID_CONT_ITEM; i < books_num; ++i)
+    {
+        ++counter;
+        MenuItem *item = creator.getMenuItem(counter);
+        items.push_back(item);
+
+        Label *lbl = new Label(1, _display);
+        item->setLbl(lbl);
+        lbl->setTickerInFocus(true);
+
+        lbl->setText(_dirs[i].getName());
+    }
+}
+
+void ReaderScreen::showBooksListTmpl()
 {
     WidgetCreator creator{_display};
     IWidgetContainer *layout = creator.getEmptyLayout();
 
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK));
+    _books_list_menu = creator.getDynamicMenu(ID_D_MENU);
+    layout->addWidget(_books_list_menu);
+    _books_list_menu->setWidth(D_WIDTH - SCROLLBAR_WIDTH);
+    _books_list_menu->setHeight(D_HEIGHT);
+    _books_list_menu->setItemHeight((_books_list_menu->getHeight() - 2) / BOOKS_ITEMS_NUM);
 
-    _dynamic_menu = creator.getDynamicMenu(ID_D_MENU, this);
-    layout->addWidget(_dynamic_menu);
-    _dynamic_menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 2) / BOOKS_ITEMS_NUM);
-    _dynamic_menu->setWidth(_display.width() - SCROLLBAR_WIDTH);
-    _dynamic_menu->setHeight(_display.height() - NAVBAR_HEIGHT - 1);
+    _books_list_menu->setOnNextItemsLoadHandler(onNextItemsLoad, this);
+    _books_list_menu->setOnPrevItemsLoadHandler(onPrevItemsLoad, this);
 
     _scrollbar = new ScrollBar(ID_SCROLL, _display);
     layout->addWidget(_scrollbar);
     _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
-
-    uint16_t pl_sz = _bl_manager.getDirSize(_book_dir_name.c_str());
-
-    if (pl_sz > 0 && pos == pl_sz)
-        --pos;
-
-    _scrollbar->setMax(pl_sz);
-    _scrollbar->setValue(pos);
-
-    std::vector<MenuItem *> items = getBooksItems(_dynamic_menu->getItemsNumOnScreen(), pos);
-
-    for (size_t i = 0; i < items.size(); ++i)
-        _dynamic_menu->addItem(items[i]);
+    _scrollbar->setHeight(D_HEIGHT);
+    _scrollbar->setPos(D_WIDTH - SCROLLBAR_WIDTH, 0);
 
     _mode = MODE_BOOK_SEL;
+
     setLayout(layout);
 }
 
-void ReaderScreen::showRead()
+void ReaderScreen::fillBooks(uint16_t pos)
 {
-    DisplayUtil display;
-    display.setBrightness(_brightness);
+    _books_list_menu->deleteWidgets();
 
+    uint16_t pl_sz = _books.size();
+    if (pl_sz > 0 && pos >= pl_sz)
+        --pos;
+
+    std::vector<MenuItem *> items;
+    makeBooksItems(items, pos, _books_list_menu->getItemsNumOnScreen());
+
+    uint16_t books_num = _books.size();
+
+    uint16_t size = items.size();
+
+    for (size_t i = 0; i < size; ++i)
+        _books_list_menu->addItem(items[i]);
+
+    _scrollbar->setMax(pl_sz);
+    _scrollbar->setValue(pos);
+}
+
+void ReaderScreen::makeBooksItems(std::vector<MenuItem *> &items, uint16_t file_pos, uint8_t size)
+{
+    if (file_pos >= _books.size())
+        return;
+
+    uint16_t read_to = file_pos + size;
+
+    if (read_to > _books.size())
+        read_to = _books.size();
+
+    WidgetCreator creator{_display};
+    items.clear();
+    items.reserve(read_to - file_pos);
+
+    for (uint16_t i = file_pos; i < read_to; ++i)
+    {
+        ++file_pos;
+
+        MenuItem *item = creator.getMenuItem(file_pos);
+        items.push_back(item);
+
+        Label *lbl = new Label(1, _display);
+        item->setLbl(lbl);
+        lbl->setTickerInFocus(true);
+
+        lbl->setText(_books[i].getName());
+    }
+}
+
+void ReaderScreen::showReadTmpl()
+{
     WidgetCreator creator{_display};
     IWidgetContainer *layout = creator.getEmptyLayout();
 
@@ -209,31 +223,28 @@ void ReaderScreen::showRead()
     _page = new Label(ID_PAGE_LBL, _display);
     layout->addWidget(_page);
     _page->setMultiline(true);
-    _page->setWidth(DWIDTH);
-    _page->setHeight(DHEIGHT - NAVBAR_HEIGHT);
+    _page->setWidth(D_WIDTH - 10);
+    _page->setHeight(D_HEIGHT - 16);
     _page->setBackColor(TFT_BLACK);
     _page->setTextColor(TFT_WHITE);
+    _page->setPos(5, 0);
 
-    _time_lbl = new Label(ID_UPD_LBL, _display);
+    _time_lbl = new Label(ID_TIME_LBL, _display);
+    layout->addWidget(_time_lbl);
     _time_lbl->setText(EMPTY_TIME);
-    _time_lbl->setAlign(IWidget::ALIGN_CENTER);
-    _time_lbl->setGravity(IWidget::GRAVITY_CENTER);
     _time_lbl->setTextColor(TFT_WHITE);
+    _time_lbl->setFontID(4);
     _time_lbl->initWidthToFit();
+    _time_lbl->setPos(5, D_HEIGHT - _time_lbl->getHeight());
 
     _progress_lbl = _time_lbl->clone(ID_PROGRESS_LBL);
+    layout->addWidget(_progress_lbl);
     _progress_lbl->setText(EMPTY_READ_PROGRESS);
     _progress_lbl->initWidthToFit();
-
-    _book_navbar = creator.getNavbar(ID_NAVBAR, "", "", "");
-    layout->addWidget(_book_navbar);
-    _book_navbar->setWidgets(_time_lbl, new Label(1, _display), _progress_lbl);
-
-    updateTime();
-    updateReadProgress();
+    _progress_lbl->setPos(getCenterX(_progress_lbl), _time_lbl->getYPos());
 
     _mode = MODE_BOOK_READ;
-    
+
     setLayout(layout);
 }
 
@@ -242,12 +253,11 @@ void ReaderScreen::showSDErrTmpl()
     WidgetCreator creator{_display};
     IWidgetContainer *layout = creator.getEmptyLayout();
 
-    layout->addWidget(creator.getNavbar(ID_NAVBAR, "", "", STR_EXIT));
-
-    _msg_lbl = creator.getStatusMsgLable(ID_MSG_LBL, STR_SD_ERR);
-    layout->addWidget(_msg_lbl);
+    Label *msg_lbl = creator.getStatusMsgLable(ID_MSG_LBL, STR_SD_ERR);
+    layout->addWidget(msg_lbl);
 
     _mode = MODE_SD_UNCONN;
+
     setLayout(layout);
 }
 
@@ -259,16 +269,13 @@ ReaderScreen::ReaderScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
 
-    if (!_bl_manager.hasConnection())
+    if (!_f_mgr.isSdMounted())
     {
         showSDErrTmpl();
         return;
     }
 
     _watch_inited = _watch.begin();
-
-    if (!_watch_inited)
-        log_e("Помилка ініціалізації RTC");
 
     _old_brightness = atoi(_settings.get(STR_PREF_BRIGHT).c_str());
 
@@ -282,11 +289,13 @@ ReaderScreen::ReaderScreen(GraphicsDriver &display) : IScreen(display)
     else
         _brightness = atoi(book_br.c_str());
 
-    _book_dir_name = _settings.get(STR_BOOK_DIR_PREF);
+    _dir_name = _settings.get(STR_BOOK_DIR_PREF);
     _book_name = _settings.get(STR_BOOK_NAME_PREF);
     _read_pos = atoi(_settings.get(STR_READ_POS_PREF).c_str());
 
-    showBookDirs();
+    showBookDirsTmpl();
+    indexDirs();
+    fillBookDirs();
 }
 
 void ReaderScreen::update()
@@ -295,7 +304,7 @@ void ReaderScreen::update()
     {
         if (_input.isReleased(KeyID::KEY_BACK))
         {
-            _input.lock(KeyID::KEY_BACK, 500);
+            _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
             setCpuFrequencyMhz(240);
             openScreenByID(ID_SCREEN_MENU);
         }
@@ -305,43 +314,43 @@ void ReaderScreen::update()
 
     if (_input.isPressed(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 1000);
+        _input.lock(KeyID::KEY_OK, PRESS_LOCK);
         if (_mode == MODE_BOOK_SEL)
-            showBookMenu();
+            showContextMenuTmpl();
     }
     else if (_input.isPressed(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 2500);
+        _input.lock(KeyID::KEY_BACK, PRESS_LOCK);
         backPressed();
     }
     else if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 150);
+        _input.lock(KeyID::KEY_UP, HOLD_LOCK);
         up();
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 150);
+        _input.lock(KeyID::KEY_DOWN, HOLD_LOCK);
         down();
     }
     else if (_input.isReleased(KeyID::KEY_RIGHT))
     {
-        _input.lock(KeyID::KEY_RIGHT, 100);
+        _input.lock(KeyID::KEY_RIGHT, CLICK_LOCK);
         right();
     }
     else if (_input.isReleased(KeyID::KEY_LEFT))
     {
-        _input.lock(KeyID::KEY_LEFT, 100);
+        _input.lock(KeyID::KEY_LEFT, CLICK_LOCK);
         left();
     }
     else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 100);
+        _input.lock(KeyID::KEY_OK, CLICK_LOCK);
         ok();
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 100);
+        _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
         back();
     }
 
@@ -353,52 +362,58 @@ void ReaderScreen::update()
             _upd_time_time = millis();
         }
     }
-    else if (_mode == MODE_UPDATING)
-    {
-        if (_bl_manager.isWorking() && (millis() - _upd_msg_time) > 1000)
-        {
-            String upd_txt = STR_UPDATING;
-            if (_upd_counter > 3)
-                _upd_counter = 0;
-            else
-                ++_upd_counter;
-
-            for (uint8_t i{0}; i < _upd_counter; ++i)
-                upd_txt += ".";
-
-            _msg_lbl->setText(upd_txt);
-            _upd_msg_time = millis();
-        }
-    }
 }
 
 void ReaderScreen::ok()
 {
     if (_mode == MODE_BOOK_DIR_SEL)
     {
-        uint16_t item_ID = _fixed_menu->getCurrentItemID();
-        if (item_ID == 1)
+        uint16_t item_ID = _book_dirs_menu->getCurrentItemID();
+
+        if (item_ID == ID_CONT_ITEM)
         {
+            indexBooks();
             openBook(true);
-        }
-        else if (item_ID == 2)
-        {
-            if (_bl_manager.updateBookDirs([this]
-                                           { showBookDirs(); }))
-            {
-                showUpdating();
-            }
         }
         else
         {
-            _book_dir_name = _fixed_menu->getCurrentItemText();
+            _dir_name = _book_dirs_menu->getCurrentItemText();
             _book_pos = 0;
-            showBooks(_book_pos);
+            indexBooks();
+            showBooksListTmpl();
+            fillBooks(_book_pos);
         }
     }
     else if (_mode == MODE_BOOK_SEL)
     {
-        openBook(false);
+        if (_books_list_menu->getSize() > 0)
+            openBook(false);
+    }
+    else if (_mode == MODE_CONTEXT_MENU)
+    {
+        uint16_t id = _context_menu->getCurrentItemID();
+
+        if (id == ID_ITEM_DEL)
+        {
+            _book_name = _books_list_menu->getCurrentItemText();
+            if (_book_name.isEmpty())
+                return;
+
+            String book_path = getBookPath(_dir_name.c_str(), _book_name.c_str());
+
+            if (_f_mgr.rmFile(book_path.c_str(), true))
+            {
+                if (_books_list_menu->getCurrentItemID() - 2 > -1)
+                    _book_pos = _books_list_menu->getCurrentItemID() - 2;
+                else
+                    _book_pos = 0;
+
+                hideContextMenu();
+                indexBooks();
+                updateBookPos();
+                fillBooks(_book_pos);
+            }
+        }
     }
     else if (_mode == MODE_BOOK_READ)
     {
@@ -409,52 +424,16 @@ void ReaderScreen::ok()
             _input.enablePin(KeyID::KEY_UP);
             _input.enablePin(KeyID::KEY_DOWN);
             _input.enablePin(KeyID::KEY_BACK);
-            _book_navbar->setVisibility(IWidget::VISIBLE);
+            _time_lbl->setVisibility(IWidget::VISIBLE);
+            _progress_lbl->setVisibility(IWidget::VISIBLE);
         }
         else
         {
             _input.disablePin(KeyID::KEY_UP);
             _input.disablePin(KeyID::KEY_DOWN);
             _input.disablePin(KeyID::KEY_BACK);
-            _book_navbar->setVisibility(IWidget::INVISIBLE);
-        }
-    }
-    else if (_mode == MODE_BOOK_MENU)
-    {
-        uint16_t id = _pl_menu->getCurrentItemID();
-
-        if (id == ID_ITEM_UPD)
-        {
-            if (_bl_manager.updateBooklist(_book_dir_name.c_str(),
-                                           [this]
-                                           {
-                                               updateBookPos();
-                                               showBooks(_book_pos);
-                                           }))
-            {
-                showUpdating();
-            }
-        }
-        else if (id == ID_ITEM_DEL)
-        {
-            String book_name = _dynamic_menu->getCurrentItemText();
-            if (book_name.isEmpty())
-                return;
-
-            _book_pos = _dynamic_menu->getCurrentItemID() - 1;
-
-            if (_bl_manager.removeBook(_book_dir_name.c_str(), book_name.c_str(), [this]
-                                       {
-                                           if (!_bl_manager.updateBooklist(_book_dir_name.c_str(), [this] {
-                                               updateBookPos();
-                                               showBooks(_book_pos);
-                                           }))
-                                           {
-                                                showBooks(_book_pos);
-                                           } }))
-            {
-                showUpdating();
-            }
+            _time_lbl->setVisibility(IWidget::INVISIBLE);
+            _progress_lbl->setVisibility(IWidget::INVISIBLE);
         }
     }
 }
@@ -463,11 +442,64 @@ void ReaderScreen::updateBookPos()
 {
     if (_book_pos > 0)
     {
-        uint16_t list_size = _bl_manager.getDirSize(_book_dir_name.c_str());
-
-        if (_book_pos >= list_size)
-            _book_pos = list_size;
+        if (_book_pos >= _books.size())
+            _book_pos = _books.size() - 1;
     }
+}
+
+void ReaderScreen::indexDirs()
+{
+    String dirs_path = ROOT_PATH;
+    _f_mgr.indexDirs(_dirs, dirs_path.c_str());
+}
+
+void ReaderScreen::indexBooks()
+{
+    String books_path = ROOT_PATH;
+    books_path += "/";
+    books_path += _dir_name;
+    _f_mgr.indexFilesExt(_books, books_path.c_str(), BOOK_EXT);
+}
+
+void ReaderScreen::handleNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id)
+{
+    if (!cur_id)
+        return;
+
+    makeBooksItems(items, cur_id, size);
+}
+
+void ReaderScreen::handlePrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id)
+{
+    if (!cur_id)
+        return;
+
+    uint16_t item_pos = cur_id - 1;
+
+    if (!item_pos)
+        return;
+
+    if (cur_id > size)
+        item_pos = cur_id - size - 1;
+    else
+    {
+        item_pos = 0;
+        _scrollbar->setValue(cur_id);
+    }
+
+    makeBooksItems(items, item_pos, size);
+}
+
+void ReaderScreen::onNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg)
+{
+    ReaderScreen *this_ptr = static_cast<ReaderScreen *>(arg);
+    this_ptr->handleNextItemsLoad(items, size, cur_id);
+}
+
+void ReaderScreen::onPrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg)
+{
+    ReaderScreen *this_ptr = static_cast<ReaderScreen *>(arg);
+    this_ptr->handlePrevItemsLoad(items, size, cur_id);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -476,13 +508,17 @@ void ReaderScreen::up()
 {
     if (_mode == MODE_BOOK_DIR_SEL)
     {
-        _fixed_menu->focusUp();
+        _book_dirs_menu->focusUp();
         _scrollbar->scrollUp();
     }
     else if (_mode == MODE_BOOK_SEL)
     {
-        _dynamic_menu->focusUp();
+        _books_list_menu->focusUp();
         _scrollbar->scrollUp();
+    }
+    else if (_mode == MODE_CONTEXT_MENU)
+    {
+        _context_menu->focusUp();
     }
     else if (_mode == MODE_BOOK_READ)
     {
@@ -497,23 +533,23 @@ void ReaderScreen::up()
             }
         }
     }
-    else if (_mode == MODE_BOOK_MENU)
-    {
-        _pl_menu->focusUp();
-    }
 }
 
 void ReaderScreen::down()
 {
     if (_mode == MODE_BOOK_DIR_SEL)
     {
-        _fixed_menu->focusDown();
+        _book_dirs_menu->focusDown();
         _scrollbar->scrollDown();
     }
     else if (_mode == MODE_BOOK_SEL)
     {
-        _dynamic_menu->focusDown();
+        _books_list_menu->focusDown();
         _scrollbar->scrollDown();
+    }
+    else if (_mode == MODE_CONTEXT_MENU)
+    {
+        _context_menu->focusDown();
     }
     else if (_mode == MODE_BOOK_READ)
     {
@@ -527,10 +563,6 @@ void ReaderScreen::down()
                 display.setBrightness(_brightness);
             }
         }
-    }
-    else if (_mode == MODE_BOOK_MENU)
-    {
-        _pl_menu->focusDown();
     }
 }
 
@@ -554,11 +586,13 @@ void ReaderScreen::back()
     }
     else if (_mode == MODE_BOOK_SEL)
     {
-        showBookDirs();
+        indexDirs();
+        showBookDirsTmpl();
+        fillBookDirs();
     }
-    else if (_mode == MODE_BOOK_MENU)
+    else if (_mode == MODE_CONTEXT_MENU)
     {
-        hideBookMenu();
+        hideContextMenu();
     }
 }
 
@@ -579,26 +613,10 @@ void ReaderScreen::backPressed()
         display.setBrightness(_old_brightness);
         _upd_time_time = 0;
         _temp_date_time.year = 0;
+
         savePref();
-        showBooks(_book_pos);
-    }
-}
-
-void ReaderScreen::fillBookDirs(Menu *menu_ptr, uint16_t from_id)
-{
-    std::vector<String> menu_list = _bl_manager.getBookDirs();
-
-    WidgetCreator creator{_display};
-
-    for (uint8_t i = 0; i < menu_list.size(); ++i)
-    {
-        MenuItem *upd_item = creator.getMenuItem(from_id);
-        menu_ptr->addItem(upd_item);
-
-        Label *upd_lbl = creator.getItemLabel(menu_list[i].c_str(), 4, 2);
-        upd_item->setLbl(upd_lbl);
-
-        ++from_id;
+        showBooksListTmpl();
+        fillBooks(_book_pos);
     }
 }
 
@@ -606,31 +624,32 @@ void ReaderScreen::openBook(bool contn)
 {
     if (contn)
     {
-        if ((_book_dir_name.isEmpty() || _book_name.isEmpty()))
+        if ((_dir_name.isEmpty() || _book_name.isEmpty()))
             return;
     }
     else
     {
-        if (_dynamic_menu->getSize() == 0)
-            return;
-
-        _book_name = _dynamic_menu->getCurrentItemText();
-        _book_pos = _dynamic_menu->getCurrentItemID() - 1;
+        _book_name = _books_list_menu->getCurrentItemText();
+        _book_pos = _books_list_menu->getCurrentItemID() - 1;
         _read_pos = 0;
         _bytes_read = 0;
     }
 
-    _book_size = _bl_manager.getBookSize(_book_dir_name.c_str(), _book_name.c_str());
+    String book_path = getBookPath(_dir_name.c_str(), _book_name.c_str());
 
-    if (_bl_manager.containCyrillic(_book_dir_name.c_str(), _book_name.c_str()))
-        _num_char_to_read = KIR_NUM_CHARS_TO_READ;
+    _book_size = _f_mgr.getFileSize(book_path.c_str());
+
+    if (containCyrillic(_dir_name.c_str(), _book_name.c_str()))
+        _num_char_to_read = KIR_NUM_NYTES_TO_READ;
     else
-        _num_char_to_read = LAT_NUM_CHARS_TO_READ;
+        _num_char_to_read = LAT_NUM_BYTES_TO_READ;
 
     if (_book_size > 0)
     {
-        showRead();
+        showReadTmpl();
         loadNextTxt();
+        updateReadProgress();
+        updateTime();
     }
 }
 
@@ -640,8 +659,8 @@ void ReaderScreen::loadNextTxt()
 
     _read_pos += _bytes_read;
 
-    bool is_eof;
-    String txt = _bl_manager.readText(is_eof, _book_dir_name.c_str(), _book_name.c_str(), _read_pos, _num_char_to_read);
+    String txt;
+    bool is_eof = !readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
 
     if (!txt.isEmpty())
     {
@@ -669,8 +688,8 @@ void ReaderScreen::loadPrevTxt()
     else
         _read_pos = 0;
 
-    bool is_eof;
-    String txt = _bl_manager.readText(is_eof, _book_dir_name.c_str(), _book_name.c_str(), _read_pos, _num_char_to_read);
+    String txt;
+    bool is_eof = !readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
 
     if (!txt.isEmpty())
     {
@@ -698,32 +717,7 @@ void ReaderScreen::updateTime()
 
     _temp_date_time = date_time;
 
-    String temp_str;
-
-    // Час
-    if (date_time.hour < 10)
-    {
-        temp_str = "0";
-        temp_str += String(date_time.hour);
-        temp_str += ":";
-    }
-    else
-    {
-        temp_str = String(date_time.hour);
-        temp_str += ":";
-    }
-
-    if (date_time.minute < 10)
-    {
-        temp_str += "0";
-        temp_str += String(date_time.minute);
-    }
-    else
-    {
-        temp_str += String(date_time.minute);
-    }
-
-    _time_lbl->setText(temp_str);
+    _time_lbl->setText(_temp_date_time.timeToStr());
     _time_lbl->updateWidthToFit();
 }
 
@@ -738,25 +732,97 @@ void ReaderScreen::updateReadProgress()
     _progress_lbl->updateWidthToFit();
 }
 
-std::vector<MenuItem *> ReaderScreen::getBooksItems(uint8_t size, uint16_t from_id)
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+String ReaderScreen::getBookPath(const char *dir_name, const char *book_name)
 {
-    std::vector<String> books = _bl_manager.getBooks(_book_dir_name.c_str(), from_id, size);
+    String book_path = ROOT_PATH;
+    book_path += "/";
+    book_path += dir_name;
+    book_path += "/";
+    book_path += book_name;
+    return book_path;
+}
 
-    WidgetCreator creator{_display};
+bool ReaderScreen::isCyrillic(char ch)
+{
+    unsigned char uc = static_cast<unsigned char>(ch);
+    return (uc >= 0xC0 && uc <= 0xFF) || (uc >= 0x80 && uc <= 0xBF);
+}
 
-    std::vector<MenuItem *> ret;
-    ret.reserve(books.size());
+bool ReaderScreen::containCyrillic(const char *dir_name, const char *book_name)
+{
+    String path = getBookPath(dir_name, book_name);
 
-    for (size_t i = 0; i < books.size(); ++i)
+    const uint8_t ARR_SIZE = 160;
+    char ch_arr[ARR_SIZE];
+
+    size_t read_bytes = _f_mgr.readFile(ch_arr, path.c_str(), ARR_SIZE);
+
+    for (size_t i{0}; i < read_bytes; ++i)
     {
-        ++from_id;
-
-        MenuItem *item = creator.getMenuItem(from_id);
-        ret.push_back(item);
-
-        Label *item_lbl = creator.getItemLabel(books[i].c_str(), 2, 1);
-        item->setLbl(item_lbl);
+        if (isCyrillic(ch_arr[i]))
+            return true;
     }
 
-    return ret;
+    return false;
+}
+
+bool ReaderScreen::readText(String &out_str, const char *dir_name, const char *book_name, size_t len, size_t pos)
+{
+    char *buffer;
+    if (psramInit())
+        buffer = (char *)ps_malloc(len + 1);
+    else
+        buffer = (char *)malloc(len + 1);
+
+    if (!buffer)
+    {
+        log_e("alloc error: %zu b", len + 1);
+        out_str = "";
+        return false;
+    }
+
+    String book_path = getBookPath(dir_name, book_name);
+
+    size_t bytes_read = _f_mgr.readFile(buffer, book_path.c_str(), len, pos);
+    buffer[bytes_read] = '\0';
+
+    bool is_oef = false;
+
+    if (bytes_read != len)
+        is_oef = true;
+
+    if (bytes_read > 2 && (buffer[bytes_read - 1] & 0x80) != 0)
+    {
+        size_t correct_char_pos{0};
+
+        for (size_t i{bytes_read - 2}; i > 0; --i)
+        {
+            if ((buffer[i] & 0x80) == 0)
+            {
+                correct_char_pos = i;
+                break;
+            }
+        }
+
+        if (correct_char_pos > 0)
+        {
+            char *temp_buff = (char *)malloc(correct_char_pos + 2);
+            if (temp_buff)
+            {
+                memcpy(temp_buff, buffer, correct_char_pos + 1);
+                temp_buff[correct_char_pos + 1] = '\0';
+                out_str = String(temp_buff, correct_char_pos);
+                free(temp_buff);
+            }
+            else
+                log_e("Помилка створення temp буферу на %zu байт", len);
+        }
+    }
+    else
+        out_str = String(buffer, bytes_read);
+
+    free(buffer);
+    return !is_oef;
 }

@@ -10,8 +10,6 @@
 
 #include "../resources/color.h"
 #include "../resources/string.h"
-#include "./res/paw_src.h"
-#include "./res/logo_txt_src.h"
 
 #include "meowui_setup/sd_setup.h"
 
@@ -27,17 +25,22 @@ SplashScreen::SplashScreen(GraphicsDriver &display) : IScreen(display)
     EmptyLayout *layout = creator.getEmptyLayout();
     setLayout(layout);
     //
-    uint16_t y_pos{5};
+    uint16_t y_pos{RES_X_OFFSET};
 
-    SD_Manager sd = SD_Manager::getInstance();
+    SD_Manager &sd = SD_Manager::getInst();
+
     SPI_Manager spi_mngr;
     spi_mngr.initBus(SD_SPI_BUS, SD_PIN_SCLK, SD_PIN_MISO, SD_PIN_MOSI);
-    
+
     sd.setup(SD_PIN_CS, spi_mngr.getSpi4Bus(SD_SPI_BUS), SD_FREQUENCY, SD_MOUNTPOINT, SD_MAX_FILES);
-    if (sd.mount())
+
+    if (!sd.mount())
+    {
+        addLabel(RES_X_OFFSET, y_pos, STR_FAIL, TFT_RED);
+    }
+    else
     {
         addLabel(RES_X_OFFSET, y_pos, STR_SUCCSESS, TFT_GREEN);
-
         SettingsManager settings;
         String bright = settings.get(STR_PREF_BRIGHT);
 
@@ -48,8 +51,6 @@ SplashScreen::SplashScreen(GraphicsDriver &display) : IScreen(display)
         else
             displ_util.setBrightness(atoi(bright.c_str()));
     }
-    else
-        addLabel(RES_X_OFFSET, y_pos, STR_FAIL, TFT_RED);
 
     addLabel(LBL_X_OFFSET, y_pos, STR_SD_LBL, TFT_WHITE);
 
@@ -63,6 +64,8 @@ SplashScreen::SplashScreen(GraphicsDriver &display) : IScreen(display)
         addLabel(RES_X_OFFSET, y_pos, STR_FAIL, TFT_RED);
 
     addLabel(LBL_X_OFFSET, y_pos, STR_PSRAM_LBL, TFT_WHITE);
+
+    //////////////
 }
 
 void SplashScreen::loop()
@@ -71,29 +74,7 @@ void SplashScreen::loop()
 
 void SplashScreen::update()
 {
-    if (!_logo_showed)
-        if (millis() - _start_time > SHOWING_INIT_TIME)
-        {
-            IWidgetContainer *container = getLayout();
-            container->deleteWidgets();
-            container->setBackColor(TFT_WHITE);
-
-            Image *paw_img = new Image(1, _display);
-            container->addWidget(paw_img);
-            paw_img->init(99, 110);
-            paw_img->setSrc(PAW_SRC);
-            paw_img->setPos((_display.width() - 99) * 0.5, 5);
-
-            Image *logo_txt_img = new Image(2, _display);
-            container->addWidget(logo_txt_img);
-            logo_txt_img->init(235, 72);
-            logo_txt_img->setSrc(LOGO_TXT_SRC);
-            logo_txt_img->setPos(((_display.width() - 235) * 0.5), _display.height() - 72 - 5);
-
-            _logo_showed = true;
-        }
-
-    if (millis() - _start_time > SHOWING_LOGO_TIME)
+    if (millis() - _start_time > SHOWING_INIT_TIME)
     {
         openScreenByID(ScreenID::ID_SCREEN_HOME);
     }

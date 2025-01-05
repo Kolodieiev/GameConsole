@@ -3,5 +3,4 @@
 
 // ---------------------------------
 const uint8_t DISPLAY_DESCRIPT_HEIGHT{18}; //
-const uint8_t NAVBAR_HEIGHT{20};           //
 const uint8_t SCROLLBAR_WIDTH{2};          //

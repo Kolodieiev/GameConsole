@@ -26,7 +26,6 @@ private:
         ID_TIME_LBL,
         ID_DATE_LBL,
         ID_DAY_LBL,
-        ID_NAVBAR
     };
 
     const unsigned long UPD_DISPLAY_INTERVAL{5000};

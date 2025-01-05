@@ -1,8 +1,10 @@
 #pragma once
 #pragma GCC optimize("O3")
 #include <Arduino.h>
+#include "meow/ui/screen/IScreen.h"
 #include "meow/manager/files/FileManager.h"
-
+#include "meow/lib/server/file_server/FileServer.h"
+//
 #include "meow/ui/widget/scrollbar/ScrollBar.h"
 #include "meow/ui/widget/menu/FixedMenu.h"
 #include "meow/ui/widget/menu/DynamicMenu.h"
@@ -11,33 +13,24 @@
 #include "meow/ui/widget/image/Image.h"
 #include "meow/ui/widget/text/TextBox.h"
 
-#include "meow/ui/screen/IScreen.h"
-
-#include "meow/lib/server/file_server/FileServer.h"
-
 using namespace meow;
 
-class FilesScreen : public IScreen, public IItemsLoader
+class FilesScreen : public IScreen
 {
 public:
     FilesScreen(GraphicsDriver &display);
     virtual ~FilesScreen() { delete _dir_img; }
-
-    virtual std::vector<MenuItem *> loadPrev(uint8_t size, uint16_t current_ID) override;
-    virtual std::vector<MenuItem *> loadNext(uint8_t size, uint16_t current_ID) override;
 
 protected:
     virtual void loop() override;
     virtual void update() override;
 
 private:
-    const uint8_t MENU_ITEMS_NUM{10};
-    const uint16_t KEY_LOCK_DUR = 250;
+    const uint8_t MENU_ITEMS_NUM{7};
 
     enum Widget_ID : uint8_t
     {
-        ID_NAVBAR = 1,
-        ID_SCROLLBAR,
+        ID_SCROLLBAR = 1,
         ID_DYNAMIC_MENU,
         ID_CONTEXT_MENU,
         ID_KEYBOARD,
@@ -46,6 +39,9 @@ private:
         ID_PROGRESS,
         ID_QR_IMG,
         ID_QR_LBL,
+        ID_SIZE_TITLE_LBL,
+        ID_SIZE_LBL,
+        ID_FILE_POS_LBL,
     };
 
     enum Item_ID : uint8_t
@@ -67,7 +63,6 @@ private:
         MODE_COPYING,
         MODE_REMOVING,
         MODE_MOVING,
-        MODE_UPDATING,
         MODE_CONTEXT_MENU,
         MODE_NEW_DIR_DIALOG,
         MODE_RENAME_DIALOG,
@@ -76,7 +71,7 @@ private:
         MODE_FILE_SERVER
     };
     //
-    FileManager _file_manager;
+    FileManager _f_mgr;
     //
     Label *_msg_lbl;
     const uint16_t UPD_TRACK_INF_INTERVAL{1000};
@@ -84,7 +79,6 @@ private:
     uint8_t _upd_counter{0};
     //
     Mode _mode{MODE_NAVIGATION};
-    bool _has_task = false;
     //
     FileServer _server;
     Image *_qr_img;
@@ -109,12 +103,17 @@ private:
     bool _has_copying_file{false};
     String _path_from;
     String _name_from;
+    String _copy_to_path;
+    //
+    Label *_file_size_lbl;
+    Label *_file_pos_lbl;
     //
     std::vector<String> _breadcrumbs;
-    String makePathFromBreadcrumbs();
+    void makePathFromBreadcrumbs(String &out_str);
+    //
+    std::vector<FileInfo> _files;
     //
     void showFilesTmpl();
-    void showUpdatingTmpl();
     void showCopyingTmpl();
     void showRemovingTmpl();
     void showCancelingTmpl();
@@ -135,18 +134,28 @@ private:
     //
     void ok();
     void back();
+    void up();
+    void down();
+    void updateFileInfo();
     //
     void openNextLevel();
     void openPrevlevel();
     //
-    void showDir(bool need_update);
-    void updateDir(const char *dir_path);
-
+    void indexCurDir();
+    void fillFilesTmpl();
     void saveDialogResult();
 
-    std::vector<MenuItem *> getMenuFilesItems(const char *path, uint16_t file_pos, uint8_t size);
+    void makeMenuFilesItems(std::vector<MenuItem *> &items, uint16_t file_pos, uint8_t size);
     //
     void startFileServer(FileServer::ServerMode mode);
     void stopFileServer();
-    void switchBackLight();
+
+    void taskDoneHandler(bool result);
+    static void taskDone(bool result, void *arg);
+    //
+    void handleNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id);
+    static void onNextItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg);
+    //
+    void handlePrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id);
+    static void onPrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg);
 };

@@ -22,15 +22,13 @@ private:
     {
         ID_MENU = 1,
         ID_SCROLLBAR,
-        ID_NAVBAR,
     };
 
     FixedMenu *_menu;
     ScrollBar *_scrollbar;
 
-    std::vector<IWidget *> _bin;
-
     void up();
     void down();
     void ok();
+    std::vector<IWidget *> _bin;
 };

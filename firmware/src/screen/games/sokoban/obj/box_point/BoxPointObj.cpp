@@ -8,6 +8,7 @@ namespace sokoban
 {
     void BoxPointObj::init()
     {
+        _obj_id = IdGen::genID();
         _class_ID = ClassID::CLASS_BOX_POINT;
         _sprite.img_ptr = SPRITE_BOX_POIN;
         _sprite.has_img = true;
@@ -23,16 +24,16 @@ namespace sokoban
     {
     }
 
-    IObjShape *BoxPointObj::getShape()
+    void BoxPointObj::serialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен повертати свій образ");
-        esp_restart();
-        return nullptr;
     }
 
-    void BoxPointObj::reborn(IObjShape *shape)
+    void BoxPointObj::deserialize(DataStream &ds)
     {
-        log_e("Об'єкт не повинен бути відновлений");
-        esp_restart();
+    }
+
+    size_t BoxPointObj::getDataSize() const
+    {
+        return 0;
     }
 }

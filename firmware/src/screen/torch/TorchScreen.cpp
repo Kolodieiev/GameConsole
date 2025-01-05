@@ -5,8 +5,6 @@
 
 #include "../WidgetCreator.h"
 #include "meow/ui/widget/layout/EmptyLayout.h"
-#include "meow/ui/widget/navbar/NavBar.h"
-
 #include "../resources/string.h"
 
 TorchScreen::TorchScreen(GraphicsDriver &display) : IScreen{display}

@@ -20,50 +20,54 @@
 #include "screen/firmware/FirmwareScreen.h"
 // Ігрові екрани
 #include "screen/games/sokoban/SokobanScreen.h"
+#include "screen/games/test_server/TestServerScreen.h"
 
 // -------------------------------- Стартова орієнтація екрану
 #define DISPLAY_ROTATION 2
 
 // -------------------------------- Додай перемикання екранів
-#define SCREEN_CASES                                   \
-    case ScreenID::ID_SCREEN_HOME:                     \
-        screen = new HomeScreen(_display);             \
-        break;                                         \
-    case ScreenID::ID_SCREEN_TORCH:                    \
-        screen = new TorchScreen(_display);            \
-        break;                                         \
-    case ScreenID::ID_SCREEN_MENU:                     \
-        screen = new MenuScreen(_display);             \
-        break;                                         \
-    case ScreenID::ID_SCREEN_MP3:                      \
-        screen = new Mp3Screen(_display);              \
-        break;                                         \
-    case ScreenID::ID_SCREEN_READER:                   \
-        screen = new ReaderScreen(_display);           \
-        break;                                         \
-    case ScreenID::ID_SCREEN_GAMES:                    \
-        screen = new GamesListScreen(_display);        \
-        break;                                         \
-    case ScreenID::ID_SCREEN_FILES:                    \
-        screen = new FilesScreen(_display);            \
-        break;                                         \
-    case ScreenID::ID_SCREEN_PREF_SEL:                 \
-        screen = new PrefSelectScreen(_display);       \
-        break;                                         \
-    case ScreenID::ID_SCREEN_PREF_BRIGHT:              \
-        screen = new PrefBrightScreen(_display);       \
-        break;                                         \
-    case ScreenID::ID_SCREEN_PREF_FILE_SERVER:         \
-        screen = new PrefFileServerScreen(_display);   \
-        break;                                         \
-    case ScreenID::ID_SCREEN_PREF_WATCH:               \
-        screen = new PrefWatchScreen(_display);        \
-        break;                                         \
-    case ScreenID::ID_SCREEN_FIRMWARE:                 \
-        screen = new FirmwareScreen(_display);         \
-        break;                                         \
-    case ScreenID::ID_SCREEN_SOKOBAN:                  \
-        screen = new sokoban::SokobanScreen(_display); \
+#define SCREEN_CASES                                          \
+    case ScreenID::ID_SCREEN_HOME:                            \
+        screen = new HomeScreen(_display);                    \
+        break;                                                \
+    case ScreenID::ID_SCREEN_TORCH:                           \
+        screen = new TorchScreen(_display);                   \
+        break;                                                \
+    case ScreenID::ID_SCREEN_MENU:                            \
+        screen = new MenuScreen(_display);                    \
+        break;                                                \
+    case ScreenID::ID_SCREEN_MP3:                             \
+        screen = new Mp3Screen(_display);                     \
+        break;                                                \
+    case ScreenID::ID_SCREEN_READER:                          \
+        screen = new ReaderScreen(_display);                  \
+        break;                                                \
+    case ScreenID::ID_SCREEN_GAMES:                           \
+        screen = new GamesListScreen(_display);               \
+        break;                                                \
+    case ScreenID::ID_SCREEN_FILES:                           \
+        screen = new FilesScreen(_display);                   \
+        break;                                                \
+    case ScreenID::ID_SCREEN_PREF_SEL:                        \
+        screen = new PrefSelectScreen(_display);              \
+        break;                                                \
+    case ScreenID::ID_SCREEN_PREF_BRIGHT:                     \
+        screen = new PrefBrightScreen(_display);              \
+        break;                                                \
+    case ScreenID::ID_SCREEN_PREF_FILE_SERVER:                \
+        screen = new PrefFileServerScreen(_display);          \
+        break;                                                \
+    case ScreenID::ID_SCREEN_PREF_WATCH:                      \
+        screen = new PrefWatchScreen(_display);               \
+        break;                                                \
+    case ScreenID::ID_SCREEN_FIRMWARE:                        \
+        screen = new FirmwareScreen(_display);                \
+        break;                                                \
+    case ScreenID::ID_SCREEN_SOKOBAN:                         \
+        screen = new sokoban::SokobanScreen(_display);        \
+        break;                                                \
+    case ScreenID::ID_SCREEN_TEST_SERVER:                     \
+        screen = new test_server::TestServerScreen(_display); \
         break;
 
 // case ScreenID::ID_SCREEN_CALC:\

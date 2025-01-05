@@ -5,7 +5,6 @@
 
 #include "../WidgetCreator.h"
 #include "meow/ui/widget/layout/EmptyLayout.h"
-#include "meow/ui/widget/navbar/NavBar.h"
 #include "meow/ui/widget/menu/item/MenuItem.h"
 
 #include "./icons/snake_ico.h"
@@ -23,26 +22,21 @@ GamesListScreen::GamesListScreen(GraphicsDriver &display) : IScreen(display)
     _menu = new FixedMenu(ID_MENU, _display);
     layout->addWidget(_menu);
     _menu->setBackColor(COLOR_MENU_ITEM);
-    _menu->setWidth(_display.width() - SCROLLBAR_WIDTH - 2);
-    _menu->setHeight(_display.height() - NAVBAR_HEIGHT - 2);
-    _menu->setItemHeight((_display.height() - NAVBAR_HEIGHT - 2) / 4);
-
+    _menu->setWidth(D_WIDTH - SCROLLBAR_WIDTH - 2);
+    _menu->setHeight(D_HEIGHT - 2);
+    _menu->setItemHeight((_menu->getHeight() - 2) / 4);
     //
     _scrollbar = new ScrollBar(ID_SCROLLBAR, _display);
     layout->addWidget(_scrollbar);
     _scrollbar->setWidth(SCROLLBAR_WIDTH);
-    _scrollbar->setHeight(_display.height() - NAVBAR_HEIGHT);
-    _scrollbar->setPos(_display.width() - SCROLLBAR_WIDTH, 0);
+    _scrollbar->setHeight(D_HEIGHT);
+    _scrollbar->setPos(D_WIDTH - SCROLLBAR_WIDTH, 0);
     //
-    NavBar *navbar = creator.getNavbar(ID_NAVBAR, STR_SELECT, "", STR_BACK);
-    layout->addWidget(navbar);
-
-    //---------------------------
     MenuItem *sokoban_item = creator.getMenuItem(ID_SCREEN_SOKOBAN);
     _menu->addItem(sokoban_item);
 
     Image *soko_img = new Image(1, _display);
-    sokoban_item->setImg(soko_img);
+    sokoban_item->setIco(soko_img);
     soko_img->init(32, 32);
     soko_img->setCornerRadius(5);
     soko_img->setTransparentColor(Image::COLOR_TRANSPARENT);
@@ -51,7 +45,14 @@ GamesListScreen::GamesListScreen(GraphicsDriver &display) : IScreen(display)
     Label *soko_lbl = creator.getItemLabel(STR_SOKOBAN_ITEM, 4, 2);
     sokoban_item->setLbl(soko_lbl);
     soko_lbl->setTickerInFocus(true);
-    //
+
+    //---------------------------------
+    MenuItem *test_server_item = creator.getMenuItem(ID_SCREEN_TEST_SERVER);
+    _menu->addItem(test_server_item);
+
+    Label *server_lbl = creator.getItemLabel(STR_TEST_SERV_ITEM, 4, 2);
+    test_server_item->setLbl(server_lbl);
+    server_lbl->setTickerInFocus(true);
 
     //---------------------------------
     _bin.reserve(_menu->getSize());
@@ -74,22 +75,22 @@ void GamesListScreen::update()
 {
     if (_input.isHolded(KeyID::KEY_UP))
     {
-        _input.lock(KeyID::KEY_UP, 200);
+        _input.lock(KeyID::KEY_UP, HOLD_LOCK);
         up();
     }
     else if (_input.isHolded(KeyID::KEY_DOWN))
     {
-        _input.lock(KeyID::KEY_DOWN, 200);
+        _input.lock(KeyID::KEY_DOWN, HOLD_LOCK);
         down();
     }
     else if (_input.isReleased(KeyID::KEY_BACK))
     {
-        _input.lock(KeyID::KEY_BACK, 500);
+        _input.lock(KeyID::KEY_BACK, CLICK_LOCK);
         openScreenByID(ID_SCREEN_MENU);
     }
     else if (_input.isReleased(KeyID::KEY_OK))
     {
-        _input.lock(KeyID::KEY_OK, 500);
+        _input.lock(KeyID::KEY_OK, CLICK_LOCK);
 
         openScreenByID((ScreenID)_menu->getCurrentItemID());
     }
