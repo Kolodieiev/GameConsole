@@ -62,8 +62,8 @@ private:
 
     const uint8_t BOOK_DIR_ITEMS_NUM{7};
     const uint8_t BOOKS_ITEMS_NUM{7};
-    const uint16_t LAT_NUM_BYTES_TO_READ{550};
-    const uint16_t KIR_NUM_NYTES_TO_READ{950};
+    const uint16_t LAT_NUM_BYTES_TO_READ{540};
+    const uint16_t KIR_NUM_NYTES_TO_READ{940};
     uint16_t _num_char_to_read{0};
     //
     Label *_time_lbl;
@@ -80,7 +80,6 @@ private:
     uint16_t _book_pos{0};
     size_t _book_size{0};
     size_t _read_pos{0};
-    size_t _bytes_read{0};
     //
     uint8_t _old_brightness;
     uint8_t _brightness;

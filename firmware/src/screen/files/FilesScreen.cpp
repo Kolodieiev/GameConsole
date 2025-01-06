@@ -452,6 +452,7 @@ void FilesScreen::pasteFile()
             {
                 indexCurDir();
                 fillFilesTmpl();
+                hideContextMenu();
             }
         }
     }
@@ -817,9 +818,6 @@ void FilesScreen::stopFileServer()
 
 void FilesScreen::taskDoneHandler(bool result)
 {
-    if (!result)
-        _f_mgr.rmFile(_copy_to_path.c_str(), true);
-
     showFilesTmpl();
     indexCurDir();
     fillFilesTmpl();

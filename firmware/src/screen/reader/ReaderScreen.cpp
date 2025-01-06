@@ -632,7 +632,6 @@ void ReaderScreen::openBook(bool contn)
         _book_name = _books_list_menu->getCurrentItemText();
         _book_pos = _books_list_menu->getCurrentItemID() - 1;
         _read_pos = 0;
-        _bytes_read = 0;
     }
 
     String book_path = getBookPath(_dir_name.c_str(), _book_name.c_str());
@@ -657,17 +656,12 @@ void ReaderScreen::loadNextTxt()
 {
     setCpuFrequencyMhz(240);
 
-    _read_pos += _bytes_read;
-
     String txt;
-    bool is_eof = !readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
+    readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
 
     if (!txt.isEmpty())
     {
-        if (!is_eof)
-            _bytes_read = txt.length();
-        else
-            _bytes_read = 0;
+        _read_pos += txt.length();
 
         _page->setText(txt);
         updateReadProgress();
@@ -689,15 +683,10 @@ void ReaderScreen::loadPrevTxt()
         _read_pos = 0;
 
     String txt;
-    bool is_eof = !readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
+    readText(txt, _dir_name.c_str(), _book_name.c_str(), _num_char_to_read, _read_pos);
 
     if (!txt.isEmpty())
     {
-        if (!is_eof)
-            _bytes_read = txt.length();
-        else
-            _bytes_read = 0;
-
         _page->setText(txt);
         updateReadProgress();
     }
