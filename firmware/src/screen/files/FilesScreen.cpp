@@ -727,7 +727,7 @@ void FilesScreen::openNextLevel()
     makePathFromBreadcrumbs(next_dir_path);
     next_dir_path += next_dir;
 
-    if (!_f_mgr.dirExist(next_dir_path.c_str()))
+    if (!_f_mgr.dirExist(next_dir_path.c_str(), true))
         return;
 
     _breadcrumbs.push_back(next_dir);
