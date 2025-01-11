@@ -158,4 +158,6 @@ private:
     //
     void handlePrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id);
     static void onPrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size, uint16_t cur_id, void *arg);
+    //
+    void showResultToast(bool result);
 };

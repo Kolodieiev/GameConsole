@@ -373,6 +373,7 @@ void FilesContext::saveDialogResult()
         dir_path += _dialog_txt->getText();
 
         _dialog_success_res = _f_mgr.createDir(dir_path.c_str());
+        showResultToast(_dialog_success_res);
     }
     else if (_mode = MODE_RENAME_DIALOG)
     {
@@ -390,6 +391,7 @@ void FilesContext::saveDialogResult()
         new_name += _dialog_txt->getText();
 
         _dialog_success_res = _f_mgr.rename(old_name.c_str(), new_name.c_str());
+        showResultToast(_dialog_success_res);
     }
 
     hideDialog();
@@ -446,19 +448,23 @@ void FilesContext::pasteFile()
 
     if (_has_moving_file)
     {
-        if (_f_mgr.exists(old_file_path.c_str()))
+        if (_f_mgr.exists(old_file_path.c_str()) && _f_mgr.rename(old_file_path.c_str(), new_file_path.c_str()))
         {
-            if (_f_mgr.rename(old_file_path.c_str(), new_file_path.c_str()))
-            {
-                indexCurDir();
-                fillFilesTmpl();
-                hideContextMenu();
-            }
+            indexCurDir();
+            fillFilesTmpl();
+            hideContextMenu();
+            showResultToast(true);
         }
+        else
+            showResultToast(false);
     }
     else if (_has_copying_file)
     {
-        if (_f_mgr.fileExist(old_file_path.c_str()))
+        if (!_f_mgr.fileExist(old_file_path.c_str()) || !_f_mgr.startCopyFile(old_file_path.c_str(), new_file_path.c_str()))
+        {
+            showResultToast(false);
+        }
+        else
         {
             if (old_file_path.equals(new_file_path))
             {
@@ -470,8 +476,7 @@ void FilesContext::pasteFile()
 
             _copy_to_path = new_file_path;
 
-            if (_f_mgr.startCopyFile(old_file_path.c_str(), new_file_path.c_str()))
-                showCopyingTmpl();
+            showCopyingTmpl();
         }
     }
 
@@ -818,6 +823,8 @@ void FilesContext::stopFileServer()
 
 void FilesContext::taskDoneHandler(bool result)
 {
+    showResultToast(result);
+    
     showFilesTmpl();
     indexCurDir();
     fillFilesTmpl();
@@ -910,4 +917,12 @@ void FilesContext::onPrevItemsLoad(std::vector<MenuItem *> &items, uint8_t size,
 {
     FilesContext *this_ptr = static_cast<FilesContext *>(arg);
     this_ptr->handlePrevItemsLoad(items, size, cur_id);
+}
+
+void FilesContext::showResultToast(bool result)
+{
+    if (result)
+        showToast(STR_SUCCSESS, 1500);
+    else
+        showToast(STR_FAIL, 1500);
 }
