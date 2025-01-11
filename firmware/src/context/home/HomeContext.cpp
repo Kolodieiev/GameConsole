@@ -48,7 +48,7 @@ HomeContext::HomeContext(GraphicsDriver &display) : IContext{display}
     _bat_ico->setTransparency(true);
     _bat_ico->setTransparentColor(Image::COLOR_TRANSPARENT);
 
-    updateBatCap();
+    updateBatCap(false);
 
     //
     _time_lbl = new Label(ID_TIME_LBL, _display);
@@ -78,8 +78,7 @@ HomeContext::HomeContext(GraphicsDriver &display) : IContext{display}
     _day_lbl->initWidthToFit();
     _day_lbl->setTransparency(true);
 
-    updateWatch();
-
+    updateWatch(false);
     //
 }
 
@@ -112,12 +111,12 @@ void HomeContext::update()
     if (millis() - _upd_timer > UPD_DISPLAY_INTERVAL)
     {
         _upd_timer = millis();
-        updateBatCap();
-        updateWatch();
+        updateBatCap(true);
+        updateWatch(true);
     }
 }
 
-void HomeContext::updateBatCap()
+void HomeContext::updateBatCap(bool full_redraw)
 {
     float DIV_K{0.5827};
     const uint8_t READ_CYCLES_NUMBER = 128;
@@ -133,10 +132,17 @@ void HomeContext::updateBatCap()
     bat_voltage /= DIV_K;
 
     String volt_str = String(bat_voltage);
-    _bat_cap_lbl->setText(volt_str);
+
+    if (!_bat_cap_lbl->getText().equals(volt_str))
+    {
+        _bat_cap_lbl->setText(volt_str);
+
+        if (full_redraw)
+            getLayout()->forcedDraw();
+    }
 }
 
-void HomeContext::updateWatch()
+void HomeContext::updateWatch(bool full_redraw)
 {
     if (!_watch_inited)
         return;
@@ -157,4 +163,7 @@ void HomeContext::updateWatch()
     // День тижня
     _day_lbl->setText(DAY_OF_WEEK[date_time.dayOfWeek()]);
     _day_lbl->updateWidthToFit();
+
+    if (full_redraw)
+        getLayout()->forcedDraw();
 }

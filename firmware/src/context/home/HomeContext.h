@@ -45,6 +45,6 @@ private:
     Label *_date_lbl{nullptr};
     Label *_day_lbl{nullptr};
 
-    void updateBatCap();
-    void updateWatch();
+    void updateBatCap(bool full_redraw);
+    void updateWatch(bool full_redraw);
 };
