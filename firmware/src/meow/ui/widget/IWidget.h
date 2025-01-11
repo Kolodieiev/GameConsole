@@ -82,11 +82,11 @@ namespace meow
         const IWidget *getParent() const { return _parent; }
 
         /*!
-         * @brief  Задати скруглення вуглів елементу.
+         * @brief  Задати скруглення кутів віджета.
          * @param  radius
-         *         Значення скруглення вуглів.
+         *         Значення скруглення кутів.
          */
-        void setCornerRadius(const uint8_t radius)
+        void setCornerRadius(uint8_t radius)
         {
             _corner_radius = radius;
             _is_changed = true;
@@ -95,11 +95,11 @@ namespace meow
         /*!
          * @brief
          *          Встановити відображення межі елементу товщиною 1пкс.
-         *          Межа буде відображатися за рахунок ширини віджету.
+         *          Межа буде відображатися за рахунок ширини віджета.
          * @param  state
          *         Логічне значення стану.
          */
-        void setBorder(const bool state)
+        void setBorder(bool state)
         {
             _has_border = state;
             _is_changed = true;
@@ -136,11 +136,11 @@ namespace meow
 
         /*!
          * @brief
-         *       Задати флаг відображення межі елементу, при встановленні фокусу на ньому.
+         *       Задати флаг відображення межі віджета, при встановленні фокусу на ньому.
          * @param  state
          *       Стан флагу.
          */
-        void setChangingBorder(const bool state)
+        void setChangingBorder(bool state)
         {
             _need_change_border = state;
             _is_changed = true;
@@ -148,11 +148,11 @@ namespace meow
 
         /*!
          * @brief
-         *       Задати флаг зміни кольору фону елементу, при встановленні фокусу на ньому.
+         *       Задати флаг зміни кольору фону віджета, при встановленні фокусу на ньому.
          * @param  state
          *       Стан флагу.
          */
-        void setChangingBack(const bool state)
+        void setChangingBack(bool state)
         {
             _need_change_back = state;
             _is_changed = true;
@@ -160,7 +160,7 @@ namespace meow
 
         /*!
          * @brief
-         *       Задати колір межі елементу, при встановленні фокусу на ньому.
+         *       Задати колір межі віджета, при встановленні фокусу на ньому.
          * @param  color
          *       Колір фону.
          */
@@ -173,7 +173,7 @@ namespace meow
 
         /*!
          * @brief
-         *       Задати колір фону при встановленні фокусу на елементі.
+         *       Задати колір фону при встановленні фокусу на віджеті.
          * @param  color
          *       Колір фону.
          */
@@ -185,17 +185,17 @@ namespace meow
         uint16_t getFocusBackColor() const { return _focus_back_color; }
 
         /*!
-         * @brief Встановити фокус на елементі.
+         * @brief Встановити фокус на віджеті.
          */
         void setFocus();
 
         /*!
-         * @brief Прибрати фокус з елементу.
+         * @brief Прибрати фокус з віджета.
          */
         void removeFocus();
 
         /*!
-         * @brief Встановити видимість віджету.
+         * @brief Встановити видимість віджета.
          */
         void setVisibility(Visibility value)
         {
@@ -269,7 +269,7 @@ namespace meow
         const IWidget *_parent{nullptr};
 
         /*!
-         * @brief  Залити елемент фоновим кольором.
+         * @brief  Залити місце розташування віджета фоновим кольором.
          */
         void clear() const;
 
