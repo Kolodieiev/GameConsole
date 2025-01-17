@@ -1,8 +1,7 @@
 #pragma once
 #include <Arduino.h>
 
-// -------------------------------- Увімкнути підтримку сенсорного екрану
-// #define TOUCHSCREEN_SUPPORT
+// #define TOUCHSCREEN_SUPPORT // Увімкнути підтримку сенсорного екрану
 
 #ifdef TOUCHSCREEN_SUPPORT
 #define TOUCH_ROTATION ROTATION_0
@@ -12,18 +11,17 @@
 // -------------------------------- Обрати драйвер сенсорного екрану
 #define GT911_DRIVER // Поки що додано підтримку тільки 1 чіпа
 
-
 // -------------------------------- Налаштуй піни, до яких підключено драйвер тачскріна
 #ifdef GT911_DRIVER
 #define TOUCH_SDA_PIN 33
 #define TOUCH_SCL_PIN 32
 #define TOUCH_INT_PIN 21
 #define TOUCH_RST_PIN 25
-#endif// GT911_DRIVER
+#endif // GT911_DRIVER
 
 #endif // TOUCHSCREEN_SUPPORT
 
-// -------------------------------- Закріплення назв кнопок до виводів МК
+// -------------------------------- Закріплення віртуальних назв кнопок до виводів МК
 
 namespace meow
 {
@@ -57,7 +55,7 @@ namespace meow
 #define KEY_TOUCH_TRESHOLD 65
 #endif
 
-#define PRESS_DURATION (unsigned long)1000
+#define PRESS_DURATION (unsigned long)1000 // Час, після спливання якого дія вважається утримуваною.
 //
 #define PRESS_LOCK (unsigned long)700
 #define CLICK_LOCK (unsigned long)250

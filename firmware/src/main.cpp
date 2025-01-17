@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "meow/manager/context/ContextManager.h"
 
-#define SLEEP_PIN 46
-
 void guiTask(void *params)
 {
     meow::MEOW.run();
@@ -17,7 +15,6 @@ void setup()
     // Без цього оновлення прошивка не працюватиме!
 
     // Посилання на сторінку з патчем https://github.com/espressif/arduino-esp32/commit/629ffc55ed97b561f5bd1412a40cc83d00b2f825
-
     // Файл до якого потрібно застосувати патч C:\.platformio\packages\framework-arduinoespressif32\cores\esp32\esp32-hal-spi.c
 
     xTaskCreatePinnedToCore(guiTask, "guiTask", (1024 / 2) * 70, NULL, 10, NULL, 1);
