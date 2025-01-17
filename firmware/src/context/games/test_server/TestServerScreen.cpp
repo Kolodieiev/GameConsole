@@ -173,7 +173,8 @@ namespace test_server
         title->setText(STR_SERVER_SCANNING_DONE);
 
         WidgetCreator creator{_display};
-        std::vector<String> result = _wifi_scanner.getScanResult();
+        std::vector<String> result;
+        _wifi_scanner.getScanResult(result);
         uint16_t item_id_counter = 1;
         for (auto it = result.begin(), last_it = result.end(); it != last_it; ++it, ++item_id_counter)
         {

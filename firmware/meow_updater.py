@@ -67,6 +67,8 @@ def clone_repo(repo_url, target_folder):
         print(f"Бібліотека успішно клонована в {target_folder}")
 
         remove_dir(target_folder / ".git")
+        remove_dir(target_folder / ".github")
+        remove_dir(target_folder / "docs")
         remove_dir(target_folder / "include")
         remove_unwanted_files(target_folder, ["README.md", ".gitignore"])
     except Exception as e:
