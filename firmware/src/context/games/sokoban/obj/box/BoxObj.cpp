@@ -17,7 +17,7 @@ namespace sokoban
         _sprite.has_img = true;
         _sprite.width = 32;
         _sprite.height = 32;
-        _body.pass_abillity_mask = Tile::TYPE_GROUND;
+        _sprite.pass_abillity_mask = Tile::TYPE_GROUND;
 
         initSprite();
     }
@@ -63,7 +63,7 @@ namespace sokoban
         }
 
         // Якщо ящик не знайдено, перевірити, чи не вприємося в стіну за ящиком
-        if (!_game_map.canPass(_x_global, _y_global, x, y, _body, _sprite))
+        if (!_terrain.canPass(_x_global, _y_global, x, y, _sprite))
         {
             // Якщо впираємося в стіну, рух продовжувати не можна
             return false;
@@ -80,7 +80,7 @@ namespace sokoban
 
         // // Отримати випадковий звук переміщення
         // uint8_t track_ID = rand() % (end - start + 1) + start;
-        // WavData *s_data = _res.getWav(track_ID);
+        // WavData *s_data = _res_manager.getWav(track_ID);
 
         // if (s_data && s_data->size > 0)
         // {

@@ -12,7 +12,7 @@ namespace test_server
         _sprite.width = 32;     // Ширина спрайта
         _sprite.height = 32;    // Висота спрайта
 
-        _body.pass_abillity_mask |= Tile::TYPE_GROUND; // Маска типу прохідності ігрового об'єкта.
+        _sprite.pass_abillity_mask |= Tile::TYPE_GROUND; // Маска типу прохідності ігрового об'єкта.
         initSprite();                                  // Ініціалізувати спрайт об'єкта
     }
 
@@ -77,7 +77,7 @@ namespace test_server
 
     void BallObj::stepTo(uint16_t x, uint16_t y)
     {
-        if (_game_map.canPass(_x_global, _y_global, x, y, _body, _sprite))
+        if (_terrain.canPass(_x_global, _y_global, x, y, _sprite))
         {
             _x_global = x; // Якщо перевірка успішна - рухаємо об'єкт
             _y_global = y;

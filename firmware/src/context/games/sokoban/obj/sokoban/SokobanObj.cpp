@@ -17,7 +17,7 @@ namespace sokoban
         _sprite.width = 32;               // Ширина спрайта
         _sprite.height = 32;              // Висота спрайта
 
-        _body.pass_abillity_mask |= Tile::TYPE_GROUND; // Маска типу прохідності ігрового об'єкта.
+        _sprite.pass_abillity_mask |= Tile::TYPE_GROUND; // Маска типу прохідності ігрового об'єкта.
                                                        // Дозволяє обмежувати пересування об'єкта по певних видах плиток ігрової мапи
         initSprite();                                  // Ініціалізувати спрайт об'єкта
     }
@@ -105,7 +105,7 @@ namespace sokoban
         }
 
         // Якщо ящик не було знайдено, перевіряємо чи може комірник пройти
-        if (_game_map.canPass(_x_global, _y_global, x, y, _body, _sprite))
+        if (_terrain.canPass(_x_global, _y_global, x, y, _sprite))
         {
             _x_global = x; // Якщо перевірка успішна - рухаємо комірника
             _y_global = y;

@@ -15,7 +15,7 @@ namespace sokoban
         _sprite.width = 32;
         _sprite.height = 32;
 
-        _body.is_rigid = false;
+        _sprite.is_rigid = false;
 
         initSprite();
     }

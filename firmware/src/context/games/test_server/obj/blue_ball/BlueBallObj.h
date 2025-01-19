@@ -12,8 +12,8 @@ namespace test_server
         BlueBallObj(GraphicsDriver &display,
                     ResManager &res,
                     WavManager &audio,
-                    GameMap &game_map,
-                    std::unordered_map<uint32_t, IGameObject *> &game_objs) : BallObj(display, res, audio, game_map, game_objs) {}
+                    TerrainManager &terrain,
+                    std::unordered_map<uint32_t, IGameObject *> &game_objs) : BallObj(display, res, audio, terrain, game_objs) {}
         virtual ~BlueBallObj() {}
 
         virtual void init() override;

@@ -96,14 +96,14 @@ namespace test_server
 
     void MainScene::buildMap()
     {
-        _game_map.addTileDescr(0, Tile::TYPE_GROUND, IMG_TILE_0);
-        _game_map.addTileDescr(1, Tile::TYPE_WALL, IMG_TILE_1);
+        _terrain.addTileDescr(0, Tile::TYPE_GROUND, IMG_TILE_0);
+        _terrain.addTileDescr(1, Tile::TYPE_WALL, IMG_TILE_1);
 
         uint8_t tiles_x_num{11}; // Кількість плиток мапи по ширині
         uint8_t tiles_y_num{11}; // Кількість плиток мапи по висоті
         uint8_t tile_width{32};  // Ширина або висота плитки. Плитки повинні бути квадратними
 
-        _game_map.build(tiles_x_num, tiles_y_num, tile_width, MAP_SCENE_MAIN); // Побудувати мапу на основі даних шаблону
+        _terrain.buildTerrain(tiles_x_num, tiles_y_num, tile_width, MAP_SCENE_MAIN); // Побудувати мапу на основі даних шаблону
     }
 
     void MainScene::update()

@@ -4,7 +4,7 @@ namespace sokoban
 {
     void GhostObj::init()
     {
-        _body.is_rigid = false; // Вимикаємо тверде тіло для нашого привида, щоб він міг проходити крізь стіни
+        _sprite.is_rigid = false; // Вимикаємо тверде тіло для нашого привида, щоб він міг проходити крізь стіни
     }
 
     void GhostObj::update()
@@ -30,22 +30,22 @@ namespace sokoban
         {
             // Даний об'єкт завжди може проходити по будь-якій плитці мапи, так як він не має твердого тіла.
             // Результат буде false тільки у випадку, якщо об'єкт спробує вийти за межі ігрового рівня.
-            if (_game_map.canPass(_x_global, _y_global, _x_global, _y_global - PIX_PER_STEP, _body, _sprite))
+            if (_terrain.canPass(_x_global, _y_global, _x_global, _y_global - PIX_PER_STEP, _sprite))
                 _y_global -= PIX_PER_STEP;
         }
         else if (direction == DIRECTION_DOWN)
         {
-            if (_game_map.canPass(_x_global, _y_global, _x_global, _y_global + PIX_PER_STEP, _body, _sprite))
+            if (_terrain.canPass(_x_global, _y_global, _x_global, _y_global + PIX_PER_STEP, _sprite))
                 _y_global += PIX_PER_STEP;
         }
         else if (direction == DIRECTION_LEFT)
         {
-            if (_game_map.canPass(_x_global, _y_global, _x_global - PIX_PER_STEP, _y_global, _body, _sprite))
+            if (_terrain.canPass(_x_global, _y_global, _x_global - PIX_PER_STEP, _y_global, _sprite))
                 _x_global -= PIX_PER_STEP;
         }
         else if (direction == DIRECTION_RIGHT)
         {
-            if (_game_map.canPass(_x_global, _y_global, _x_global + PIX_PER_STEP, _y_global, _body, _sprite))
+            if (_terrain.canPass(_x_global, _y_global, _x_global + PIX_PER_STEP, _y_global, _sprite))
                 _x_global += PIX_PER_STEP;
         }
     }
